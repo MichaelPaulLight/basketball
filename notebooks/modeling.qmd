@@ -221,7 +221,9 @@ jumpball_turnovers <- poss_initial %>%
 # identify and change consecutive possessions
 change_consec <- poss_initial %>%
   # rows_update(lane_description_missing, by = c("game_id", "number_event")) %>%
-  rows_update(jumpball_turnovers, by = c("game_id", "number_event")) %>%
+  rows_update(jumpball_turnovers %>% 
+              mutate(across(c(off_slug_team, slug_team), as.character)), 
+             by = c("game_id", "number_event")) %>%
   filter(possession == 1 | (msg_type == 6 & act_type == 30)) %>%
   group_by(game_id, period) %>%
   filter(possession == lead(possession) & off_slug_team == lead(off_slug_team)) %>%
@@ -232,12 +234,15 @@ change_consec <- poss_initial %>%
 # replace in data
 poss_non_consec <- poss_initial %>%
   # rows_update(lane_description_missing, by = c("game_id", "number_event")) %>%
-  rows_update(jumpball_turnovers, by = c("game_id", "number_event")) %>%
+  rows_update(jumpball_turnovers %>% 
+              mutate(across(c(off_slug_team, slug_team), as.character)), 
+             by = c("game_id", "number_event")) %>%
   rows_update(change_consec, by = c("game_id","number_event"))
 ```
 
 ```{r}
-start_possessions <- poss_initial %>%
+# find start of possessions
+start_possessions <- poss_non_consec %>%
   group_by(game_id, secs_passed_game, 
            slug_team_foul = ifelse(msg_type == 6, ifelse(team_home == slug_team, team_away, team_home), slug_team)) %>%
   mutate(and1 = sum(msg_type == 1) > 0 &
@@ -252,7 +257,7 @@ start_possessions <- poss_initial %>%
   filter(!is.na(start_poss))
 
 # add start of possession column to table
-poss_non_consec <- poss_initial %>%
+poss_non_consec <- poss_non_consec %>%
   left_join(start_possessions %>%
               select(game_id, number_event, start_poss)) %>%
   group_by(game_id, period) %>%
