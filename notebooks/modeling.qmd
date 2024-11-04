@@ -48,7 +48,11 @@ nba_pbp_raw <- pbp_month %>%
   mutate(across(c(player1_id, player2_id, player3_id), as.numeric))
 
 player_logs <- player_logs %>%
-  mutate(across(c(player_id, team_id), as.numeric))
+  mutate(across(c(player_id, team_id), as.numeric)) |> 
+  mutate(team_location = case_when(
+    game_id == "0022400147" & team_id == 1610612748 ~ "home",
+    .default = team_location
+  ))
 
 nba_pbp <- nba_pbp_raw %>%
   left_join(player_logs %>%
@@ -181,7 +185,6 @@ poss_initial <- lineup_game %>%
                                 TRUE ~ 0))
 ```
 
-
 ```{r}
 # finding lane violations that are not specified
 lane_description_missing <- poss_initial %>%
@@ -218,8 +221,10 @@ jumpball_turnovers <- poss_initial %>%
 ```{r}
 # identify and change consecutive possessions
 change_consec <- poss_initial %>%
-  # rows_update(lane_description_missing, by = c("game_id", "number_event")) %>%
-  rows_update(jumpball_turnovers, by = c("game_id", "number_event")) %>%
+  # Only perform rows_update if jumpball_turnovers has rows
+  {if (nrow(jumpball_turnovers) > 0) 
+    rows_update(., jumpball_turnovers, by = c("game_id", "number_event")) 
+   else .} %>%
   filter(possession == 1 | (msg_type == 6 & act_type == 30)) %>%
   group_by(game_id, period) %>%
   filter(possession == lead(possession) & off_slug_team == lead(off_slug_team)) %>%
@@ -229,13 +234,18 @@ change_consec <- poss_initial %>%
 
 # replace in data
 poss_non_consec <- poss_initial %>%
-  # rows_update(lane_description_missing, by = c("game_id", "number_event")) %>%
-  rows_update(jumpball_turnovers, by = c("game_id", "number_event")) %>%
-  rows_update(change_consec, by = c("game_id","number_event"))
+  # Only perform rows_update if the respective dataframes have rows
+  {if (nrow(jumpball_turnovers) > 0) 
+    rows_update(., jumpball_turnovers, by = c("game_id", "number_event"))
+   else .} %>%
+  {if (nrow(change_consec) > 0)
+    rows_update(., change_consec, by = c("game_id", "number_event"))
+   else .}
 ```
 
 ```{r}
-start_possessions <- poss_initial %>%
+# find start of possessions
+start_possessions <- poss_non_consec %>%
   group_by(game_id, secs_passed_game, 
            slug_team_foul = ifelse(msg_type == 6, ifelse(team_home == slug_team, team_away, team_home), slug_team)) %>%
   mutate(and1 = sum(msg_type == 1) > 0 &
@@ -250,7 +260,7 @@ start_possessions <- poss_initial %>%
   filter(!is.na(start_poss))
 
 # add start of possession column to table
-poss_non_consec <- poss_initial %>%
+poss_non_consec <- poss_non_consec %>%
   left_join(start_possessions %>%
               select(game_id, number_event, start_poss)) %>%
   group_by(game_id, period) %>%
@@ -430,17 +440,6 @@ lineup_stats <- pbp_final_gt %>%
 ```
 
 ```{r}
-dubs_clips <- lineup_stats |> 
-  mutate(plus_minus = pts_team - pts_opp) |> 
-  select(game_id, slug_team, lineup, secs_played, plus_minus, poss_team, poss_opp, garbage_time) |> 
-  separate_longer_delim(lineup, delim = ", ") |> 
-  rename(player = lineup) |> 
-  group_by(slug_team, player) |>
-  summarise(plus_minus = sum(plus_minus), 
-            secs_played = sum(secs_played), 
-            poss_team = sum(poss_team), 
-            poss_opp = sum(poss_opp), 
-            garbage_time = mean(garbage_time))
 
 ```
 
@@ -448,7 +447,6 @@ dubs_clips <- lineup_stats |>
 zero_prop <- mean(player_stats$secs_played == 0)
 cat("Proportion of zero minutes:", zero_prop, "\n")
 ```
-
 
 ```{r}
 library(brms)
@@ -519,6 +517,7 @@ ggplot(head(player_effects, 20), aes(y = reorder(player, Estimate), x = Estimate
        x = "Estimated Effect on Minutes Played (seconds)",
        y = "Player")
 ```
+
 ```{r}
 # Calculate expected minutes for specific players
 predict_minutes <- function(player_name, opp_team, home_team, fit, data) {
@@ -668,7 +667,6 @@ ggplot(predictions |> filter(player != "TEAM TOTAL"),
        y = "Player") +
   theme_minimal()
 ```
-
 
 ```{r}
 # Create conditional effects plot for specific variables
