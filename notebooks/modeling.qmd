@@ -274,16 +274,16 @@ addit_poss <- poss_non_consec %>%
   ungroup() %>%
   filter(clock != "00:00.0" & !(msg_type == 4 & desc_value == 1)) %>%
   transmute(game_id, period, start_poss = clock, possession = 1,
-            off_slug_team = ifelse(msg_type == 4 | msg_type == 3 & act_type %in% c(19, 20, 29, 26), 
+            off_slug_team = as.character(ifelse(msg_type == 4 | msg_type == 3 & act_type %in% c(19, 20, 29, 26), 
                                    slug_team, 
-                                   ifelse(slug_team == team_home, team_away, team_home)),
+                                   ifelse(slug_team == team_home, team_away, team_home))),
             msg_type = 99, act_type = 0, number_original = 0, description = "Last possession of quarter") %>%
   left_join(poss_non_consec %>%
               filter(msg_type == 13) %>%
               select(-c(number_original, msg_type, act_type, start_poss,
                         description, possession, off_slug_team))) %>%
   mutate(number_event = number_event - 0.5,
-         slug_team = off_slug_team)
+         slug_team = as.character(off_slug_team))  # Ensure both columns are character type
 
 pbp_poss <- poss_non_consec %>%
   bind_rows(addit_poss) %>%
@@ -315,23 +315,23 @@ flagrant_clear <- lineup_game %>%
   select(game_id, secs_passed_game, number_event_ft = number_event, slug_team) %>%
   left_join(lineup_game %>%
               filter(msg_type == 6 & act_type %in% c(9, 14, 15)) %>%
+              mutate(slug_team = as.character(slug_team),
+                    team_home = as.character(team_home),
+                    team_away = as.character(team_away)) %>%
               transmute(game_id, secs_passed_game, number_event_foul = number_event, 
-                        slug_team = ifelse(slug_team == team_home, team_away, team_home)))
-
-## REGULAR FOULS
-other_fouls <- lineup_game %>%
-  filter(msg_type %in% c(3, 6)) %>%
-  filter(!str_detect(description, "Technical|Defense 3 Second"),
-         !(msg_type == 3 & act_type %in% c(18:20, 25:26, 27:29)),
-         !(msg_type == 6 & act_type %in% c(9, 14, 15)))
+                        slug_team = as.character(ifelse(slug_team == team_home, team_away, team_home))))
 
 regular_fouls <- other_fouls %>%
   filter(msg_type == 3) %>%
   select(game_id, secs_passed_game, number_event_ft = number_event, slug_team, player_fouled = player1) %>%
   left_join(other_fouls %>%
               filter(msg_type == 6 & str_detect(description, "FT")) %>%
-              transmute(game_id, secs_passed_game, number_event_foul = number_event, player_fouled = player3,
-                        slug_team = ifelse(slug_team == team_home, team_away, team_home)))
+              mutate(slug_team = as.character(slug_team),
+                    team_home = as.character(team_home),
+                    team_away = as.character(team_away)) %>%
+              transmute(game_id, secs_passed_game, number_event_foul = number_event, 
+                       player_fouled = player3,
+                       slug_team = as.character(ifelse(slug_team == team_home, team_away, team_home))))
 
 regular_fouls <- regular_fouls %>%
   left_join(other_fouls %>%
