@@ -9,9 +9,6 @@ library(hoopR)
 library(tidyverse)
 library(janitor)
 library(zoo)
-library(brms)
-library(bayesplot)
-library(ggdist)
 ```
 
 ```{r}
@@ -184,6 +181,7 @@ poss_initial <- lineup_game %>%
                                 TRUE ~ 0))
 ```
 
+
 ```{r}
 # finding lane violations that are not specified
 lane_description_missing <- poss_initial %>%
@@ -221,9 +219,7 @@ jumpball_turnovers <- poss_initial %>%
 # identify and change consecutive possessions
 change_consec <- poss_initial %>%
   # rows_update(lane_description_missing, by = c("game_id", "number_event")) %>%
-  rows_update(jumpball_turnovers %>% 
-              mutate(across(c(off_slug_team, slug_team), as.character)), 
-             by = c("game_id", "number_event")) %>%
+  rows_update(jumpball_turnovers, by = c("game_id", "number_event")) %>%
   filter(possession == 1 | (msg_type == 6 & act_type == 30)) %>%
   group_by(game_id, period) %>%
   filter(possession == lead(possession) & off_slug_team == lead(off_slug_team)) %>%
@@ -234,15 +230,12 @@ change_consec <- poss_initial %>%
 # replace in data
 poss_non_consec <- poss_initial %>%
   # rows_update(lane_description_missing, by = c("game_id", "number_event")) %>%
-  rows_update(jumpball_turnovers %>% 
-              mutate(across(c(off_slug_team, slug_team), as.character)), 
-             by = c("game_id", "number_event")) %>%
+  rows_update(jumpball_turnovers, by = c("game_id", "number_event")) %>%
   rows_update(change_consec, by = c("game_id","number_event"))
 ```
 
 ```{r}
-# find start of possessions
-start_possessions <- poss_non_consec %>%
+start_possessions <- poss_initial %>%
   group_by(game_id, secs_passed_game, 
            slug_team_foul = ifelse(msg_type == 6, ifelse(team_home == slug_team, team_away, team_home), slug_team)) %>%
   mutate(and1 = sum(msg_type == 1) > 0 &
@@ -257,7 +250,7 @@ start_possessions <- poss_non_consec %>%
   filter(!is.na(start_poss))
 
 # add start of possession column to table
-poss_non_consec <- poss_non_consec %>%
+poss_non_consec <- poss_initial %>%
   left_join(start_possessions %>%
               select(game_id, number_event, start_poss)) %>%
   group_by(game_id, period) %>%
@@ -274,16 +267,16 @@ addit_poss <- poss_non_consec %>%
   ungroup() %>%
   filter(clock != "00:00.0" & !(msg_type == 4 & desc_value == 1)) %>%
   transmute(game_id, period, start_poss = clock, possession = 1,
-            off_slug_team = as.character(ifelse(msg_type == 4 | msg_type == 3 & act_type %in% c(19, 20, 29, 26), 
+            off_slug_team = ifelse(msg_type == 4 | msg_type == 3 & act_type %in% c(19, 20, 29, 26), 
                                    slug_team, 
-                                   ifelse(slug_team == team_home, team_away, team_home))),
+                                   ifelse(slug_team == team_home, team_away, team_home)),
             msg_type = 99, act_type = 0, number_original = 0, description = "Last possession of quarter") %>%
   left_join(poss_non_consec %>%
               filter(msg_type == 13) %>%
               select(-c(number_original, msg_type, act_type, start_poss,
                         description, possession, off_slug_team))) %>%
   mutate(number_event = number_event - 0.5,
-         slug_team = as.character(off_slug_team))  # Ensure both columns are character type
+         slug_team = off_slug_team)
 
 pbp_poss <- poss_non_consec %>%
   bind_rows(addit_poss) %>%
@@ -315,23 +308,23 @@ flagrant_clear <- lineup_game %>%
   select(game_id, secs_passed_game, number_event_ft = number_event, slug_team) %>%
   left_join(lineup_game %>%
               filter(msg_type == 6 & act_type %in% c(9, 14, 15)) %>%
-              mutate(slug_team = as.character(slug_team),
-                    team_home = as.character(team_home),
-                    team_away = as.character(team_away)) %>%
               transmute(game_id, secs_passed_game, number_event_foul = number_event, 
-                        slug_team = as.character(ifelse(slug_team == team_home, team_away, team_home))))
+                        slug_team = ifelse(slug_team == team_home, team_away, team_home)))
+
+## REGULAR FOULS
+other_fouls <- lineup_game %>%
+  filter(msg_type %in% c(3, 6)) %>%
+  filter(!str_detect(description, "Technical|Defense 3 Second"),
+         !(msg_type == 3 & act_type %in% c(18:20, 25:26, 27:29)),
+         !(msg_type == 6 & act_type %in% c(9, 14, 15)))
 
 regular_fouls <- other_fouls %>%
   filter(msg_type == 3) %>%
   select(game_id, secs_passed_game, number_event_ft = number_event, slug_team, player_fouled = player1) %>%
   left_join(other_fouls %>%
               filter(msg_type == 6 & str_detect(description, "FT")) %>%
-              mutate(slug_team = as.character(slug_team),
-                    team_home = as.character(team_home),
-                    team_away = as.character(team_away)) %>%
-              transmute(game_id, secs_passed_game, number_event_foul = number_event, 
-                       player_fouled = player3,
-                       slug_team = as.character(ifelse(slug_team == team_home, team_away, team_home))))
+              transmute(game_id, secs_passed_game, number_event_foul = number_event, player_fouled = player3,
+                        slug_team = ifelse(slug_team == team_home, team_away, team_home)))
 
 regular_fouls <- regular_fouls %>%
   left_join(other_fouls %>%
@@ -437,10 +430,25 @@ lineup_stats <- pbp_final_gt %>%
 ```
 
 ```{r}
-zero_prop <- mean(lineup_stats$secs_played == 0)
-cat("Proportion of zero minutes:", zero_prop, "\n")
-lineup
+dubs_clips <- lineup_stats |> 
+  mutate(plus_minus = pts_team - pts_opp) |> 
+  select(game_id, slug_team, lineup, secs_played, plus_minus, poss_team, poss_opp, garbage_time) |> 
+  separate_longer_delim(lineup, delim = ", ") |> 
+  rename(player = lineup) |> 
+  group_by(slug_team, player) |>
+  summarise(plus_minus = sum(plus_minus), 
+            secs_played = sum(secs_played), 
+            poss_team = sum(poss_team), 
+            poss_opp = sum(poss_opp), 
+            garbage_time = mean(garbage_time))
+
 ```
+
+```{r}
+zero_prop <- mean(player_stats$secs_played == 0)
+cat("Proportion of zero minutes:", zero_prop, "\n")
+```
+
 
 ```{r}
 library(brms)
@@ -463,20 +471,22 @@ player_stats <- lineup_stats |>
 
 fit_01 <- brm(
   formula = secs_played ~ 
-    (1 | game_id/slug_team) +     # Teams nested within games
-    (1 | player) +                # Player random effect
-    (1 | game_id:stint) +         # Stint effect nested within games
-    (1 | slug_team:stint),        # Stint effect nested within teams
+    (1 | game_id) +           # Game-level variation
+    (1 | player) +            # Player random effect
+    (1 | slug_team) +         # Team effect
+    (1 | slug_opp) +          # Opponent effect
+    (1 | stint) +             # Stint-level variation
   family = Gamma(link = "log"),
   data = player_stats,
   chains = 4,
   iter = 2000,
   prior = c(
     prior(normal(7, 1), class = "Intercept"),
-    prior(exponential(2), class = "sd", group = "game_id:slug_team"),
     prior(exponential(2), class = "sd", group = "player"),
-    prior(exponential(2), class = "sd", group = "game_id:stint"),
-    prior(exponential(2), class = "sd", group = "slug_team:stint"),
+    prior(exponential(2), class = "sd", group = "slug_team"),
+    prior(exponential(2), class = "sd", group = "game_id"),
+    prior(exponential(2), class = "sd", group = "slug_opp"),
+    prior(exponential(2), class = "sd", group = "stint"),
     prior(gamma(2, 0.1), class = "shape")
   ),
   file = "../models/minutes-model_01.rds"
@@ -509,7 +519,6 @@ ggplot(head(player_effects, 20), aes(y = reorder(player, Estimate), x = Estimate
        x = "Estimated Effect on Minutes Played (seconds)",
        y = "Player")
 ```
-
 ```{r}
 # Calculate expected minutes for specific players
 predict_minutes <- function(player_name, opp_team, home_team, fit, data) {
@@ -659,6 +668,7 @@ ggplot(predictions |> filter(player != "TEAM TOTAL"),
        y = "Player") +
   theme_minimal()
 ```
+
 
 ```{r}
 # Create conditional effects plot for specific variables
