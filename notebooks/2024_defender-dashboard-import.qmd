@@ -1,0 +1,238 @@
+---
+title: "2024_defender-dashboard-import"
+format: html
+editor: visual
+---
+
+```{r}
+library(hoopR)
+library(tidyverse)
+```
+
+
+```{r}
+season_open <- "2024-10-22"
+date <- Sys.Date() - 1
+
+defense_dash <- nba_playerdashptshotdefend(
+  date_from = season_open,
+  date_to = Sys.Date(),
+  game_segment = "",
+  last_n_games = 0,
+  league_id = "00",
+  location = "",
+  month = 0,
+  opponent_team_id = 0,
+  outcome = "",
+  per_mode = "Totals",
+  period = 0,
+  player_id = 0,
+  season = year_to_season(most_recent_nba_season() - 1),
+  season_segment = "",
+  season_type = "Regular Season",
+  team_id = "0",
+  vs_conference = "",
+  vs_division = ""
+)
+```
+
+```{r}
+yesterday_dd <- defense_dash$DefendingShots
+
+jk <- defense_dash$DefendingShots
+```
+
+
+```{r}
+season_open <- "2024-10-22"
+date <- Sys.Date() - 1
+
+defense_dash_dubs <- nba_playerdashptshotdefend(
+  date_from = season_open,
+  date_to = Sys.Date(),
+  game_segment = "",
+  last_n_games = 0,
+  league_id = "00",
+  location = "",
+  month = 0,
+  opponent_team_id = 0,
+  outcome = "",
+  per_mode = "Totals",
+  period = 0,
+  player_id = 0,
+  season = year_to_season(most_recent_nba_season() - 1),
+  season_segment = "",
+  season_type = "Regular Season",
+  team_id = "1610612744",
+  vs_conference = "",
+  vs_division = ""
+)
+
+defense_dash_dubs_jazz <- nba_playerdashptshotdefend(
+  date_from = "2024-10-25",
+  date_to = "2024-10-25",
+  game_segment = "",
+  last_n_games = 0,
+  league_id = "00",
+  location = "",
+  month = 0,
+  opponent_team_id = 0,
+  outcome = "",
+  per_mode = "Totals",
+  period = "4",
+  player_id = 0,
+  season = year_to_season(most_recent_nba_season() - 1),
+  season_segment = "",
+  season_type = "Regular Season",
+  team_id = "1610612762",
+  vs_conference = "",
+  vs_division = ""
+)
+
+# excluding team_id, player_id, and including darte_from and date_to for a single day, and including period, the returned data is for every player who played on that day in that period, excluding player_ids for players who did not play that period and including a 0 value for the G column if a player did not defend a given shot type during the given day and period
+
+defense_dash_dubs_jazz_all <- nba_playerdashptshotdefend(
+  date_from = "2024-10-25",
+  date_to = "2024-10-25",
+  game_segment = "",
+  last_n_games = 0,
+  league_id = "00",
+  location = "",
+  month = 0,
+  opponent_team_id = 0,
+  outcome = "",
+  per_mode = "Totals",
+  period = "4",
+  player_id = 0,
+  season = year_to_season(most_recent_nba_season() - 1),
+  season_segment = "",
+  season_type = "Regular Season",
+  team_id = 0,
+  vs_conference = "",
+  vs_division = ""
+)
+
+defense_dash_okc <- nba_playerdashptshotdefend(
+  date_from = season_open,
+  date_to = Sys.Date(),
+  game_segment = "",
+  last_n_games = 0,
+  league_id = "00",
+  location = "",
+  month = 0,
+  opponent_team_id = 0,
+  outcome = "",
+  per_mode = "Totals",
+  period = 0,
+  player_id = 0,
+  season = year_to_season(most_recent_nba_season() - 1),
+  season_segment = "",
+  season_type = "Regular Season",
+  team_id = "1610612760",
+  vs_conference = "",
+  vs_division = ""
+)
+```
+
+
+```{r}
+
+defense_dash_full <- defense_dash_full$DefendingShots
+
+ddd <- defense_dash_dubs$DefendingShots
+
+ddd_opp <- defense_dash_dubs_opp$DefendingShots
+
+ddokc <- defense_dash_okc$DefendingShots
+
+ddjazzdubs <- defense_dash_dubs_jazz$DefendingShots
+
+ddjazzdubs_all <- defense_dash_dubs_jazz_all$DefendingShots
+```
+
+```{r}
+
+# with no team_id or player_id, the returned data is for every player in the league's most recent game
+
+defense_dash_full <- nba_playerdashptshotdefend(
+  date_from = season_open,
+  date_to = Sys.Date(),
+  game_segment = "",
+  last_n_games = 0,
+  league_id = "00",
+  location = "",
+  month = 0,
+  opponent_team_id = 0,
+  outcome = "",
+  per_mode = "Totals",
+  period = 0,
+  player_id = 0,
+  season = year_to_season(most_recent_nba_season() - 1),
+  season_segment = "",
+  season_type = "Regular Season",
+  team_id = 0,
+  vs_conference = "",
+  vs_division = ""
+)
+
+defense_dash_full_n2 <- nba_playerdashptshotdefend(
+  date_from = season_open,
+  date_to = Sys.Date(),
+  game_segment = "",
+  last_n_games = 2,
+  league_id = "00",
+  location = "",
+  month = 0,
+  opponent_team_id = 0,
+  outcome = "",
+  per_mode = "Totals",
+  period = 0,
+  player_id = 0,
+  season = year_to_season(most_recent_nba_season() - 1),
+  season_segment = "",
+  season_type = "Regular Season",
+  team_id = 0,
+  vs_conference = "",
+  vs_division = ""
+)
+```
+
+```{r}
+defense_dash_full_n2 <- defense_dash_full_n2$DefendingShots
+```
+
+```{r}
+
+# when you input a team_id, the returned data is for every player on opposing teams who played that team
+
+defense_dash_dubs_p1 <- nba_playerdashptshotdefend(
+  date_from = season_open,
+  date_to = Sys.Date(),
+  game_segment = "",
+  last_n_games = 0,
+  league_id = "00",
+  location = "",
+  month = 0,
+  opponent_team_id = 0,
+  outcome = "",
+  per_mode = "Totals",
+  period = 1,
+  player_id = 0,
+  season = year_to_season(most_recent_nba_season() - 1),
+  season_segment = "",
+  season_type = "Regular Season",
+  team_id = "1610612744",
+  vs_conference = "",
+  vs_division = ""
+)
+```
+
+```{r}
+ddd_p1 <- defense_dash_dubs_p1$DefendingShots
+
+```
+
+```{r}
+dubs_okc_p1 <- pbp_final_gt |> 
+  filter(game_id == "22400207" & period == 1 & str_detect(description, "3pt"))
+```
