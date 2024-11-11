@@ -1,17 +1,9 @@
----
-title: "nba_exploration"
-format: html
-editor: visual
----
-
 ```{r}
 library(hoopR)
 library(tidyverse)
 library(janitor)
 library(zoo)
-```
 
-```{r}
 player_logs <- nba_leaguegamelog(season = "2024-25", player_or_team = "P") %>%
   pluck("LeagueGameLog") %>%
   clean_names() %>%
@@ -28,9 +20,6 @@ games <- player_logs %>%
   pull(game_id)
 
 pbp_month <- map_df(games, function_pbp)
-```
-
-```{r}
 
 nba_pbp_raw <- pbp_month %>%
   mutate(across(c(player1_id, player2_id, player3_id), as.numeric))
@@ -86,9 +75,6 @@ nba_pbp <- nba_pbp %>%
   ungroup() %>%
   arrange(game_id, number_event)
 
-```
-
-```{r}
 players_subbed <- nba_pbp %>%
   filter(msg_type == 8) %>%
   select(game_id, period, number_event, player_in = player2, player_out = player1, description) %>%
@@ -164,16 +150,12 @@ lineup_game <- nba_pbp %>%
          lineup_away = map_chr(str_split(lineup_away, ", "), ~ paste(sort(.), collapse = ", "))) %>%
   select(-c(starts_with("lineup_start"), starts_with("lineup_before"), starts_with("lineup_after")))
 
-```
 
-```{r}
 poss_initial <- lineup_game %>%
   mutate(possession = case_when(msg_type %in% c(1, 2, 5) ~ 1,
                                 msg_type == 3 & act_type %in% c(12, 15) ~ 1,
                                 TRUE ~ 0))
-```
 
-```{r}
 # finding lane violations that are not specified
 lane_description_missing <- poss_initial %>%
   group_by(game_id, secs_passed_game) %>%
@@ -204,15 +186,12 @@ jumpball_turnovers <- poss_initial %>%
   transmute(game_id, number_event, off_slug_team = ifelse(slug_team == team_home, team_away, team_home), possession) %>%
   mutate(slug_team = off_slug_team)
 
-```
-
-```{r}
 # identify and change consecutive possessions
 change_consec <- poss_initial %>%
   # Only perform rows_update if jumpball_turnovers has rows
   {if (nrow(jumpball_turnovers) > 0) 
     rows_update(., jumpball_turnovers, by = c("game_id", "number_event")) 
-   else .} %>%
+    else .} %>%
   filter(possession == 1 | (msg_type == 6 & act_type == 30)) %>%
   group_by(game_id, period) %>%
   filter(possession == lead(possession) & off_slug_team == lead(off_slug_team)) %>%
@@ -225,13 +204,11 @@ poss_non_consec <- poss_initial %>%
   # Only perform rows_update if the respective dataframes have rows
   {if (nrow(jumpball_turnovers) > 0) 
     rows_update(., jumpball_turnovers, by = c("game_id", "number_event"))
-   else .} %>%
+    else .} %>%
   {if (nrow(change_consec) > 0)
     rows_update(., change_consec, by = c("game_id", "number_event"))
-   else .}
-```
+    else .}
 
-```{r}
 # find start of possessions
 start_possessions <- poss_non_consec %>%
   group_by(game_id, secs_passed_game, 
@@ -279,9 +256,6 @@ addit_poss <- poss_non_consec %>%
 pbp_poss <- poss_non_consec %>%
   bind_rows(addit_poss) %>%
   arrange(game_id, number_event)
-```
-
-```{r}
 
 ### find unidentified double technicals (instead of description showing double technical, there's one event for each but no FTs)
 unident_double_techs <- lineup_game %>%
@@ -393,9 +367,6 @@ pbp_final_gt <- pbp_poss_final %>%
   mutate(garbage_time = ifelse(garbage_time == 1 & number_event < max_nongarbage, 0, garbage_time)) %>%
   select(-c(starts_with("lineup_start_"), max_nongarbage, opt2, ord))
 
-```
-
-```{r}
 lineup_stats <- pbp_final_gt %>%
   group_by(game_id, slug_team) %>%
   mutate(stint_home = ifelse(slug_team == team_home, cumsum(msg_type == 8) + 1, NA),
@@ -424,638 +395,3 @@ lineup_stats <- pbp_final_gt %>%
   group_by(game_id, slug_team) %>%
   mutate(stint = row_number()) %>%
   ungroup()
-
-```
-
-```{r}
-zero_prop <- mean(lineup_stats$secs_played == 0)
-zero_prop
-```
-
-```{r}
-library(brms)
-
-player_stats <- lineup_stats |> 
-  separate_longer_delim(lineup, delim = ", ") |> 
-  rename(player = lineup) |> 
-  filter(garbage_time == 0) |> 
-  filter(secs_played > 0) |>
-  group_by(player) |>
-  arrange(player, game_id, stint) |> 
-  mutate(prior_stint_secs = case_when(
-    stint - lag(stint) == 1 ~ lag(secs_played),
-    .default = 0
-  )) |> 
-  mutate(accumulated_secs = case_when(
-    prior_stint_secs =! 0 ~ prior_stint_secs + secs_played,
-    .default = secs_played
-  ))
-
-fit_01 <- brm(
-  formula = secs_played ~ 
-    (1 | game_id) +     # Game-level variation
-    (1 | player) +      # Player random effect
-    (1 | slug_team) +   # Team effect
-    (1 | slug_opp) +    # Opponent effect
-    (1 | period),       # Period effect
-  family = Gamma(link = "log"),
-  data = player_stats,
-  chains = 4,
-  iter = 2000,
-  prior = c(
-    prior(normal(7, 1), class = "Intercept"),
-    prior(exponential(2), class = "sd", group = "player"),
-    prior(exponential(2), class = "sd", group = "slug_team"),
-    prior(exponential(2), class = "sd", group = "game_id"),
-    prior(exponential(2), class = "sd", group = "slug_opp"),
-    prior(exponential(2), class = "sd", group = "period"),
-    prior(gamma(2, 0.1), class = "shape")
-  ),
-  file = "../models/minutes-model_01.rds"
-)
-
-```
-
-```{r}
-test_3 <- pbp_final_gt |> 
-  group_by(game_id) |> 
-  mutate(posession_sequential = cumsum(possession))
-
-```
-
-```{r}
-fit <-  fit_01
-
-pp_check(fit, ndraws = 100)  # Posterior predictive check
-```
-
-```{r}
-library(ggdist)
-# Extract random effects for players
-player_effects <- ranef(fit)$player[, , "Intercept"] |>
-  as.data.frame() |>
-  rownames_to_column("player") |>
-  arrange(desc(Estimate))
-
-# Extract team effects
-team_effects <- ranef(fit)$slug_team[, , "Intercept"] |>
-  as.data.frame() |>
-  rownames_to_column("team") |>
-  arrange(desc(Estimate))
-
-# Visualize player random effects
-ggplot(head(player_effects, 30), aes(y = reorder(player, Estimate), x = Estimate)) +
-  stat_halfeye() +
-  labs(title = "Top 20 Players by Minutes Effect",
-       x = "Estimated Effect on Minutes Played (seconds)",
-       y = "Player")
-
-ggplot(head(team_effects, 20), aes(y = reorder(team, Estimate), x = Estimate)) +
-  stat_halfeye() +
-  labs(title = "Top 20 Teams by Minutes Effect",
-       x = "Estimated Effect on Minutes Played (seconds)",
-       y = "Team")
-```
-
-```{r}
-# Calculate expected minutes for specific players
-predict_minutes <- function(player_name, opp_team, home_team, fit, data) {
-  newdata <- data.frame(
-    player = player_name,
-    slug_team = home_team,
-    slug_opp = opp_team
-  )
-  
-  posterior_pred <- posterior_predict(
-    fit, 
-    newdata = newdata,
-    allow_new_levels = TRUE
-  )
-  
-  # Convert to minutes and summarize
-  mins_summary <- data.frame(
-    mean_mins = mean(posterior_pred) / 60,
-    lower = quantile(posterior_pred, 0.025) / 60,
-    upper = quantile(posterior_pred, 0.975) / 60,
-  )
-  
-  return(mins_summary)
-}
-
-# Example usage of prediction function
-example_pred <- predict_minutes(
-  player_name = "Nikola Jokić",  
-  opp_team = "OKC",
-  home_team = "DEN",
-  fit = fit,
-  data = player_stats
-)
-```
-
-```{r}
-predict_minutes <- function(player_names, opp_team, home_team, fit, data, n_games = 1) {
-  # Create newdata for all players
-  newdata <- data.frame(
-    player = player_names,
-    slug_team = home_team,
-    slug_opp = opp_team
-  )
-  
-  # Get posterior predictions for all players
-  posterior_pred <- posterior_predict(
-    fit, 
-    newdata = newdata,
-    allow_new_levels = TRUE
-  )
-  
-  # Calculate summaries for each player
-  player_summaries <- lapply(1:ncol(posterior_pred), function(i) {
-    data.frame(
-      player = player_names[i],
-      mean_mins_per_game = mean(posterior_pred[,i]) / 60,
-      lower_per_game = quantile(posterior_pred[,i], 0.025) / 60,
-      upper_per_game = quantile(posterior_pred[,i], 0.975) / 60,
-      total_mins = (mean(posterior_pred[,i]) / 60) * n_games,
-      total_lower = (quantile(posterior_pred[,i], 0.025) / 60) * n_games,
-      total_upper = (quantile(posterior_pred[,i], 0.975) / 60) * n_games
-    )
-  }) |>
-    bind_rows() |>
-    # Add team total row
-    bind_rows(
-      data.frame(
-        player = "TEAM TOTAL",
-        mean_mins_per_game = mean(rowSums(posterior_pred)) / 60,
-        lower_per_game = quantile(rowSums(posterior_pred), 0.025) / 60,
-        upper_per_game = quantile(rowSums(posterior_pred), 0.975) / 60,
-        total_mins = mean(rowSums(posterior_pred)) / 60 * n_games,
-        total_lower = quantile(rowSums(posterior_pred), 0.025) / 60 * n_games,
-        total_upper = quantile(rowSums(posterior_pred), 0.975) / 60 * n_games
-      )
-    )
-  
-  # Add warnings/flags
-  player_summaries <- player_summaries |>
-    mutate(
-      warning = case_when(
-        player == "TEAM TOTAL" & mean_mins_per_game < 240 ~ "⚠️ Under 240 minutes",
-        player == "TEAM TOTAL" & mean_mins_per_game > 240 ~ "⚠️ Over 240 minutes",
-        mean_mins_per_game < 0 ~ "⚠️ Negative minutes",
-        TRUE ~ ""
-      )
-    )
-  
-  return(player_summaries)
-}
-
-# Example usage:
-home_team <- "DEN"
-opp_team <- "OKC"
-
-player_names <- player_stats |>
-  filter(slug_team == home_team) |> 
-  distinct(player) |>
-  pull(player)
-
-predictions <- predict_minutes(
-  player_names = player_names,
-  opp_team = opp_team,
-  home_team = home_team,
-  fit = fit,
-  data = player_stats
-)
-
-# Pretty printing function for the results
-print_minutes_prediction <- function(predictions) {
-  predictions |>
-    mutate(
-      minutes = sprintf("%.1f [%.1f, %.1f]", mean_mins, lower, upper)
-    ) |>
-    select(player, minutes, warning) |>
-    arrange(desc(mean_mins)) |>
-    knitr::kable(
-      col.names = c("Player/Team", "Minutes [95% CI]", "Warning"),
-      align = c("l", "r", "l")
-    )
-}
-
-predictions
-
-# Print results
-print_minutes_prediction(predictions)
-
-# Optional: Plot the predictions
-library(ggplot2)
-
-ggplot(predictions |> filter(player != "TEAM TOTAL"), 
-       aes(y = reorder(player, mean_mins), 
-           x = mean_mins,
-           xmin = lower,
-           xmax = upper)) +
-  geom_pointrange() +
-  geom_vline(data = predictions |> filter(player == "TEAM TOTAL"),
-             aes(xintercept = mean_mins),
-             linetype = "dashed",
-             color = "red") +
-  geom_vline(xintercept = 240/length(example_players),
-             linetype = "dotted",
-             color = "blue") +
-  labs(title = "Predicted Minutes Distribution",
-       subtitle = "Red line: Predicted team total, Blue line: Equal distribution",
-       x = "Minutes",
-       y = "Player") +
-  theme_minimal()
-```
-
-```{r}
-# Create conditional effects plot for specific variables
-# conditional_effects <- conditional_effects(fit, effects = "slug_team")
-
-# Calculate season-long player usage patterns
-player_usage <- player_stats |>
-  group_by(player) |>
-  summarise(
-    total_mins = sum(secs_played) / 60,
-    stints_played = n(),
-    avg_mins = mean(secs_played) / 60,
-    model_estimate = player_effects$Estimate[match(first(player), player_effects$player)]
-  ) |>
-  arrange(desc(avg_mins), stints_played)
-```
-
-```{r}
-library(bayesplot)
-ppc_dens_overlay(fit, color = "blue", fill = "blue", alpha = 0.5)
-
-
-```
-
-```{r}
-player_stats_by_period <- lineup_stats |> 
-  separate_longer_delim(lineup, delim = ", ") |> 
-  rename(player = lineup) |> 
-  filter(garbage_time == 0) |> 
-  filter(secs_played > 0) |>
-  group_by(player, game_id, period, slug_team, slug_opp) |>  # Group by period as well
-  summarise(
-    secs_per_period = sum(secs_played),
-    stints_in_period = n()
-  ) |>
-  group_by(player) |>
-  arrange(player, game_id, period) |> 
-  mutate(
-    prior_period_secs = lag(secs_per_period, default = 0),
-    accumulated_secs = cumsum(secs_per_period)
-  ) |>
-  ungroup()
-
-fit_02 <- brm(
-  formula = secs_per_period ~ 
-    (1 | game_id) +     # Game-level variation
-    (1 | player) +      # Player random effect
-    (1 | slug_team) +   # Team effect
-    (1 | slug_opp) +    # Opponent effect
-    (1 | period),       # Period effect
-  family = Gamma(link = "log"),
-  data = player_stats_by_period,
-  chains = 4,
-  iter = 2000,
-  prior = c(
-    prior(normal(7, 1), class = "Intercept"),
-    prior(exponential(2), class = "sd", group = "player"),
-    prior(exponential(2), class = "sd", group = "slug_team"),
-    prior(exponential(2), class = "sd", group = "game_id"),
-    prior(exponential(2), class = "sd", group = "slug_opp"),
-    prior(exponential(2), class = "sd", group = "period"),
-    prior(gamma(2, 0.1), class = "shape")
-  ),
-  file = "../models/minutes-model_02.rds"
-)
-```
-
-```{r}
-fit <-  fit_02
-
-pp_check(fit, ndraws = 100)  # Posterior predictive check
-```
-
-```{r}
-library(ggdist)
-# Extract random effects for players
-player_effects <- ranef(fit)$player[, , "Intercept"] |>
-  as.data.frame() |>
-  rownames_to_column("player") |>
-  arrange(desc(Estimate))
-
-# Extract team effects
-team_effects <- ranef(fit)$slug_team[, , "Intercept"] |>
-  as.data.frame() |>
-  rownames_to_column("team") |>
-  arrange(desc(Estimate))
-
-# Visualize player random effects
-ggplot(head(player_effects, 30), aes(y = reorder(player, Estimate), x = Estimate)) +
-  stat_halfeye() +
-  labs(title = "Top 20 Players by Minutes Effect",
-       x = "Estimated Effect on Minutes Played (seconds)",
-       y = "Player")
-
-ggplot(head(team_effects, 20), aes(y = reorder(team, Estimate), x = Estimate)) +
-  stat_halfeye() +
-  labs(title = "Top 20 Teams by Minutes Effect",
-       x = "Estimated Effect on Minutes Played (seconds)",
-       y = "Team")
-```
-
-```{r}
-# Calculate expected minutes for specific players
-predict_minutes <- function(player_name, opp_team, home_team, fit, data) {
-  newdata <- data.frame(
-    player = player_name,
-    slug_team = home_team,
-    slug_opp = opp_team
-  )
-  
-  posterior_pred <- posterior_predict(
-    fit, 
-    newdata = newdata,
-    allow_new_levels = TRUE
-  )
-  
-  # Convert to minutes and summarize
-  mins_summary <- data.frame(
-    mean_mins = mean(posterior_pred) / 60,
-    lower = quantile(posterior_pred, 0.025) / 60,
-    upper = quantile(posterior_pred, 0.975) / 60,
-  )
-  
-  return(mins_summary)
-}
-
-# Example usage of prediction function
-example_pred <- predict_minutes(
-  player_name = "Nikola Jokić",  
-  opp_team = "OKC",
-  home_team = "DEN",
-  fit = fit,
-  data = player_stats
-)
-```
-
-```{r}
-predict_minutes <- function(player_names, opp_team, home_team, fit, data, n_games = 1) {
-  # Create newdata for all players
-  newdata <- data.frame(
-    player = player_names,
-    slug_team = home_team,
-    slug_opp = opp_team
-  )
-  
-  # Get posterior predictions for all players
-  posterior_pred <- posterior_predict(
-    fit, 
-    newdata = newdata,
-    allow_new_levels = TRUE
-  )
-  
-  # Calculate summaries for each player
-  player_summaries <- lapply(1:ncol(posterior_pred), function(i) {
-    data.frame(
-      player = player_names[i],
-      mean_mins_per_game = mean(posterior_pred[,i]) / 60,
-      lower_per_game = quantile(posterior_pred[,i], 0.025) / 60,
-      upper_per_game = quantile(posterior_pred[,i], 0.975) / 60,
-      total_mins = (mean(posterior_pred[,i]) / 60) * n_games,
-      total_lower = (quantile(posterior_pred[,i], 0.025) / 60) * n_games,
-      total_upper = (quantile(posterior_pred[,i], 0.975) / 60) * n_games
-    )
-  }) |>
-    bind_rows() |>
-    # Add team total row
-    bind_rows(
-      data.frame(
-        player = "TEAM TOTAL",
-        mean_mins_per_game = mean(rowSums(posterior_pred)) / 60,
-        lower_per_game = quantile(rowSums(posterior_pred), 0.025) / 60,
-        upper_per_game = quantile(rowSums(posterior_pred), 0.975) / 60,
-        total_mins = mean(rowSums(posterior_pred)) / 60 * n_games,
-        total_lower = quantile(rowSums(posterior_pred), 0.025) / 60 * n_games,
-        total_upper = quantile(rowSums(posterior_pred), 0.975) / 60 * n_games
-      )
-    )
-  
-  # Add warnings/flags
-  player_summaries <- player_summaries |>
-    mutate(
-      warning = case_when(
-        player == "TEAM TOTAL" & mean_mins_per_game < 240 ~ "⚠️ Under 240 minutes",
-        player == "TEAM TOTAL" & mean_mins_per_game > 240 ~ "⚠️ Over 240 minutes",
-        mean_mins_per_game < 0 ~ "⚠️ Negative minutes",
-        TRUE ~ ""
-      )
-    )
-  
-  return(player_summaries)
-}
-
-# Example usage:
-home_team <- "GSW"
-opp_team <- "BOS"
-
-player_names <- player_stats |>
-  filter(slug_team == home_team) |> 
-  distinct(player) |>
-  # filter(player != "Jamal Murray" & player != "Aaron Gordon") |>
-  pull(player)
-
-predictions <- predict_minutes(
-  player_names = player_names,
-  opp_team = opp_team,
-  home_team = home_team,
-  fit = fit,
-  data = player_stats
-)
-
-# Pretty printing function for the results
-print_minutes_prediction <- function(predictions) {
-  predictions |>
-    mutate(
-      minutes = sprintf("%.1f [%.1f, %.1f]", mean_mins, lower, upper)
-    ) |>
-    select(player, minutes, warning) |>
-    arrange(desc(mean_mins)) |>
-    knitr::kable(
-      col.names = c("Player/Team", "Minutes [95% CI]", "Warning"),
-      align = c("l", "r", "l")
-    )
-}
-
-predictions
-
-# Print results
-# print_minutes_prediction(predictions)
-
-# Optional: Plot the predictions
-library(ggplot2)
-
-ggplot(predictions |> filter(player != "TEAM TOTAL"), 
-       aes(y = reorder(player, mean_mins_per_game), 
-           x = mean_mins_per_game,
-           xmin = lower_per_game,
-           xmax = upper_per_game)) +
-  geom_pointrange() +
-  labs(title = "Predicted Minutes Distribution",
-       subtitle = "Red line: Predicted team total, Blue line: Equal distribution",
-       x = "Minutes",
-       y = "Player") +
-  theme_minimal()
-
-```
-
-```{r}
-
-yesterday_stats <- player_stats |>
-  filter(game_date == Sys.Date() - 1) |>
-  distinct()
-
-fit_01_updated <- update(
-  fit_01,
-  newdata = yesterday_stats,
-  chains = 4,
-  iter = 2000,
-  # Reuse existing priors
-  file = "../models/241105_minutes-model_01.rds"
-)
-
-```
-
-```{r}
-pairs(fit_01_updated, pars = c("sd_player", "sd_slug_team", "sd_game_id", "sd_slug_opp", "sd_period"))
-```
-
-```{r}
-fit <-  fit_01_updated
-
-pp_check(fit, ndraws = 100)  # Posterior predictive check
-```
-
-```{r}
-library(ggdist)
-# Extract random effects for players
-player_effects <- ranef(fit)$player[, , "Intercept"] |>
-  as.data.frame() |>
-  rownames_to_column("player") |>
-  arrange(desc(Estimate))
-
-# Extract team effects
-team_effects <- ranef(fit)$slug_team[, , "Intercept"] |>
-  as.data.frame() |>
-  rownames_to_column("team") |>
-  arrange(desc(Estimate))
-
-# Visualize player random effects
-ggplot(head(player_effects, 30), aes(y = reorder(player, Estimate), x = Estimate)) +
-  stat_halfeye() +
-  labs(title = "Top 20 Players by Minutes Effect",
-       x = "Estimated Effect on Minutes Played (seconds)",
-       y = "Player")
-
-ggplot(head(team_effects, 20), aes(y = reorder(team, Estimate), x = Estimate)) +
-  stat_halfeye() +
-  labs(title = "Top 20 Teams by Minutes Effect",
-       x = "Estimated Effect on Minutes Played (seconds)",
-       y = "Team")
-```
-
-```{r}
-# Calculate expected minutes for specific players
-predict_minutes <- function(player_name, opp_team, home_team, fit, data) {
-  newdata <- data.frame(
-    player = player_name,
-    slug_team = home_team,
-    slug_opp = opp_team
-  )
-  
-  posterior_pred <- posterior_predict(
-    fit, 
-    newdata = newdata,
-    allow_new_levels = TRUE
-  )
-  
-  # Convert to minutes and summarize
-  mins_summary <- data.frame(
-    mean_mins = mean(posterior_pred) / 60,
-    lower = quantile(posterior_pred, 0.025) / 60,
-    upper = quantile(posterior_pred, 0.975) / 60,
-  )
-  
-  return(mins_summary)
-}
-
-# Example usage of prediction function
-example_pred <- predict_minutes(
-  player_name = "Nikola Jokić",  
-  opp_team = "OKC",
-  home_team = "DEN",
-  fit = fit,
-  data = player_stats
-)
-```
-
-```{r}
-predict_minutes \<- function(player_names, opp_team, home_team, fit, data, n_games = 1) { \# Create newdata for all players newdata \<- data.frame( player = player_names, slug_team = home_team, slug_opp = opp_team )
-
-\# Get posterior predictions for all players posterior_pred \<- posterior_predict( fit, newdata = newdata, allow_new_levels = TRUE )
-
-\# Calculate summaries for each player player_summaries \<- lapply(1:ncol(posterior_pred), function(i) { data.frame( player = player_names\[i\], mean_mins_per_game = mean(posterior_pred\[,i\]) / 60, lower_per_game = quantile(posterior_pred\[,i\], 0.025) / 60, upper_per_game = quantile(posterior_pred\[,i\], 0.975) / 60, total_mins = (mean(posterior_pred\[,i\]) / 60) \* n_games, total_lower = (quantile(posterior_pred\[,i\], 0.025) / 60) \* n_games, total_upper = (quantile(posterior_pred\[,i\], 0.975) / 60) \* n_games ) }) \|\> bind_rows() \|\> \# Add team total row bind_rows( data.frame( player = "TEAM TOTAL", mean_mins_per_game = mean(rowSums(posterior_pred)) / 60, lower_per_game = quantile(rowSums(posterior_pred), 0.025) / 60, upper_per_game = quantile(rowSums(posterior_pred), 0.975) / 60, total_mins = mean(rowSums(posterior_pred)) / 60 \* n_games, total_lower = quantile(rowSums(posterior_pred), 0.025) / 60 \* n_games, total_upper = quantile(rowSums(posterior_pred), 0.975) / 60 \* n_games ) )
-
-\# Add warnings/flags player_summaries \<- player_summaries \|\> mutate( warning = case_when( player == "TEAM TOTAL" & mean_mins_per_game \< 240 \~ "⚠️ Under 240 minutes", player == "TEAM TOTAL" & mean_mins_per_game \> 240 \~ "⚠️ Over 240 minutes", mean_mins_per_game \< 0 \~ "⚠️ Negative minutes", TRUE \~ "" ) )
-
-return(player_summaries) }
-
-# Example usage:
-
-home_team \<- "DEN" opp_team \<- "OKC"
-
-player_names \<- player_stats \|\> filter(slug_team == home_team) \|\> distinct(player) \|\> pull(player)
-
-predictions \<- predict_minutes( player_names = player_names, opp_team = opp_team, home_team = home_team, fit = fit, data = player_stats )
-
-# Pretty printing function for the results
-
-print_minutes_prediction \<- function(predictions) { predictions \|\> mutate( minutes = sprintf("%.1f \[%.1f, %.1f\]", mean_mins, lower, upper) ) \|\> select(player, minutes, warning) \|\> arrange(desc(mean_mins)) \|\> knitr::kable( col.names = c("Player/Team", "Minutes \[95% CI\]", "Warning"), align = c("l", "r", "l") ) }
-
-predictions
-
-# Print results
-
-print_minutes_prediction(predictions)
-
-# Optional: Plot the predictions
-
-library(ggplot2)
-
-ggplot(predictions \|\> filter(player != "TEAM TOTAL"), aes(y = reorder(player, mean_mins), x = mean_mins, xmin = lower, xmax = upper)) + geom_pointrange() + geom_vline(data = predictions \|\> filter(player == "TEAM TOTAL"), aes(xintercept = mean_mins), linetype = "dashed", color = "red") + geom_vline(xintercept = 240/length(example_players), linetype = "dotted", color = "blue") + labs(title = "Predicted Minutes Distribution", subtitle = "Red line: Predicted team total, Blue line: Equal distribution", x = "Minutes", y = "Player") + theme_minimal()
-
-```
-
-```{r}
-indiv_stats <- lineup_stats %>%
-  separate_longer_delim(lineup, delim = ", ") %>%
-  group_by(player = lineup, game_id, slug_team) %>%
-  mutate(pm = pts_team - pts_opp) |> 
-  summarise(total_pm = sum(pm),
-            total_secs = sum(secs_played)) %>%
-  ungroup() %>%
-  arrange(-total_pm)
-
-indiv_season_stats <- indiv_stats %>%
-  group_by(slug_team, player) %>%
-  summarise(season_pm = sum(total_pm),
-            season_secs = sum(total_secs),
-            pm_per_minute = season_pm / (season_secs /60)) %>%
-  ungroup() %>%
-  filter(slug_team %in% c("CLE", "GSW")) |> 
-  arrange(-season_pm) 
-
-```
