@@ -66,3 +66,84 @@ def_dash <- def_dash |> list_rbind()
 write_parquet(def_dash, "241112_defender_dashboard.parquet")
 
 ```
+
+
+```{r}
+game_date <- "2024-11-10"
+
+
+shots <- nba_playerdashptshots(
+    date_from = game_date,
+    date_to = game_date,
+    game_segment = "",
+    last_n_games = 0,
+    league_id = "00",
+    location = "",
+    month = 0,
+    opponent_team_id = 0,
+    outcome = "",
+    per_mode = "Totals",
+    period = 1,
+    player_id = 0,
+    season = year_to_season(most_recent_nba_season() - 1),
+    season_segment = "",
+    season_type = "Regular Season",
+    team_id = 0,
+    vs_conference = "",
+    vs_division = ""
+    )
+
+```
+
+```{r}
+closest_def_shots <- shots |> 
+  pluck("ClosestDefenderShooting")
+```
+
+```{r}
+function_closest_defender_shooting_dash <- function(game_dates, periods){
+  nba_playerdashptshots(
+    date_from = game_dates,
+    date_to = game_dates,
+    game_segment = "",
+    last_n_games = 0,
+    league_id = "00",
+    location = "",
+    month = 0,
+    opponent_team_id = 0,
+    outcome = "",
+    per_mode = "Totals",
+    period = periods,
+    player_id = 0,
+    season = year_to_season(most_recent_nba_season() - 1),
+    season_segment = "",
+    season_type = "Regular Season",
+    team_id = 0,
+    vs_conference = "",
+    vs_division = ""
+    ) |> 
+    pluck("ClosestDefenderShooting") |>
+    mutate(date = game_dates,
+           period = periods)
+}
+
+game_dates <- player_logs %>%
+  distinct(game_date) |> 
+  pull(game_date)
+
+periods <- c(1:6)
+
+game_by_period <- expand_grid(game_dates, periods)
+
+closest_defender_shooting_dash <- game_by_period |> 
+  pmap(possibly(function_closest_defender_shooting_dash, NULL)) 
+
+```
+
+```{r}
+closest_defender_shooting_dash <- closest_defender_shooting_dash |> list_rbind()
+```
+
+```{r}
+write_parquet(closest_defender_shooting_dash, "241112_closest_defender_shooting_dashboard.parquet")
+```
