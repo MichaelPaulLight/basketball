@@ -7,143 +7,137 @@ editor: visual
 ```{r}
 library(hoopR)
 library(tidyverse)
+library(lubridate)
 library(nanoparquet)
 ```
 
-
-```{r}
 # excluding team_id, player_id, and including date_from and date_to for a single day, and including period, the returned data is for every player who played on that day in that period, excluding player_ids for players who did not play that period and including a 0 value for the G column if a player did not defend a given shot type during the given day and period
 
-player_logs <- nba_leaguegamelog(season = "2024-25", player_or_team = "P") %>%
-  pluck("LeagueGameLog") %>%
-  clean_names() %>%
-  mutate(team_location = ifelse(str_detect(matchup, "\\@"), "away", "home"),
-         across(c(player_id, team_id), as.numeric))
-
-function_defense_dash <- function(game_dates, periods){
-  nba_playerdashptshotdefend(
-    date_from = game_dates,
-    date_to = game_dates,
-    game_segment = "",
-    last_n_games = 0,
-    league_id = "00",
-    location = "",
-    month = 0,
-    opponent_team_id = 0,
-    outcome = "",
-    per_mode = "Totals",
-    period = periods,
-    player_id = 0,
-    season = year_to_season(most_recent_nba_season() - 1),
-    season_segment = "",
-    season_type = "Regular Season",
-    team_id = 0,
-    vs_conference = "",
-    vs_division = ""
-    ) |> 
-    pluck("DefendingShots") |>
-    mutate(date = game_dates,
-           period = periods)
+```{r}
+# Getting a list of existing parquet files to find the most recent date
+existing_files <- list.files(pattern = ".*_defender_dashboard\\.parquet$")
+if (length(existing_files) > 0) {
+  last_date <- max(as.Date(substr(existing_files, 1, 6), format = "%y%m%d"))
+  start_date <- last_date + 1
+} else {
+  start_date <- as.Date("2024-11-12")
 }
 
-game_dates <- player_logs %>%
-  distinct(game_date) |> 
-  pull(game_date)
+current_date <- Sys.Date() - 1  # Yesterday
 
-periods <- c(1:6)
+# Only proceed if we have new dates to process
+if (start_date <= current_date) {
+  # Add a try-catch block for the main processing
+  tryCatch({
+    game_dates <- seq(start_date, current_date, by = "day")
+    
+    # Add logging
+    message(sprintf("Processing data from %s to %s", start_date, current_date))
+    
+    # Create filename for today's data
+    def_dash_filename <- paste0(format(current_date, "%y%m%d"), "_defender_dashboard.parquet")
+    closest_def_filename <- paste0(format(current_date, "%y%m%d"), "_closest_defender_shooting_dashboard.parquet")
+    
+    player_logs <- nba_leaguegamelog(season = year_to_season(most_recent_nba_season() - 1), 
+                                    player_or_team = "P") %>%
+      pluck("LeagueGameLog") %>%
+      clean_names() %>%
+      mutate(team_location = ifelse(str_detect(matchup, "\\@"), "away", "home"),
+             across(c(player_id, team_id), as.numeric))
 
-game_by_period <- expand_grid(game_dates, periods)
+    function_defense_dash <- function(game_dates, periods){
+      nba_playerdashptshotdefend(
+        date_from = game_dates,
+        date_to = game_dates,
+        game_segment = "",
+        last_n_games = 0,
+        league_id = "00",
+        location = "",
+        month = 0,
+        opponent_team_id = 0,
+        outcome = "",
+        per_mode = "Totals",
+        period = periods,
+        player_id = 0,
+        season = year_to_season(most_recent_nba_season() - 1),
+        season_segment = "",
+        season_type = "Regular Season",
+        team_id = 0,
+        vs_conference = "",
+        vs_division = ""
+        ) |> 
+        pluck("DefendingShots") |>
+        mutate(date = game_dates,
+              period = periods)
+    }
 
-def_dash <- game_by_period |> 
-  pmap(possibly(function_defense_dash, NULL)) 
-```
+    game_dates <- player_logs %>%
+      distinct(game_date) |> 
+      pull(game_date)
 
-```{r}
-def_dash <- def_dash |> list_rbind()
-```
+    periods <- c(1:6)
 
-```{r}
-write_parquet(def_dash, "241112_defender_dashboard.parquet")
+    game_by_period <- expand_grid(game_dates, periods)
 
-```
+    def_dash <- game_by_period |> 
+      pmap(possibly(function_defense_dash, NULL)) 
 
+    def_dash <- def_dash |> list_rbind()
 
-```{r}
-game_date <- "2024-11-10"
+    # creating the closest defender shooting dashboard
 
+    function_closest_defender_shooting_dash <- function(game_dates, periods){
+      nba_playerdashptshots(
+        date_from = game_dates,
+        date_to = game_dates,
+        game_segment = "",
+        last_n_games = 0,
+        league_id = "00",
+        location = "",
+        month = 0,
+        opponent_team_id = 0,
+        outcome = "",
+        per_mode = "Totals",
+        period = periods,
+        player_id = 0,
+        season = year_to_season(most_recent_nba_season() - 1),
+        season_segment = "",
+        season_type = "Regular Season",
+        team_id = 0,
+        vs_conference = "",
+        vs_division = ""
+        ) |> 
+        pluck("ClosestDefenderShooting") |>
+        mutate(date = game_dates,
+              period = periods)
+    }
 
-shots <- nba_playerdashptshots(
-    date_from = game_date,
-    date_to = game_date,
-    game_segment = "",
-    last_n_games = 0,
-    league_id = "00",
-    location = "",
-    month = 0,
-    opponent_team_id = 0,
-    outcome = "",
-    per_mode = "Totals",
-    period = 1,
-    player_id = 0,
-    season = year_to_season(most_recent_nba_season() - 1),
-    season_segment = "",
-    season_type = "Regular Season",
-    team_id = 0,
-    vs_conference = "",
-    vs_division = ""
-    )
+    closest_defender_shooting_dash <- game_by_period |> 
+      pmap(possibly(function_closest_defender_shooting_dash, NULL)) 
 
-```
+    closest_defender_shooting_dash <- closest_defender_shooting_dash |> list_rbind()
 
-```{r}
-closest_def_shots <- shots |> 
-  pluck("ClosestDefenderShooting")
-```
-
-```{r}
-function_closest_defender_shooting_dash <- function(game_dates, periods){
-  nba_playerdashptshots(
-    date_from = game_dates,
-    date_to = game_dates,
-    game_segment = "",
-    last_n_games = 0,
-    league_id = "00",
-    location = "",
-    month = 0,
-    opponent_team_id = 0,
-    outcome = "",
-    per_mode = "Totals",
-    period = periods,
-    player_id = 0,
-    season = year_to_season(most_recent_nba_season() - 1),
-    season_segment = "",
-    season_type = "Regular Season",
-    team_id = 0,
-    vs_conference = "",
-    vs_division = ""
-    ) |> 
-    pluck("ClosestDefenderShooting") |>
-    mutate(date = game_dates,
-           period = periods)
+    combined_def_file <- "combined_defender_dashboard.parquet"
+    if (file.exists(combined_def_file)) {
+      existing_def_dash <- read_parquet(combined_def_file)
+      def_dash <- bind_rows(existing_def_dash, def_dash)
+    }
+    write_parquet(def_dash, combined_def_file)
+    
+    # Read and combine closest defender data
+    combined_closest_file <- "combined_closest_defender_dashboard.parquet"
+    if (file.exists(combined_closest_file)) {
+      existing_closest <- read_parquet(combined_closest_file)
+      closest_defender_shooting_dash <- bind_rows(existing_closest, closest_defender_shooting_dash)
+    }
+    write_parquet(closest_defender_shooting_dash, combined_closest_file)
+    
+    message("Successfully updated combined files")
+    
+  }, error = function(e) {
+    message(sprintf("Error processing data: %s", e$message))
+  })
+} else {
+  message("No new data to process")
 }
-
-game_dates <- player_logs %>%
-  distinct(game_date) |> 
-  pull(game_date)
-
-periods <- c(1:6)
-
-game_by_period <- expand_grid(game_dates, periods)
-
-closest_defender_shooting_dash <- game_by_period |> 
-  pmap(possibly(function_closest_defender_shooting_dash, NULL)) 
-
-```
-
-```{r}
-closest_defender_shooting_dash <- closest_defender_shooting_dash |> list_rbind()
-```
-
-```{r}
-write_parquet(closest_defender_shooting_dash, "241112_closest_defender_shooting_dashboard.parquet")
 ```
