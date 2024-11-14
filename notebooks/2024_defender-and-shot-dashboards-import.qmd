@@ -27,7 +27,6 @@ player_logs <- nba_leaguegamelog(season = year_to_season(most_recent_nba_season(
 # Only proceed if we have new dates to process
 if (dim(player_logs)[1] > 0) {
   # Add a try-catch block for the main processing
-  tryCatch({
     game_dates <- Sys.Date() - 1
     
     
@@ -107,26 +106,23 @@ if (dim(player_logs)[1] > 0) {
 
     closest_defender_shooting_dash <- closest_defender_shooting_dash |> list_rbind()
 
-    combined_def_file <- "combined_defender_dashboard.parquet"
+    combined_def_file <- "defender_dashboard.parquet"
     if (file.exists(combined_def_file)) {
       existing_def_dash <- read_parquet(combined_def_file)
       def_dash <- bind_rows(existing_def_dash, def_dash)
     }
-    write_parquet(def_dash, combined_def_file)
+    write_parquet(def_dash, "defender_dashboard.parquet")
     
     # Read and combine closest defender data
-    combined_closest_file <- "combined_closest_defender_dashboard.parquet"
+    combined_closest_file <- "closest_defender_shooting_dashboard.parquet"
     if (file.exists(combined_closest_file)) {
       existing_closest <- read_parquet(combined_closest_file)
       closest_defender_shooting_dash <- bind_rows(existing_closest, closest_defender_shooting_dash)
     }
-    write_parquet(closest_defender_shooting_dash, combined_closest_file)
+    write_parquet(closest_defender_shooting_dash, "closest_defender_shooting_dashboard.parquet")
     
     message("Successfully updated combined files")
     
-  }, error = function(e) {
-    message(sprintf("Error processing data: %s", e$message))
-  })
 } else {
   message("No new data to process")
 }
