@@ -5,9 +5,10 @@ editor: visual
 ---
 
 ```{r}
+library(lubridate)
 library(hoopR)
 library(tidyverse)
-library(lubridate)
+library(janitor)
 library(nanoparquet)
 ```
 
@@ -15,35 +16,24 @@ library(nanoparquet)
 
 ```{r}
 # Getting a list of existing parquet files to find the most recent date
-existing_files <- list.files(pattern = ".*_defender_dashboard\\.parquet$")
-if (length(existing_files) > 0) {
-  last_date <- max(as.Date(substr(existing_files, 1, 6), format = "%y%m%d"))
-  start_date <- last_date + 1
-} else {
-  start_date <- as.Date("2024-11-12")
-}
-
-current_date <- Sys.Date() - 1  # Yesterday
-
-# Only proceed if we have new dates to process
-if (start_date <= current_date) {
-  # Add a try-catch block for the main processing
-  tryCatch({
-    game_dates <- seq(start_date, current_date, by = "day")
-    
-    # Add logging
-    message(sprintf("Processing data from %s to %s", start_date, current_date))
-    
-    # Create filename for today's data
-    def_dash_filename <- paste0(format(current_date, "%y%m%d"), "_defender_dashboard.parquet")
-    closest_def_filename <- paste0(format(current_date, "%y%m%d"), "_closest_defender_shooting_dashboard.parquet")
-    
-    player_logs <- nba_leaguegamelog(season = year_to_season(most_recent_nba_season() - 1), 
+player_logs <- nba_leaguegamelog(season = year_to_season(most_recent_nba_season() - 1), 
                                     player_or_team = "P") %>%
       pluck("LeagueGameLog") %>%
       clean_names() %>%
       mutate(team_location = ifelse(str_detect(matchup, "\\@"), "away", "home"),
-             across(c(player_id, team_id), as.numeric))
+             across(c(player_id, team_id), as.numeric)) |> 
+      filter(game_date == Sys.Date() - 1)
+
+# Only proceed if we have new dates to process
+if (dim(player_logs)[1] > 0) {
+  # Add a try-catch block for the main processing
+  tryCatch({
+    game_dates <- Sys.Date() - 1
+    
+    
+    # Create filename for today's data
+    def_dash_filename <- paste0(format(game_dates, "%y%m%d"), "_defender_dashboard.parquet")
+    closest_def_filename <- paste0(format(game_dates, "%y%m%d"), "_closest_defender_shooting_dashboard.parquet")
 
     function_defense_dash <- function(game_dates, periods){
       nba_playerdashptshotdefend(
