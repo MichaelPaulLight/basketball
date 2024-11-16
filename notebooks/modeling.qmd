@@ -9,6 +9,7 @@ library(hoopR)
 library(tidyverse)
 library(janitor)
 library(zoo)
+library(nanoparquet)
 ```
 
 ```{r}
@@ -394,6 +395,13 @@ pbp_final_gt <- pbp_poss_final %>%
   select(-c(starts_with("lineup_start_"), max_nongarbage, opt2, ord))
 
 ```
+```{r}
+
+parquet_file_name <- paste0(format(Sys.Date(), "%y%m%d"), "_pbp_gt.parquet")
+
+write_parquet(pbp_final_gt, parquet_file_name)
+```
+
 
 ```{r}
 lineup_stats <- pbp_final_gt %>%
@@ -1003,7 +1011,7 @@ example_pred <- predict_minutes(
 ```
 
 ```{r}
-predict_minutes \<- function(player_names, opp_team, home_team, fit, data, n_games = 1) { \# Create newdata for all players newdata \<- data.frame( player = player_names, slug_team = home_team, slug_opp = opp_team )
+predict_minutes <- function(player_names, opp_team, home_team, fit, data, n_games = 1) { \# Create newdata for all players newdata \<- data.frame( player = player_names, slug_team = home_team, slug_opp = opp_team )
 
 \# Get posterior predictions for all players posterior_pred \<- posterior_predict( fit, newdata = newdata, allow_new_levels = TRUE )
 
