@@ -5,7 +5,7 @@ library(janitor)
 library(nanoparquet)
 
 
-# Getting a list of existing parquet files to find the most recent date
+# Find the most recent game date
 player_logs <- nba_leaguegamelog(season = year_to_season(most_recent_nba_season() - 1), 
                                     player_or_team = "P") %>%
       pluck("LeagueGameLog") %>%
@@ -14,7 +14,7 @@ player_logs <- nba_leaguegamelog(season = year_to_season(most_recent_nba_season(
              across(c(player_id, team_id), as.numeric)) |> 
       filter(game_date == Sys.Date() - 1)
 
-# Only proceed if we have new dates to process
+# Only proceed if we have new games to process
 if (dim(player_logs)[1] > 0) {
   # Add a try-catch block for the main processing
     game_dates <- Sys.Date() - 1
@@ -96,15 +96,15 @@ if (dim(player_logs)[1] > 0) {
 
     closest_defender_shooting_dash <- closest_defender_shooting_dash |> list_rbind()
 
-    combined_def_file <- "defender_dashboard.parquet"
+    combined_def_file <- "../data/defender_dashboard.parquet"
     if (file.exists(combined_def_file)) {
       existing_def_dash <- read_parquet(combined_def_file)
       def_dash <- bind_rows(existing_def_dash, def_dash)
     }
-    write_parquet(def_dash, "defender_dashboard.parquet")
+    write_parquet(def_dash, "../data/defender_dashboard.parquet")
     
     # Read and combine closest defender data
-    combined_closest_file <- "closest_defender_shooting_dashboard.parquet"
+    combined_closest_file <- "../data/closest_defender_shooting_dashboard.parquet"
     if (file.exists(combined_closest_file)) {
       existing_closest <- read_parquet(combined_closest_file)
       closest_defender_shooting_dash <- bind_rows(existing_closest, closest_defender_shooting_dash)
