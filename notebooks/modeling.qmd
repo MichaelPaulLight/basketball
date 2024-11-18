@@ -398,8 +398,8 @@ pbp_final_gt <- pbp_poss_final %>%
 ```{r}
 
 parquet_file_name <- paste0(format(Sys.Date(), "%y%m%d"), "_pbp_gt.parquet")
+write_parquet(pbp_final_gt, file.path("..", "data", parquet_file_name))
 
-write_parquet(pbp_final_gt, parquet_file_name)
 ```
 
 
