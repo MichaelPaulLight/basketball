@@ -19,7 +19,7 @@ jobs:
       
     - name: Install packages
       run: |
-        R -e 'install.packages(c("lubridate", "hoopR", "tidyverse", "janitor", "nanoparquet"))'
+        R -e 'install.packages(c("lubridate", "tidyverse", "janitor", "nanoparquet"))'
         
     - name: Run update script
       run: Rscript notebooks/2024_defender-and-shot-dashboards-import.R
