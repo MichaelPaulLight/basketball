@@ -4,23 +4,96 @@ format: html
 editor: visual
 ---
 
-## Quarto
 
-Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
-
-## Running Code
-
-When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
 
 ```{r}
-1 + 1
+library(hoopR)
+library(tidyverse)
+library(nanoparquet)
 ```
 
-You can add options to executable code like this
 
 ```{r}
-#| echo: false
-2 * 2
+player_logs <- nba_leaguegamelog(season = "2024-25", player_or_team = "P") %>%
+  pluck("LeagueGameLog") %>%
+  clean_names() %>%
+  mutate(team_location = ifelse(str_detect(matchup, "\\@"), "away", "home"),
+         across(c(player_id, team_id), as.numeric))
+
+pbp_df <- read_parquet("../data/241119_pbp_gt.parquet")
 ```
 
-The `echo: false` option disables the printing of code (only output is displayed).
+```{r}
+
+pbp_df <- (
+  pbp_final_gt 
+  |> group_by(game_id, slug_team)
+  |> mutate(stint_home = ifelse(slug_team == team_home, cumsum(msg_type == 8) + 1, NA),
+         stint_away = ifelse(slug_team == team_away, cumsum(msg_type == 8) + 1, NA)) 
+  |> group_by(game_id) 
+  |> mutate(across(starts_with("stint"), ~ na.locf0(., fromLast = TRUE)),
+         across(starts_with("stint"), ~ na.locf(.))) 
+  |> ungroup() 
+  |> pivot_longer(cols = starts_with("lineup"),
+               names_to = "lineup_location",
+               values_to = "lineup",
+               names_prefix = "lineup_")
+  |> mutate(pts_team = ifelse(lineup_location == "home", shot_pts_home, shot_pts_away),
+         pts_opp = ifelse(lineup_location == "away", shot_pts_home, shot_pts_away),
+         poss_team = ifelse(lineup_location == "home", poss_home, poss_away),
+         poss_opp = ifelse(lineup_location == "away", poss_home, poss_away),
+         slug_team = ifelse(lineup_location == "home", team_home, team_away),
+         slug_opp = ifelse(lineup_location == "away", team_home, team_away),
+         stint = ifelse(lineup_location == "home", stint_home, stint_away))
+  # |> select(game_id, game_date, period, stint, number_event, msg_type, description, lineup, pts_team, pts_opp,
+  #         poss_team, poss_opp, secs_played, slug_team, slug_opp, garbage_time, player1, player2, player3)
+  |> filter(str_detect(description, "Shot"))
+  |> mutate(shot_type = case_when(str_detect(description, "3pt") ~ "3pt",
+                              TRUE ~ "2pt"))
+  |> rename(known_defender = player3)
+  # |> group_by(game_id, game_date, period, stint, slug_team, slug_opp, lineup, garbage_time)
+  # |> summarise(across(c(pts_team, pts_opp, poss_team, poss_opp, secs_played), sum))
+  # |> ungroup()
+  # |> filter(secs_played + poss_opp + poss_team + pts_opp + pts_team > 0)
+  # |> group_by(game_id, slug_team)
+  # |> mutate(stint = row_number())
+  # |> ungroup()
+)
+
+```
+
+
+```{r}
+shot_pbp_by_defense <- (pbp_df 
+|> filter(off_slug_team != slug_team)
+|> separate_longer_delim(cols = lineup, delim = ", ")
+|> rename(player_name = lineup)
+)  
+
+```
+
+```{r}
+player_logs_for_join <- (
+  player_logs
+  |> select(player_name, player_id, team_id, team_abbreviation, game_id)
+  |> rename(slug_team = team_abbreviation)
+  |> mutate(game_id = as.numeric(game_id))
+)
+
+shot_pbp_by_defense <- (shot_pbp_by_defense
+  |> left_join(player_logs_for_join, by = join_by("player_name", "slug_team", "game_id"))
+)    
+```
+
+```{r}
+defender_dashboard <- nanoparquet::read_parquet("../data/defender_dashboard.parquet")
+
+defender_dashboard <- (
+  defender_dashboard
+  |> rename(player_id = CLOSE_DEF_playerId)
+  |> filter(player_id == 1627780 & date == "2024-11-18")
+)
+
+test <- shot_pbp_by_defense |> filter(player_id == 1627780 & game_date == "2024-11-18")
+
+```
