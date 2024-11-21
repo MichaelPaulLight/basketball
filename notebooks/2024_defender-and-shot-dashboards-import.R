@@ -109,7 +109,7 @@ if (dim(player_logs)[1] > 0) {
       existing_closest <- read_parquet(combined_closest_file)
       closest_defender_shooting_dash <- bind_rows(existing_closest, closest_defender_shooting_dash)
     }
-    write_parquet(closest_defender_shooting_dash, "closest_defender_shooting_dashboard.parquet")
+    write_parquet(closest_defender_shooting_dash, "../data/closest_defender_shooting_dashboard.parquet")
     
     message("Successfully updated combined files")
     
