@@ -47,7 +47,7 @@ pbp_df <- (
          stint = ifelse(lineup_location == "home", stint_home, stint_away))
   # |> select(game_id, game_date, period, stint, number_event, msg_type, description, lineup, pts_team, pts_opp,
   #         poss_team, poss_opp, secs_played, slug_team, slug_opp, garbage_time, player1, player2, player3)
-  |> filter(str_detect(description, "Shot"))
+  |> filter(str_detect(description, regex("shot", ignore_case = T)) & !str_detect(description, regex("clock", ignore_case = T)))
   |> mutate(shot_type = case_when(str_detect(description, "3pt") ~ "3pt",
                               TRUE ~ "2pt"))
   |> rename(known_defender = player3)
@@ -82,6 +82,7 @@ player_logs_for_join <- (
 
 shot_pbp_by_defense <- (shot_pbp_by_defense
   |> left_join(player_logs_for_join, by = join_by("player_name", "slug_team", "game_id"))
+  |> rename(defender_name = player_name)
 )    
 ```
 
@@ -90,10 +91,85 @@ defender_dashboard <- nanoparquet::read_parquet("../data/defender_dashboard.parq
 
 defender_dashboard <- (
   defender_dashboard
-  |> rename(player_id = CLOSE_DEF_playerId)
-  |> filter(player_id == 1627780 & date == "2024-11-18")
+  |> rename(defender_id = CLOSE_DEF_playerId)
+  |> filter(defender_id == 1627780 & date == "2024-11-18",
+            G == 1)
+  
 )
 
-test <- shot_pbp_by_defense |> filter(player_id == 1627780 & game_date == "2024-11-18")
+test <- (shot_pbp_by_defense 
+         |> filter(player_id == 1627780 & game_date == "2024-11-18")
+         |> mutate(make = ifelse(pts_opp > 0, 1, 0))
+         |> group_by(game_id, period, player_id, make, shot_type)
+         |> summarise(counts = n())
+)
+
+```
+
+```{r}
+first_date <- player_logs %>%
+  distinct(game_date) %>%
+  arrange(game_date) |> 
+  head(1)
+
+shot_df <- nba_shotchartdetail(
+  context_measure = "FGA",
+  date_from = Sys.Date() - 3,
+  date_to = Sys.Date() - 2,
+  game_id = "",
+  game_segment = "",
+  last_n_games = 0,
+  league_id = "00",
+  location = "",
+  month = 0,
+  opponent_team_id = 0,
+  outcome = "",
+  period = 0,
+  player_id = 0,
+  player_position = "",
+  rookie_year = "",
+  season = year_to_season(most_recent_nba_season() - 1),
+  season_segment = "",
+  season_type = "Regular Season",
+  team_id = 0,
+  vs_conference = "",
+  vs_division = ""
+) |> pluck("Shot_Chart_Detail")
+
+```
+
+```{r}
+shot_df <- (shot_df 
+            |> clean_names()
+            |> mutate(game_id = as.numeric(game_id),
+                      period = as.numeric(period),
+                      game_date = as_date(game_date))
+            |> rename(number_original= game_event_id)
+            |> mutate(number_original = as.numeric(number_original))
+            |> select(-shot_type)
+)
+
+shot_df <- (shot_df
+            |> mutate(shot_distance = as.numeric(shot_distance))
+            |> mutate(defense_category = case_when(
+              shot_distance < 6 ~ "Less Than 6 Ft",
+              shot_distance < 10 ~ "Less Than 10 Ft",
+              shot_distance > 15 ~ "Greater Than 15 Ft",
+            ))
+)
+
+gp2_pbp <- (shot_df 
+            |> filter(game_id == 22400251) 
+)
+
+testy <- (gp2_pbp 
+          |> left_join(shot_pbp_by_defense, by = join_by(game_id, number_original, period, game_date)) 
+          |> select(game_date, game_id, period, number_original, clock, player1, player2, known_defender, locX, locY, possession, defender_name, slug_team, slug_opp, minutes_remaining, seconds_remaining, event_type, action_type, shot_zone_basic, shot_zone_area, shot_zone_range, shot_distance, shot_attempted_flag, shot_made_flag, shot_type, defense_category)
+)
+
+testy_agg <- (testy 
+         |> group_by(game_id, period, defender_name, shot_type, defense_category, shot_attempted_flag, shot_made_flag)
+         |> summarise(counts = n())
+)
 
 ```
