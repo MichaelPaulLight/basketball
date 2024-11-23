@@ -1,0 +1,831 @@
+game_date,game_id,period,number_original,clock,player1,player2,known_defender,locX,locY,possession,defender_name,slug_team,slug_opp,minutes_remaining,seconds_remaining,event_type,action_type,shot_zone_basic,shot_zone_area,shot_zone_range,shot_distance,shot_attempted_flag,shot_made_flag,shot_type,defense_category
+2024-11-18,22400251,1,7,11:33,James Harden,NA,NA,7,104,1,Andrew Wiggins,GSW,LAC,11,33,Missed Shot,Floating Jump shot,In The Paint (Non-RA),Center(C),8-16 ft.,10,1,0,2pt,10-15 Ft
+2024-11-18,22400251,1,7,11:33,James Harden,NA,NA,7,104,1,Draymond Green,GSW,LAC,11,33,Missed Shot,Floating Jump shot,In The Paint (Non-RA),Center(C),8-16 ft.,10,1,0,2pt,10-15 Ft
+2024-11-18,22400251,1,7,11:33,James Harden,NA,NA,7,104,1,Lindy Waters III,GSW,LAC,11,33,Missed Shot,Floating Jump shot,In The Paint (Non-RA),Center(C),8-16 ft.,10,1,0,2pt,10-15 Ft
+2024-11-18,22400251,1,7,11:33,James Harden,NA,NA,7,104,1,Stephen Curry,GSW,LAC,11,33,Missed Shot,Floating Jump shot,In The Paint (Non-RA),Center(C),8-16 ft.,10,1,0,2pt,10-15 Ft
+2024-11-18,22400251,1,7,11:33,James Harden,NA,NA,7,104,1,Trayce Jackson-Davis,GSW,LAC,11,33,Missed Shot,Floating Jump shot,In The Paint (Non-RA),Center(C),8-16 ft.,10,1,0,2pt,10-15 Ft
+2024-11-18,22400251,1,9,11:22,Lindy Waters III,Draymond Green,NA,-49,255,1,Derrick Jones Jr.,LAC,GSW,11,22,Made Shot,Jump Shot,Above the Break 3,Center(C),24+ ft.,25,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,9,11:22,Lindy Waters III,Draymond Green,NA,-49,255,1,Ivica Zubac,LAC,GSW,11,22,Made Shot,Jump Shot,Above the Break 3,Center(C),24+ ft.,25,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,9,11:22,Lindy Waters III,Draymond Green,NA,-49,255,1,James Harden,LAC,GSW,11,22,Made Shot,Jump Shot,Above the Break 3,Center(C),24+ ft.,25,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,9,11:22,Lindy Waters III,Draymond Green,NA,-49,255,1,Kris Dunn,LAC,GSW,11,22,Made Shot,Jump Shot,Above the Break 3,Center(C),24+ ft.,25,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,9,11:22,Lindy Waters III,Draymond Green,NA,-49,255,1,Norman Powell,LAC,GSW,11,22,Made Shot,Jump Shot,Above the Break 3,Center(C),24+ ft.,25,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,12,10:56,James Harden,NA,NA,-164,221,0,Andrew Wiggins,GSW,LAC,10,56,Missed Shot,Pullup Jump shot,Above the Break 3,Left Side Center(LC),24+ ft.,27,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,12,10:56,James Harden,NA,NA,-164,221,0,Draymond Green,GSW,LAC,10,56,Missed Shot,Pullup Jump shot,Above the Break 3,Left Side Center(LC),24+ ft.,27,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,12,10:56,James Harden,NA,NA,-164,221,0,Lindy Waters III,GSW,LAC,10,56,Missed Shot,Pullup Jump shot,Above the Break 3,Left Side Center(LC),24+ ft.,27,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,12,10:56,James Harden,NA,NA,-164,221,0,Stephen Curry,GSW,LAC,10,56,Missed Shot,Pullup Jump shot,Above the Break 3,Left Side Center(LC),24+ ft.,27,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,12,10:56,James Harden,NA,NA,-164,221,0,Trayce Jackson-Davis,GSW,LAC,10,56,Missed Shot,Pullup Jump shot,Above the Break 3,Left Side Center(LC),24+ ft.,27,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,17,10:23,Ivica Zubac,James Harden,NA,-22,48,1,Andrew Wiggins,GSW,LAC,10,23,Made Shot,Hook Shot,In The Paint (Non-RA),Center(C),Less Than 8 ft.,5,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,1,17,10:23,Ivica Zubac,James Harden,NA,-22,48,1,Draymond Green,GSW,LAC,10,23,Made Shot,Hook Shot,In The Paint (Non-RA),Center(C),Less Than 8 ft.,5,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,1,17,10:23,Ivica Zubac,James Harden,NA,-22,48,1,Lindy Waters III,GSW,LAC,10,23,Made Shot,Hook Shot,In The Paint (Non-RA),Center(C),Less Than 8 ft.,5,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,1,17,10:23,Ivica Zubac,James Harden,NA,-22,48,1,Stephen Curry,GSW,LAC,10,23,Made Shot,Hook Shot,In The Paint (Non-RA),Center(C),Less Than 8 ft.,5,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,1,17,10:23,Ivica Zubac,James Harden,NA,-22,48,1,Trayce Jackson-Davis,GSW,LAC,10,23,Made Shot,Hook Shot,In The Paint (Non-RA),Center(C),Less Than 8 ft.,5,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,1,19,10:11,Andrew Wiggins,NA,NA,109,224,1,Derrick Jones Jr.,LAC,GSW,10,11,Missed Shot,Jump Shot,Above the Break 3,Right Side Center(RC),24+ ft.,24,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,19,10:11,Andrew Wiggins,NA,NA,109,224,1,Ivica Zubac,LAC,GSW,10,11,Missed Shot,Jump Shot,Above the Break 3,Right Side Center(RC),24+ ft.,24,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,19,10:11,Andrew Wiggins,NA,NA,109,224,1,James Harden,LAC,GSW,10,11,Missed Shot,Jump Shot,Above the Break 3,Right Side Center(RC),24+ ft.,24,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,19,10:11,Andrew Wiggins,NA,NA,109,224,1,Kris Dunn,LAC,GSW,10,11,Missed Shot,Jump Shot,Above the Break 3,Right Side Center(RC),24+ ft.,24,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,19,10:11,Andrew Wiggins,NA,NA,109,224,1,Norman Powell,LAC,GSW,10,11,Missed Shot,Jump Shot,Above the Break 3,Right Side Center(RC),24+ ft.,24,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,21,10:06,Kris Dunn,NA,NA,20,14,1,Andrew Wiggins,GSW,LAC,10,6,Made Shot,Running Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,1,21,10:06,Kris Dunn,NA,NA,20,14,1,Draymond Green,GSW,LAC,10,6,Made Shot,Running Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,1,21,10:06,Kris Dunn,NA,NA,20,14,1,Lindy Waters III,GSW,LAC,10,6,Made Shot,Running Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,1,21,10:06,Kris Dunn,NA,NA,20,14,1,Stephen Curry,GSW,LAC,10,6,Made Shot,Running Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,1,21,10:06,Kris Dunn,NA,NA,20,14,1,Trayce Jackson-Davis,GSW,LAC,10,6,Made Shot,Running Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,1,24,09:45,James Harden,Ivica Zubac,NA,60,258,1,Andrew Wiggins,GSW,LAC,9,45,Made Shot,Step Back Jump shot,Above the Break 3,Center(C),24+ ft.,26,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,24,09:45,James Harden,Ivica Zubac,NA,60,258,1,Draymond Green,GSW,LAC,9,45,Made Shot,Step Back Jump shot,Above the Break 3,Center(C),24+ ft.,26,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,24,09:45,James Harden,Ivica Zubac,NA,60,258,1,Lindy Waters III,GSW,LAC,9,45,Made Shot,Step Back Jump shot,Above the Break 3,Center(C),24+ ft.,26,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,24,09:45,James Harden,Ivica Zubac,NA,60,258,1,Stephen Curry,GSW,LAC,9,45,Made Shot,Step Back Jump shot,Above the Break 3,Center(C),24+ ft.,26,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,24,09:45,James Harden,Ivica Zubac,NA,60,258,1,Trayce Jackson-Davis,GSW,LAC,9,45,Made Shot,Step Back Jump shot,Above the Break 3,Center(C),24+ ft.,26,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,26,09:34,Stephen Curry,NA,NA,-175,210,1,Derrick Jones Jr.,LAC,GSW,9,34,Made Shot,Jump Shot,Above the Break 3,Left Side Center(LC),24+ ft.,27,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,26,09:34,Stephen Curry,NA,NA,-175,210,1,Ivica Zubac,LAC,GSW,9,34,Made Shot,Jump Shot,Above the Break 3,Left Side Center(LC),24+ ft.,27,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,26,09:34,Stephen Curry,NA,NA,-175,210,1,James Harden,LAC,GSW,9,34,Made Shot,Jump Shot,Above the Break 3,Left Side Center(LC),24+ ft.,27,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,26,09:34,Stephen Curry,NA,NA,-175,210,1,Kris Dunn,LAC,GSW,9,34,Made Shot,Jump Shot,Above the Break 3,Left Side Center(LC),24+ ft.,27,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,26,09:34,Stephen Curry,NA,NA,-175,210,1,Norman Powell,LAC,GSW,9,34,Made Shot,Jump Shot,Above the Break 3,Left Side Center(LC),24+ ft.,27,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,27,09:15,James Harden,NA,NA,-27,15,1,Andrew Wiggins,GSW,LAC,9,15,Missed Shot,Driving Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,3,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,1,27,09:15,James Harden,NA,NA,-27,15,1,Draymond Green,GSW,LAC,9,15,Missed Shot,Driving Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,3,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,1,27,09:15,James Harden,NA,NA,-27,15,1,Lindy Waters III,GSW,LAC,9,15,Missed Shot,Driving Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,3,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,1,27,09:15,James Harden,NA,NA,-27,15,1,Stephen Curry,GSW,LAC,9,15,Missed Shot,Driving Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,3,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,1,27,09:15,James Harden,NA,NA,-27,15,1,Trayce Jackson-Davis,GSW,LAC,9,15,Missed Shot,Driving Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,3,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,1,30,09:00,Draymond Green,NA,NA,78,89,1,Derrick Jones Jr.,LAC,GSW,9,0,Missed Shot,Floating Jump shot,In The Paint (Non-RA),Right Side(R),8-16 ft.,11,1,0,2pt,10-15 Ft
+2024-11-18,22400251,1,30,09:00,Draymond Green,NA,NA,78,89,1,Ivica Zubac,LAC,GSW,9,0,Missed Shot,Floating Jump shot,In The Paint (Non-RA),Right Side(R),8-16 ft.,11,1,0,2pt,10-15 Ft
+2024-11-18,22400251,1,30,09:00,Draymond Green,NA,NA,78,89,1,James Harden,LAC,GSW,9,0,Missed Shot,Floating Jump shot,In The Paint (Non-RA),Right Side(R),8-16 ft.,11,1,0,2pt,10-15 Ft
+2024-11-18,22400251,1,30,09:00,Draymond Green,NA,NA,78,89,1,Kris Dunn,LAC,GSW,9,0,Missed Shot,Floating Jump shot,In The Paint (Non-RA),Right Side(R),8-16 ft.,11,1,0,2pt,10-15 Ft
+2024-11-18,22400251,1,30,09:00,Draymond Green,NA,NA,78,89,1,Norman Powell,LAC,GSW,9,0,Missed Shot,Floating Jump shot,In The Paint (Non-RA),Right Side(R),8-16 ft.,11,1,0,2pt,10-15 Ft
+2024-11-18,22400251,1,32,08:50,Norman Powell,James Harden,NA,-196,66,1,Andrew Wiggins,GSW,LAC,8,50,Made Shot,Pullup Jump shot,Mid-Range,Left Side(L),16-24 ft.,20,1,1,2pt,Greater Than 15 Ft
+2024-11-18,22400251,1,32,08:50,Norman Powell,James Harden,NA,-196,66,1,Draymond Green,GSW,LAC,8,50,Made Shot,Pullup Jump shot,Mid-Range,Left Side(L),16-24 ft.,20,1,1,2pt,Greater Than 15 Ft
+2024-11-18,22400251,1,32,08:50,Norman Powell,James Harden,NA,-196,66,1,Lindy Waters III,GSW,LAC,8,50,Made Shot,Pullup Jump shot,Mid-Range,Left Side(L),16-24 ft.,20,1,1,2pt,Greater Than 15 Ft
+2024-11-18,22400251,1,32,08:50,Norman Powell,James Harden,NA,-196,66,1,Stephen Curry,GSW,LAC,8,50,Made Shot,Pullup Jump shot,Mid-Range,Left Side(L),16-24 ft.,20,1,1,2pt,Greater Than 15 Ft
+2024-11-18,22400251,1,32,08:50,Norman Powell,James Harden,NA,-196,66,1,Trayce Jackson-Davis,GSW,LAC,8,50,Made Shot,Pullup Jump shot,Mid-Range,Left Side(L),16-24 ft.,20,1,1,2pt,Greater Than 15 Ft
+2024-11-18,22400251,1,36,08:24,James Harden,NA,NA,-17,12,0,Andrew Wiggins,GSW,LAC,8,24,Missed Shot,Running Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,1,36,08:24,James Harden,NA,NA,-17,12,0,Draymond Green,GSW,LAC,8,24,Missed Shot,Running Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,1,36,08:24,James Harden,NA,NA,-17,12,0,Lindy Waters III,GSW,LAC,8,24,Missed Shot,Running Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,1,36,08:24,James Harden,NA,NA,-17,12,0,Stephen Curry,GSW,LAC,8,24,Missed Shot,Running Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,1,36,08:24,James Harden,NA,NA,-17,12,0,Trayce Jackson-Davis,GSW,LAC,8,24,Missed Shot,Running Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,1,43,08:08,Andrew Wiggins,NA,James Harden,12,66,1,Derrick Jones Jr.,LAC,GSW,8,8,Missed Shot,Jump Shot,In The Paint (Non-RA),Center(C),Less Than 8 ft.,6,1,0,2pt,Less Than 10 Ft
+2024-11-18,22400251,1,43,08:08,Andrew Wiggins,NA,James Harden,12,66,1,Ivica Zubac,LAC,GSW,8,8,Missed Shot,Jump Shot,In The Paint (Non-RA),Center(C),Less Than 8 ft.,6,1,0,2pt,Less Than 10 Ft
+2024-11-18,22400251,1,43,08:08,Andrew Wiggins,NA,James Harden,12,66,1,James Harden,LAC,GSW,8,8,Missed Shot,Jump Shot,In The Paint (Non-RA),Center(C),Less Than 8 ft.,6,1,0,2pt,Less Than 10 Ft
+2024-11-18,22400251,1,43,08:08,Andrew Wiggins,NA,James Harden,12,66,1,Kris Dunn,LAC,GSW,8,8,Missed Shot,Jump Shot,In The Paint (Non-RA),Center(C),Less Than 8 ft.,6,1,0,2pt,Less Than 10 Ft
+2024-11-18,22400251,1,43,08:08,Andrew Wiggins,NA,James Harden,12,66,1,Norman Powell,LAC,GSW,8,8,Missed Shot,Jump Shot,In The Paint (Non-RA),Center(C),Less Than 8 ft.,6,1,0,2pt,Less Than 10 Ft
+2024-11-18,22400251,1,52,07:38,Norman Powell,NA,NA,232,93,1,Andrew Wiggins,GSW,LAC,7,38,Missed Shot,Jump Shot,Above the Break 3,Right Side Center(RC),24+ ft.,24,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,52,07:38,Norman Powell,NA,NA,232,93,1,Draymond Green,GSW,LAC,7,38,Missed Shot,Jump Shot,Above the Break 3,Right Side Center(RC),24+ ft.,24,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,52,07:38,Norman Powell,NA,NA,232,93,1,Lindy Waters III,GSW,LAC,7,38,Missed Shot,Jump Shot,Above the Break 3,Right Side Center(RC),24+ ft.,24,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,52,07:38,Norman Powell,NA,NA,232,93,1,Stephen Curry,GSW,LAC,7,38,Missed Shot,Jump Shot,Above the Break 3,Right Side Center(RC),24+ ft.,24,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,52,07:38,Norman Powell,NA,NA,232,93,1,Trayce Jackson-Davis,GSW,LAC,7,38,Missed Shot,Jump Shot,Above the Break 3,Right Side Center(RC),24+ ft.,24,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,57,07:00,Derrick Jones Jr.,James Harden,NA,232,40,1,Andrew Wiggins,GSW,LAC,7,0,Made Shot,Jump Shot,Right Corner 3,Right Side(R),24+ ft.,23,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,57,07:00,Derrick Jones Jr.,James Harden,NA,232,40,1,Draymond Green,GSW,LAC,7,0,Made Shot,Jump Shot,Right Corner 3,Right Side(R),24+ ft.,23,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,57,07:00,Derrick Jones Jr.,James Harden,NA,232,40,1,Lindy Waters III,GSW,LAC,7,0,Made Shot,Jump Shot,Right Corner 3,Right Side(R),24+ ft.,23,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,57,07:00,Derrick Jones Jr.,James Harden,NA,232,40,1,Stephen Curry,GSW,LAC,7,0,Made Shot,Jump Shot,Right Corner 3,Right Side(R),24+ ft.,23,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,57,07:00,Derrick Jones Jr.,James Harden,NA,232,40,1,Trayce Jackson-Davis,GSW,LAC,7,0,Made Shot,Jump Shot,Right Corner 3,Right Side(R),24+ ft.,23,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,62,06:42,Andrew Wiggins,Draymond Green,NA,45,23,1,Derrick Jones Jr.,LAC,GSW,6,42,Made Shot,Layup Shot,In The Paint (Non-RA),Center(C),Less Than 8 ft.,5,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,1,62,06:42,Andrew Wiggins,Draymond Green,NA,45,23,1,Ivica Zubac,LAC,GSW,6,42,Made Shot,Layup Shot,In The Paint (Non-RA),Center(C),Less Than 8 ft.,5,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,1,62,06:42,Andrew Wiggins,Draymond Green,NA,45,23,1,James Harden,LAC,GSW,6,42,Made Shot,Layup Shot,In The Paint (Non-RA),Center(C),Less Than 8 ft.,5,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,1,62,06:42,Andrew Wiggins,Draymond Green,NA,45,23,1,Kris Dunn,LAC,GSW,6,42,Made Shot,Layup Shot,In The Paint (Non-RA),Center(C),Less Than 8 ft.,5,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,1,62,06:42,Andrew Wiggins,Draymond Green,NA,45,23,1,Norman Powell,LAC,GSW,6,42,Made Shot,Layup Shot,In The Paint (Non-RA),Center(C),Less Than 8 ft.,5,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,1,64,06:18,James Harden,Kris Dunn,NA,138,218,1,Andrew Wiggins,GSW,LAC,6,18,Made Shot,Step Back Jump shot,Above the Break 3,Right Side Center(RC),24+ ft.,25,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,64,06:18,James Harden,Kris Dunn,NA,138,218,1,Draymond Green,GSW,LAC,6,18,Made Shot,Step Back Jump shot,Above the Break 3,Right Side Center(RC),24+ ft.,25,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,64,06:18,James Harden,Kris Dunn,NA,138,218,1,Gary Payton II,GSW,LAC,6,18,Made Shot,Step Back Jump shot,Above the Break 3,Right Side Center(RC),24+ ft.,25,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,64,06:18,James Harden,Kris Dunn,NA,138,218,1,Lindy Waters III,GSW,LAC,6,18,Made Shot,Step Back Jump shot,Above the Break 3,Right Side Center(RC),24+ ft.,25,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,64,06:18,James Harden,Kris Dunn,NA,138,218,1,Stephen Curry,GSW,LAC,6,18,Made Shot,Step Back Jump shot,Above the Break 3,Right Side Center(RC),24+ ft.,25,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,66,06:06,Stephen Curry,NA,NA,-145,197,1,Derrick Jones Jr.,LAC,GSW,6,6,Missed Shot,Step Back Jump shot,Above the Break 3,Left Side Center(LC),24+ ft.,24,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,66,06:06,Stephen Curry,NA,NA,-145,197,1,Ivica Zubac,LAC,GSW,6,6,Missed Shot,Step Back Jump shot,Above the Break 3,Left Side Center(LC),24+ ft.,24,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,66,06:06,Stephen Curry,NA,NA,-145,197,1,James Harden,LAC,GSW,6,6,Missed Shot,Step Back Jump shot,Above the Break 3,Left Side Center(LC),24+ ft.,24,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,66,06:06,Stephen Curry,NA,NA,-145,197,1,Kris Dunn,LAC,GSW,6,6,Missed Shot,Step Back Jump shot,Above the Break 3,Left Side Center(LC),24+ ft.,24,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,66,06:06,Stephen Curry,NA,NA,-145,197,1,Norman Powell,LAC,GSW,6,6,Missed Shot,Step Back Jump shot,Above the Break 3,Left Side Center(LC),24+ ft.,24,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,68,05:57,Norman Powell,James Harden,NA,-237,17,1,Andrew Wiggins,GSW,LAC,5,57,Made Shot,Running Pull-Up Jump Shot,Left Corner 3,Left Side(L),24+ ft.,23,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,68,05:57,Norman Powell,James Harden,NA,-237,17,1,Draymond Green,GSW,LAC,5,57,Made Shot,Running Pull-Up Jump Shot,Left Corner 3,Left Side(L),24+ ft.,23,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,68,05:57,Norman Powell,James Harden,NA,-237,17,1,Gary Payton II,GSW,LAC,5,57,Made Shot,Running Pull-Up Jump Shot,Left Corner 3,Left Side(L),24+ ft.,23,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,68,05:57,Norman Powell,James Harden,NA,-237,17,1,Lindy Waters III,GSW,LAC,5,57,Made Shot,Running Pull-Up Jump Shot,Left Corner 3,Left Side(L),24+ ft.,23,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,68,05:57,Norman Powell,James Harden,NA,-237,17,1,Stephen Curry,GSW,LAC,5,57,Made Shot,Running Pull-Up Jump Shot,Left Corner 3,Left Side(L),24+ ft.,23,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,70,05:36,Gary Payton II,NA,Ivica Zubac,18,55,1,Derrick Jones Jr.,LAC,GSW,5,36,Missed Shot,Driving Floating Jump Shot,In The Paint (Non-RA),Center(C),Less Than 8 ft.,5,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,1,70,05:36,Gary Payton II,NA,Ivica Zubac,18,55,1,Ivica Zubac,LAC,GSW,5,36,Missed Shot,Driving Floating Jump Shot,In The Paint (Non-RA),Center(C),Less Than 8 ft.,5,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,1,70,05:36,Gary Payton II,NA,Ivica Zubac,18,55,1,James Harden,LAC,GSW,5,36,Missed Shot,Driving Floating Jump Shot,In The Paint (Non-RA),Center(C),Less Than 8 ft.,5,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,1,70,05:36,Gary Payton II,NA,Ivica Zubac,18,55,1,Kris Dunn,LAC,GSW,5,36,Missed Shot,Driving Floating Jump Shot,In The Paint (Non-RA),Center(C),Less Than 8 ft.,5,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,1,70,05:36,Gary Payton II,NA,Ivica Zubac,18,55,1,Norman Powell,LAC,GSW,5,36,Missed Shot,Driving Floating Jump Shot,In The Paint (Non-RA),Center(C),Less Than 8 ft.,5,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,1,73,05:31,Ivica Zubac,NA,Draymond Green,10,20,1,Andrew Wiggins,GSW,LAC,5,31,Missed Shot,Running Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,1,73,05:31,Ivica Zubac,NA,Draymond Green,10,20,1,Draymond Green,GSW,LAC,5,31,Missed Shot,Running Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,1,73,05:31,Ivica Zubac,NA,Draymond Green,10,20,1,Gary Payton II,GSW,LAC,5,31,Missed Shot,Running Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,1,73,05:31,Ivica Zubac,NA,Draymond Green,10,20,1,Lindy Waters III,GSW,LAC,5,31,Missed Shot,Running Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,1,73,05:31,Ivica Zubac,NA,Draymond Green,10,20,1,Stephen Curry,GSW,LAC,5,31,Missed Shot,Running Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,1,76,05:21,Draymond Green,Gary Payton II,NA,2,249,1,Derrick Jones Jr.,LAC,GSW,5,21,Made Shot,Pullup Jump shot,Above the Break 3,Center(C),24+ ft.,24,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,76,05:21,Draymond Green,Gary Payton II,NA,2,249,1,Ivica Zubac,LAC,GSW,5,21,Made Shot,Pullup Jump shot,Above the Break 3,Center(C),24+ ft.,24,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,76,05:21,Draymond Green,Gary Payton II,NA,2,249,1,James Harden,LAC,GSW,5,21,Made Shot,Pullup Jump shot,Above the Break 3,Center(C),24+ ft.,24,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,76,05:21,Draymond Green,Gary Payton II,NA,2,249,1,Kris Dunn,LAC,GSW,5,21,Made Shot,Pullup Jump shot,Above the Break 3,Center(C),24+ ft.,24,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,76,05:21,Draymond Green,Gary Payton II,NA,2,249,1,Norman Powell,LAC,GSW,5,21,Made Shot,Pullup Jump shot,Above the Break 3,Center(C),24+ ft.,24,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,78,04:54,Norman Powell,NA,NA,143,19,1,Andrew Wiggins,GSW,LAC,4,54,Missed Shot,Pullup Jump shot,Mid-Range,Right Side(R),8-16 ft.,14,1,0,2pt,10-15 Ft
+2024-11-18,22400251,1,78,04:54,Norman Powell,NA,NA,143,19,1,Draymond Green,GSW,LAC,4,54,Missed Shot,Pullup Jump shot,Mid-Range,Right Side(R),8-16 ft.,14,1,0,2pt,10-15 Ft
+2024-11-18,22400251,1,78,04:54,Norman Powell,NA,NA,143,19,1,Gary Payton II,GSW,LAC,4,54,Missed Shot,Pullup Jump shot,Mid-Range,Right Side(R),8-16 ft.,14,1,0,2pt,10-15 Ft
+2024-11-18,22400251,1,78,04:54,Norman Powell,NA,NA,143,19,1,Lindy Waters III,GSW,LAC,4,54,Missed Shot,Pullup Jump shot,Mid-Range,Right Side(R),8-16 ft.,14,1,0,2pt,10-15 Ft
+2024-11-18,22400251,1,78,04:54,Norman Powell,NA,NA,143,19,1,Stephen Curry,GSW,LAC,4,54,Missed Shot,Pullup Jump shot,Mid-Range,Right Side(R),8-16 ft.,14,1,0,2pt,10-15 Ft
+2024-11-18,22400251,1,80,04:46,Gary Payton II,NA,NA,15,24,1,Derrick Jones Jr.,LAC,GSW,4,46,Missed Shot,Running Alley Oop Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,1,80,04:46,Gary Payton II,NA,NA,15,24,1,Ivica Zubac,LAC,GSW,4,46,Missed Shot,Running Alley Oop Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,1,80,04:46,Gary Payton II,NA,NA,15,24,1,James Harden,LAC,GSW,4,46,Missed Shot,Running Alley Oop Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,1,80,04:46,Gary Payton II,NA,NA,15,24,1,Kris Dunn,LAC,GSW,4,46,Missed Shot,Running Alley Oop Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,1,80,04:46,Gary Payton II,NA,NA,15,24,1,Norman Powell,LAC,GSW,4,46,Missed Shot,Running Alley Oop Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,1,89,04:35,Ivica Zubac,NA,NA,-27,110,1,Buddy Hield,GSW,LAC,4,35,Missed Shot,Jump Shot,In The Paint (Non-RA),Center(C),8-16 ft.,11,1,0,2pt,10-15 Ft
+2024-11-18,22400251,1,89,04:35,Ivica Zubac,NA,NA,-27,110,1,Draymond Green,GSW,LAC,4,35,Missed Shot,Jump Shot,In The Paint (Non-RA),Center(C),8-16 ft.,11,1,0,2pt,10-15 Ft
+2024-11-18,22400251,1,89,04:35,Ivica Zubac,NA,NA,-27,110,1,Gary Payton II,GSW,LAC,4,35,Missed Shot,Jump Shot,In The Paint (Non-RA),Center(C),8-16 ft.,11,1,0,2pt,10-15 Ft
+2024-11-18,22400251,1,89,04:35,Ivica Zubac,NA,NA,-27,110,1,Jonathan Kuminga,GSW,LAC,4,35,Missed Shot,Jump Shot,In The Paint (Non-RA),Center(C),8-16 ft.,11,1,0,2pt,10-15 Ft
+2024-11-18,22400251,1,89,04:35,Ivica Zubac,NA,NA,-27,110,1,Stephen Curry,GSW,LAC,4,35,Missed Shot,Jump Shot,In The Paint (Non-RA),Center(C),8-16 ft.,11,1,0,2pt,10-15 Ft
+2024-11-18,22400251,1,91,04:24,Stephen Curry,NA,NA,-205,150,1,Derrick Jones Jr.,LAC,GSW,4,24,Missed Shot,Jump Shot,Above the Break 3,Left Side Center(LC),24+ ft.,25,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,91,04:24,Stephen Curry,NA,NA,-205,150,1,Ivica Zubac,LAC,GSW,4,24,Missed Shot,Jump Shot,Above the Break 3,Left Side Center(LC),24+ ft.,25,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,91,04:24,Stephen Curry,NA,NA,-205,150,1,James Harden,LAC,GSW,4,24,Missed Shot,Jump Shot,Above the Break 3,Left Side Center(LC),24+ ft.,25,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,91,04:24,Stephen Curry,NA,NA,-205,150,1,Kris Dunn,LAC,GSW,4,24,Missed Shot,Jump Shot,Above the Break 3,Left Side Center(LC),24+ ft.,25,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,91,04:24,Stephen Curry,NA,NA,-205,150,1,Norman Powell,LAC,GSW,4,24,Missed Shot,Jump Shot,Above the Break 3,Left Side Center(LC),24+ ft.,25,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,93,04:10,James Harden,NA,NA,-118,80,1,Buddy Hield,GSW,LAC,4,10,Made Shot,Step Back Jump shot,Mid-Range,Left Side(L),8-16 ft.,14,1,1,2pt,10-15 Ft
+2024-11-18,22400251,1,93,04:10,James Harden,NA,NA,-118,80,1,Draymond Green,GSW,LAC,4,10,Made Shot,Step Back Jump shot,Mid-Range,Left Side(L),8-16 ft.,14,1,1,2pt,10-15 Ft
+2024-11-18,22400251,1,93,04:10,James Harden,NA,NA,-118,80,1,Gary Payton II,GSW,LAC,4,10,Made Shot,Step Back Jump shot,Mid-Range,Left Side(L),8-16 ft.,14,1,1,2pt,10-15 Ft
+2024-11-18,22400251,1,93,04:10,James Harden,NA,NA,-118,80,1,Jonathan Kuminga,GSW,LAC,4,10,Made Shot,Step Back Jump shot,Mid-Range,Left Side(L),8-16 ft.,14,1,1,2pt,10-15 Ft
+2024-11-18,22400251,1,93,04:10,James Harden,NA,NA,-118,80,1,Stephen Curry,GSW,LAC,4,10,Made Shot,Step Back Jump shot,Mid-Range,Left Side(L),8-16 ft.,14,1,1,2pt,10-15 Ft
+2024-11-18,22400251,1,97,03:51,Gary Payton II,NA,NA,-230,52,1,Derrick Jones Jr.,LAC,GSW,3,51,Missed Shot,Jump Shot,Left Corner 3,Left Side(L),24+ ft.,23,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,97,03:51,Gary Payton II,NA,NA,-230,52,1,Ivica Zubac,LAC,GSW,3,51,Missed Shot,Jump Shot,Left Corner 3,Left Side(L),24+ ft.,23,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,97,03:51,Gary Payton II,NA,NA,-230,52,1,James Harden,LAC,GSW,3,51,Missed Shot,Jump Shot,Left Corner 3,Left Side(L),24+ ft.,23,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,97,03:51,Gary Payton II,NA,NA,-230,52,1,Kris Dunn,LAC,GSW,3,51,Missed Shot,Jump Shot,Left Corner 3,Left Side(L),24+ ft.,23,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,97,03:51,Gary Payton II,NA,NA,-230,52,1,Norman Powell,LAC,GSW,3,51,Missed Shot,Jump Shot,Left Corner 3,Left Side(L),24+ ft.,23,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,99,03:42,Norman Powell,James Harden,NA,-11,114,1,Buddy Hield,GSW,LAC,3,42,Made Shot,Pullup Jump shot,In The Paint (Non-RA),Center(C),8-16 ft.,11,1,1,2pt,10-15 Ft
+2024-11-18,22400251,1,99,03:42,Norman Powell,James Harden,NA,-11,114,1,Draymond Green,GSW,LAC,3,42,Made Shot,Pullup Jump shot,In The Paint (Non-RA),Center(C),8-16 ft.,11,1,1,2pt,10-15 Ft
+2024-11-18,22400251,1,99,03:42,Norman Powell,James Harden,NA,-11,114,1,Gary Payton II,GSW,LAC,3,42,Made Shot,Pullup Jump shot,In The Paint (Non-RA),Center(C),8-16 ft.,11,1,1,2pt,10-15 Ft
+2024-11-18,22400251,1,99,03:42,Norman Powell,James Harden,NA,-11,114,1,Jonathan Kuminga,GSW,LAC,3,42,Made Shot,Pullup Jump shot,In The Paint (Non-RA),Center(C),8-16 ft.,11,1,1,2pt,10-15 Ft
+2024-11-18,22400251,1,99,03:42,Norman Powell,James Harden,NA,-11,114,1,Stephen Curry,GSW,LAC,3,42,Made Shot,Pullup Jump shot,In The Paint (Non-RA),Center(C),8-16 ft.,11,1,1,2pt,10-15 Ft
+2024-11-18,22400251,1,101,03:31,Stephen Curry,NA,NA,36,293,0,Derrick Jones Jr.,LAC,GSW,3,31,Missed Shot,Pullup Jump shot,Above the Break 3,Center(C),24+ ft.,29,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,101,03:31,Stephen Curry,NA,NA,36,293,0,Ivica Zubac,LAC,GSW,3,31,Missed Shot,Pullup Jump shot,Above the Break 3,Center(C),24+ ft.,29,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,101,03:31,Stephen Curry,NA,NA,36,293,0,James Harden,LAC,GSW,3,31,Missed Shot,Pullup Jump shot,Above the Break 3,Center(C),24+ ft.,29,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,101,03:31,Stephen Curry,NA,NA,36,293,0,Kris Dunn,LAC,GSW,3,31,Missed Shot,Pullup Jump shot,Above the Break 3,Center(C),24+ ft.,29,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,101,03:31,Stephen Curry,NA,NA,36,293,0,Norman Powell,LAC,GSW,3,31,Missed Shot,Pullup Jump shot,Above the Break 3,Center(C),24+ ft.,29,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,103,03:23,Jonathan Kuminga,NA,NA,239,60,1,Derrick Jones Jr.,LAC,GSW,3,23,Missed Shot,Jump Shot,Right Corner 3,Right Side(R),24+ ft.,24,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,103,03:23,Jonathan Kuminga,NA,NA,239,60,1,Ivica Zubac,LAC,GSW,3,23,Missed Shot,Jump Shot,Right Corner 3,Right Side(R),24+ ft.,24,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,103,03:23,Jonathan Kuminga,NA,NA,239,60,1,James Harden,LAC,GSW,3,23,Missed Shot,Jump Shot,Right Corner 3,Right Side(R),24+ ft.,24,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,103,03:23,Jonathan Kuminga,NA,NA,239,60,1,Kris Dunn,LAC,GSW,3,23,Missed Shot,Jump Shot,Right Corner 3,Right Side(R),24+ ft.,24,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,103,03:23,Jonathan Kuminga,NA,NA,239,60,1,Norman Powell,LAC,GSW,3,23,Missed Shot,Jump Shot,Right Corner 3,Right Side(R),24+ ft.,24,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,105,03:13,Ivica Zubac,NA,NA,22,62,1,Buddy Hield,GSW,LAC,3,13,Missed Shot,Hook Shot,In The Paint (Non-RA),Center(C),Less Than 8 ft.,6,1,0,2pt,Less Than 10 Ft
+2024-11-18,22400251,1,105,03:13,Ivica Zubac,NA,NA,22,62,1,Draymond Green,GSW,LAC,3,13,Missed Shot,Hook Shot,In The Paint (Non-RA),Center(C),Less Than 8 ft.,6,1,0,2pt,Less Than 10 Ft
+2024-11-18,22400251,1,105,03:13,Ivica Zubac,NA,NA,22,62,1,Gary Payton II,GSW,LAC,3,13,Missed Shot,Hook Shot,In The Paint (Non-RA),Center(C),Less Than 8 ft.,6,1,0,2pt,Less Than 10 Ft
+2024-11-18,22400251,1,105,03:13,Ivica Zubac,NA,NA,22,62,1,Jonathan Kuminga,GSW,LAC,3,13,Missed Shot,Hook Shot,In The Paint (Non-RA),Center(C),Less Than 8 ft.,6,1,0,2pt,Less Than 10 Ft
+2024-11-18,22400251,1,105,03:13,Ivica Zubac,NA,NA,22,62,1,Stephen Curry,GSW,LAC,3,13,Missed Shot,Hook Shot,In The Paint (Non-RA),Center(C),Less Than 8 ft.,6,1,0,2pt,Less Than 10 Ft
+2024-11-18,22400251,1,128,02:49,Buddy Hield,Kyle Anderson,NA,20,14,1,Amir Coffey,LAC,GSW,2,49,Made Shot,Running Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,1,128,02:49,Buddy Hield,Kyle Anderson,NA,20,14,1,James Harden,LAC,GSW,2,49,Made Shot,Running Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,1,128,02:49,Buddy Hield,Kyle Anderson,NA,20,14,1,Kevin Porter Jr.,LAC,GSW,2,49,Made Shot,Running Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,1,128,02:49,Buddy Hield,Kyle Anderson,NA,20,14,1,Mo Bamba,LAC,GSW,2,49,Made Shot,Running Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,1,128,02:49,Buddy Hield,Kyle Anderson,NA,20,14,1,Nicolas Batum,LAC,GSW,2,49,Made Shot,Running Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,1,130,02:29,Kevin Porter Jr.,NA,NA,91,90,1,Brandin Podziemski,GSW,LAC,2,29,Missed Shot,Step Back Jump shot,Mid-Range,Right Side(R),8-16 ft.,12,1,0,2pt,10-15 Ft
+2024-11-18,22400251,1,130,02:29,Kevin Porter Jr.,NA,NA,91,90,1,Buddy Hield,GSW,LAC,2,29,Missed Shot,Step Back Jump shot,Mid-Range,Right Side(R),8-16 ft.,12,1,0,2pt,10-15 Ft
+2024-11-18,22400251,1,130,02:29,Kevin Porter Jr.,NA,NA,91,90,1,Jonathan Kuminga,GSW,LAC,2,29,Missed Shot,Step Back Jump shot,Mid-Range,Right Side(R),8-16 ft.,12,1,0,2pt,10-15 Ft
+2024-11-18,22400251,1,130,02:29,Kevin Porter Jr.,NA,NA,91,90,1,Kyle Anderson,GSW,LAC,2,29,Missed Shot,Step Back Jump shot,Mid-Range,Right Side(R),8-16 ft.,12,1,0,2pt,10-15 Ft
+2024-11-18,22400251,1,130,02:29,Kevin Porter Jr.,NA,NA,91,90,1,Moses Moody,GSW,LAC,2,29,Missed Shot,Step Back Jump shot,Mid-Range,Right Side(R),8-16 ft.,12,1,0,2pt,10-15 Ft
+2024-11-18,22400251,1,132,02:20,Jonathan Kuminga,NA,NA,-27,12,1,Amir Coffey,LAC,GSW,2,20,Made Shot,Driving Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,1,132,02:20,Jonathan Kuminga,NA,NA,-27,12,1,James Harden,LAC,GSW,2,20,Made Shot,Driving Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,1,132,02:20,Jonathan Kuminga,NA,NA,-27,12,1,Kevin Porter Jr.,LAC,GSW,2,20,Made Shot,Driving Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,1,132,02:20,Jonathan Kuminga,NA,NA,-27,12,1,Mo Bamba,LAC,GSW,2,20,Made Shot,Driving Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,1,132,02:20,Jonathan Kuminga,NA,NA,-27,12,1,Nicolas Batum,LAC,GSW,2,20,Made Shot,Driving Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,1,133,02:02,Mo Bamba,James Harden,NA,12,17,1,Brandin Podziemski,GSW,LAC,2,2,Made Shot,Cutting Dunk Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,1,133,02:02,Mo Bamba,James Harden,NA,12,17,1,Buddy Hield,GSW,LAC,2,2,Made Shot,Cutting Dunk Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,1,133,02:02,Mo Bamba,James Harden,NA,12,17,1,Jonathan Kuminga,GSW,LAC,2,2,Made Shot,Cutting Dunk Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,1,133,02:02,Mo Bamba,James Harden,NA,12,17,1,Kyle Anderson,GSW,LAC,2,2,Made Shot,Cutting Dunk Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,1,133,02:02,Mo Bamba,James Harden,NA,12,17,1,Moses Moody,GSW,LAC,2,2,Made Shot,Cutting Dunk Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,1,138,01:42,Kevin Porter Jr.,NA,NA,-23,75,0,Brandin Podziemski,GSW,LAC,1,42,Missed Shot,Running Pull-Up Jump Shot,In The Paint (Non-RA),Center(C),Less Than 8 ft.,7,1,0,2pt,Less Than 10 Ft
+2024-11-18,22400251,1,138,01:42,Kevin Porter Jr.,NA,NA,-23,75,0,Buddy Hield,GSW,LAC,1,42,Missed Shot,Running Pull-Up Jump Shot,In The Paint (Non-RA),Center(C),Less Than 8 ft.,7,1,0,2pt,Less Than 10 Ft
+2024-11-18,22400251,1,138,01:42,Kevin Porter Jr.,NA,NA,-23,75,0,Jonathan Kuminga,GSW,LAC,1,42,Missed Shot,Running Pull-Up Jump Shot,In The Paint (Non-RA),Center(C),Less Than 8 ft.,7,1,0,2pt,Less Than 10 Ft
+2024-11-18,22400251,1,138,01:42,Kevin Porter Jr.,NA,NA,-23,75,0,Kyle Anderson,GSW,LAC,1,42,Missed Shot,Running Pull-Up Jump Shot,In The Paint (Non-RA),Center(C),Less Than 8 ft.,7,1,0,2pt,Less Than 10 Ft
+2024-11-18,22400251,1,138,01:42,Kevin Porter Jr.,NA,NA,-23,75,0,Moses Moody,GSW,LAC,1,42,Missed Shot,Running Pull-Up Jump Shot,In The Paint (Non-RA),Center(C),Less Than 8 ft.,7,1,0,2pt,Less Than 10 Ft
+2024-11-18,22400251,1,144,01:25,Buddy Hield,Jonathan Kuminga,NA,-178,172,1,Amir Coffey,LAC,GSW,1,25,Made Shot,Running Jump Shot,Above the Break 3,Left Side Center(LC),24+ ft.,24,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,144,01:25,Buddy Hield,Jonathan Kuminga,NA,-178,172,1,James Harden,LAC,GSW,1,25,Made Shot,Running Jump Shot,Above the Break 3,Left Side Center(LC),24+ ft.,24,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,144,01:25,Buddy Hield,Jonathan Kuminga,NA,-178,172,1,Kevin Porter Jr.,LAC,GSW,1,25,Made Shot,Running Jump Shot,Above the Break 3,Left Side Center(LC),24+ ft.,24,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,144,01:25,Buddy Hield,Jonathan Kuminga,NA,-178,172,1,Mo Bamba,LAC,GSW,1,25,Made Shot,Running Jump Shot,Above the Break 3,Left Side Center(LC),24+ ft.,24,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,144,01:25,Buddy Hield,Jonathan Kuminga,NA,-178,172,1,Nicolas Batum,LAC,GSW,1,25,Made Shot,Running Jump Shot,Above the Break 3,Left Side Center(LC),24+ ft.,24,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,149,00:54.1,James Harden,NA,NA,-22,20,1,Brandin Podziemski,GSW,LAC,0,54,Missed Shot,Driving Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,1,149,00:54.1,James Harden,NA,NA,-22,20,1,Buddy Hield,GSW,LAC,0,54,Missed Shot,Driving Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,1,149,00:54.1,James Harden,NA,NA,-22,20,1,Jonathan Kuminga,GSW,LAC,0,54,Missed Shot,Driving Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,1,149,00:54.1,James Harden,NA,NA,-22,20,1,Kyle Anderson,GSW,LAC,0,54,Missed Shot,Driving Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,1,149,00:54.1,James Harden,NA,NA,-22,20,1,Moses Moody,GSW,LAC,0,54,Missed Shot,Driving Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,1,157,00:35.2,Nicolas Batum,NA,NA,-175,192,1,Brandin Podziemski,GSW,LAC,0,35,Missed Shot,Jump Shot,Above the Break 3,Left Side Center(LC),24+ ft.,25,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,157,00:35.2,Nicolas Batum,NA,NA,-175,192,1,Buddy Hield,GSW,LAC,0,35,Missed Shot,Jump Shot,Above the Break 3,Left Side Center(LC),24+ ft.,25,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,157,00:35.2,Nicolas Batum,NA,NA,-175,192,1,Jonathan Kuminga,GSW,LAC,0,35,Missed Shot,Jump Shot,Above the Break 3,Left Side Center(LC),24+ ft.,25,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,157,00:35.2,Nicolas Batum,NA,NA,-175,192,1,Kyle Anderson,GSW,LAC,0,35,Missed Shot,Jump Shot,Above the Break 3,Left Side Center(LC),24+ ft.,25,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,157,00:35.2,Nicolas Batum,NA,NA,-175,192,1,Moses Moody,GSW,LAC,0,35,Missed Shot,Jump Shot,Above the Break 3,Left Side Center(LC),24+ ft.,25,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,160,00:19.8,Moses Moody,Brandin Podziemski,NA,-9,17,1,Amir Coffey,LAC,GSW,0,19,Made Shot,Driving Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,1,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,1,160,00:19.8,Moses Moody,Brandin Podziemski,NA,-9,17,1,James Harden,LAC,GSW,0,19,Made Shot,Driving Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,1,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,1,160,00:19.8,Moses Moody,Brandin Podziemski,NA,-9,17,1,Kevin Porter Jr.,LAC,GSW,0,19,Made Shot,Driving Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,1,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,1,160,00:19.8,Moses Moody,Brandin Podziemski,NA,-9,17,1,Mo Bamba,LAC,GSW,0,19,Made Shot,Driving Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,1,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,1,160,00:19.8,Moses Moody,Brandin Podziemski,NA,-9,17,1,Nicolas Batum,LAC,GSW,0,19,Made Shot,Driving Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,1,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,1,162,00:00.7,Amir Coffey,NA,NA,229,31,1,Brandin Podziemski,GSW,LAC,0,0,Missed Shot,Jump Shot,Right Corner 3,Right Side(R),24+ ft.,23,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,162,00:00.7,Amir Coffey,NA,NA,229,31,1,Buddy Hield,GSW,LAC,0,0,Missed Shot,Jump Shot,Right Corner 3,Right Side(R),24+ ft.,23,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,162,00:00.7,Amir Coffey,NA,NA,229,31,1,Jonathan Kuminga,GSW,LAC,0,0,Missed Shot,Jump Shot,Right Corner 3,Right Side(R),24+ ft.,23,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,162,00:00.7,Amir Coffey,NA,NA,229,31,1,Kyle Anderson,GSW,LAC,0,0,Missed Shot,Jump Shot,Right Corner 3,Right Side(R),24+ ft.,23,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,1,162,00:00.7,Amir Coffey,NA,NA,229,31,1,Moses Moody,GSW,LAC,0,0,Missed Shot,Jump Shot,Right Corner 3,Right Side(R),24+ ft.,23,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,168,11:46,Jonathan Kuminga,Brandin Podziemski,NA,-16,10,1,Amir Coffey,LAC,GSW,11,46,Made Shot,Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,1,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,2,168,11:46,Jonathan Kuminga,Brandin Podziemski,NA,-16,10,1,Kevin Porter Jr.,LAC,GSW,11,46,Made Shot,Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,1,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,2,168,11:46,Jonathan Kuminga,Brandin Podziemski,NA,-16,10,1,Mo Bamba,LAC,GSW,11,46,Made Shot,Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,1,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,2,168,11:46,Jonathan Kuminga,Brandin Podziemski,NA,-16,10,1,Nicolas Batum,LAC,GSW,11,46,Made Shot,Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,1,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,2,168,11:46,Jonathan Kuminga,Brandin Podziemski,NA,-16,10,1,Terance Mann,LAC,GSW,11,46,Made Shot,Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,1,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,2,170,11:24,Kevin Porter Jr.,NA,NA,5,87,1,Brandin Podziemski,GSW,LAC,11,24,Missed Shot,Floating Jump shot,In The Paint (Non-RA),Center(C),8-16 ft.,8,1,0,2pt,Less Than 10 Ft
+2024-11-18,22400251,2,170,11:24,Kevin Porter Jr.,NA,NA,5,87,1,Buddy Hield,GSW,LAC,11,24,Missed Shot,Floating Jump shot,In The Paint (Non-RA),Center(C),8-16 ft.,8,1,0,2pt,Less Than 10 Ft
+2024-11-18,22400251,2,170,11:24,Kevin Porter Jr.,NA,NA,5,87,1,Jonathan Kuminga,GSW,LAC,11,24,Missed Shot,Floating Jump shot,In The Paint (Non-RA),Center(C),8-16 ft.,8,1,0,2pt,Less Than 10 Ft
+2024-11-18,22400251,2,170,11:24,Kevin Porter Jr.,NA,NA,5,87,1,Kyle Anderson,GSW,LAC,11,24,Missed Shot,Floating Jump shot,In The Paint (Non-RA),Center(C),8-16 ft.,8,1,0,2pt,Less Than 10 Ft
+2024-11-18,22400251,2,170,11:24,Kevin Porter Jr.,NA,NA,5,87,1,Moses Moody,GSW,LAC,11,24,Missed Shot,Floating Jump shot,In The Paint (Non-RA),Center(C),8-16 ft.,8,1,0,2pt,Less Than 10 Ft
+2024-11-18,22400251,2,175,10:59,Terance Mann,NA,NA,-156,209,0,Brandin Podziemski,GSW,LAC,10,59,Missed Shot,Step Back Jump shot,Above the Break 3,Left Side Center(LC),24+ ft.,26,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,175,10:59,Terance Mann,NA,NA,-156,209,0,Buddy Hield,GSW,LAC,10,59,Missed Shot,Step Back Jump shot,Above the Break 3,Left Side Center(LC),24+ ft.,26,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,175,10:59,Terance Mann,NA,NA,-156,209,0,Jonathan Kuminga,GSW,LAC,10,59,Missed Shot,Step Back Jump shot,Above the Break 3,Left Side Center(LC),24+ ft.,26,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,175,10:59,Terance Mann,NA,NA,-156,209,0,Kyle Anderson,GSW,LAC,10,59,Missed Shot,Step Back Jump shot,Above the Break 3,Left Side Center(LC),24+ ft.,26,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,175,10:59,Terance Mann,NA,NA,-156,209,0,Moses Moody,GSW,LAC,10,59,Missed Shot,Step Back Jump shot,Above the Break 3,Left Side Center(LC),24+ ft.,26,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,183,10:43,Kyle Anderson,NA,NA,49,65,1,Amir Coffey,LAC,GSW,10,43,Made Shot,Hook Shot,In The Paint (Non-RA),Right Side(R),8-16 ft.,8,1,1,2pt,Less Than 10 Ft
+2024-11-18,22400251,2,183,10:43,Kyle Anderson,NA,NA,49,65,1,Ivica Zubac,LAC,GSW,10,43,Made Shot,Hook Shot,In The Paint (Non-RA),Right Side(R),8-16 ft.,8,1,1,2pt,Less Than 10 Ft
+2024-11-18,22400251,2,183,10:43,Kyle Anderson,NA,NA,49,65,1,Kevin Porter Jr.,LAC,GSW,10,43,Made Shot,Hook Shot,In The Paint (Non-RA),Right Side(R),8-16 ft.,8,1,1,2pt,Less Than 10 Ft
+2024-11-18,22400251,2,183,10:43,Kyle Anderson,NA,NA,49,65,1,Nicolas Batum,LAC,GSW,10,43,Made Shot,Hook Shot,In The Paint (Non-RA),Right Side(R),8-16 ft.,8,1,1,2pt,Less Than 10 Ft
+2024-11-18,22400251,2,183,10:43,Kyle Anderson,NA,NA,49,65,1,Terance Mann,LAC,GSW,10,43,Made Shot,Hook Shot,In The Paint (Non-RA),Right Side(R),8-16 ft.,8,1,1,2pt,Less Than 10 Ft
+2024-11-18,22400251,2,184,10:22,Kevin Porter Jr.,NA,NA,123,93,1,Brandin Podziemski,GSW,LAC,10,22,Made Shot,Step Back Jump shot,Mid-Range,Right Side(R),8-16 ft.,15,1,1,2pt,10-15 Ft
+2024-11-18,22400251,2,184,10:22,Kevin Porter Jr.,NA,NA,123,93,1,Buddy Hield,GSW,LAC,10,22,Made Shot,Step Back Jump shot,Mid-Range,Right Side(R),8-16 ft.,15,1,1,2pt,10-15 Ft
+2024-11-18,22400251,2,184,10:22,Kevin Porter Jr.,NA,NA,123,93,1,Jonathan Kuminga,GSW,LAC,10,22,Made Shot,Step Back Jump shot,Mid-Range,Right Side(R),8-16 ft.,15,1,1,2pt,10-15 Ft
+2024-11-18,22400251,2,184,10:22,Kevin Porter Jr.,NA,NA,123,93,1,Kyle Anderson,GSW,LAC,10,22,Made Shot,Step Back Jump shot,Mid-Range,Right Side(R),8-16 ft.,15,1,1,2pt,10-15 Ft
+2024-11-18,22400251,2,184,10:22,Kevin Porter Jr.,NA,NA,123,93,1,Moses Moody,GSW,LAC,10,22,Made Shot,Step Back Jump shot,Mid-Range,Right Side(R),8-16 ft.,15,1,1,2pt,10-15 Ft
+2024-11-18,22400251,2,185,10:14,Kyle Anderson,NA,NA,-232,3,1,Amir Coffey,LAC,GSW,10,14,Missed Shot,Jump Shot,Left Corner 3,Left Side(L),24+ ft.,23,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,185,10:14,Kyle Anderson,NA,NA,-232,3,1,Ivica Zubac,LAC,GSW,10,14,Missed Shot,Jump Shot,Left Corner 3,Left Side(L),24+ ft.,23,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,185,10:14,Kyle Anderson,NA,NA,-232,3,1,Kevin Porter Jr.,LAC,GSW,10,14,Missed Shot,Jump Shot,Left Corner 3,Left Side(L),24+ ft.,23,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,185,10:14,Kyle Anderson,NA,NA,-232,3,1,Nicolas Batum,LAC,GSW,10,14,Missed Shot,Jump Shot,Left Corner 3,Left Side(L),24+ ft.,23,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,185,10:14,Kyle Anderson,NA,NA,-232,3,1,Terance Mann,LAC,GSW,10,14,Missed Shot,Jump Shot,Left Corner 3,Left Side(L),24+ ft.,23,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,187,09:54,Nicolas Batum,Ivica Zubac,NA,191,163,1,Brandin Podziemski,GSW,LAC,9,54,Made Shot,Jump Shot,Above the Break 3,Right Side Center(RC),24+ ft.,25,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,187,09:54,Nicolas Batum,Ivica Zubac,NA,191,163,1,Buddy Hield,GSW,LAC,9,54,Made Shot,Jump Shot,Above the Break 3,Right Side Center(RC),24+ ft.,25,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,187,09:54,Nicolas Batum,Ivica Zubac,NA,191,163,1,Jonathan Kuminga,GSW,LAC,9,54,Made Shot,Jump Shot,Above the Break 3,Right Side Center(RC),24+ ft.,25,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,187,09:54,Nicolas Batum,Ivica Zubac,NA,191,163,1,Kyle Anderson,GSW,LAC,9,54,Made Shot,Jump Shot,Above the Break 3,Right Side Center(RC),24+ ft.,25,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,187,09:54,Nicolas Batum,Ivica Zubac,NA,191,163,1,Moses Moody,GSW,LAC,9,54,Made Shot,Jump Shot,Above the Break 3,Right Side Center(RC),24+ ft.,25,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,196,09:31,Ivica Zubac,NA,NA,11,87,1,Brandin Podziemski,GSW,LAC,9,31,Missed Shot,Hook Shot,In The Paint (Non-RA),Center(C),8-16 ft.,8,1,0,2pt,Less Than 10 Ft
+2024-11-18,22400251,2,196,09:31,Ivica Zubac,NA,NA,11,87,1,Buddy Hield,GSW,LAC,9,31,Missed Shot,Hook Shot,In The Paint (Non-RA),Center(C),8-16 ft.,8,1,0,2pt,Less Than 10 Ft
+2024-11-18,22400251,2,196,09:31,Ivica Zubac,NA,NA,11,87,1,Jonathan Kuminga,GSW,LAC,9,31,Missed Shot,Hook Shot,In The Paint (Non-RA),Center(C),8-16 ft.,8,1,0,2pt,Less Than 10 Ft
+2024-11-18,22400251,2,196,09:31,Ivica Zubac,NA,NA,11,87,1,Moses Moody,GSW,LAC,9,31,Missed Shot,Hook Shot,In The Paint (Non-RA),Center(C),8-16 ft.,8,1,0,2pt,Less Than 10 Ft
+2024-11-18,22400251,2,196,09:31,Ivica Zubac,NA,NA,11,87,1,Trayce Jackson-Davis,GSW,LAC,9,31,Missed Shot,Hook Shot,In The Paint (Non-RA),Center(C),8-16 ft.,8,1,0,2pt,Less Than 10 Ft
+2024-11-18,22400251,2,204,09:13,Kevin Porter Jr.,NA,NA,2,58,1,Brandin Podziemski,GSW,LAC,9,13,Missed Shot,Driving Floating Jump Shot,In The Paint (Non-RA),Center(C),Less Than 8 ft.,5,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,2,204,09:13,Kevin Porter Jr.,NA,NA,2,58,1,Buddy Hield,GSW,LAC,9,13,Missed Shot,Driving Floating Jump Shot,In The Paint (Non-RA),Center(C),Less Than 8 ft.,5,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,2,204,09:13,Kevin Porter Jr.,NA,NA,2,58,1,Jonathan Kuminga,GSW,LAC,9,13,Missed Shot,Driving Floating Jump Shot,In The Paint (Non-RA),Center(C),Less Than 8 ft.,5,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,2,204,09:13,Kevin Porter Jr.,NA,NA,2,58,1,Moses Moody,GSW,LAC,9,13,Missed Shot,Driving Floating Jump Shot,In The Paint (Non-RA),Center(C),Less Than 8 ft.,5,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,2,204,09:13,Kevin Porter Jr.,NA,NA,2,58,1,Trayce Jackson-Davis,GSW,LAC,9,13,Missed Shot,Driving Floating Jump Shot,In The Paint (Non-RA),Center(C),Less Than 8 ft.,5,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,2,206,09:00,Buddy Hield,NA,NA,-77,234,0,Amir Coffey,LAC,GSW,9,0,Missed Shot,Step Back Jump shot,Above the Break 3,Left Side Center(LC),24+ ft.,24,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,206,09:00,Buddy Hield,NA,NA,-77,234,0,Ivica Zubac,LAC,GSW,9,0,Missed Shot,Step Back Jump shot,Above the Break 3,Left Side Center(LC),24+ ft.,24,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,206,09:00,Buddy Hield,NA,NA,-77,234,0,Kevin Porter Jr.,LAC,GSW,9,0,Missed Shot,Step Back Jump shot,Above the Break 3,Left Side Center(LC),24+ ft.,24,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,206,09:00,Buddy Hield,NA,NA,-77,234,0,Nicolas Batum,LAC,GSW,9,0,Missed Shot,Step Back Jump shot,Above the Break 3,Left Side Center(LC),24+ ft.,24,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,206,09:00,Buddy Hield,NA,NA,-77,234,0,Terance Mann,LAC,GSW,9,0,Missed Shot,Step Back Jump shot,Above the Break 3,Left Side Center(LC),24+ ft.,24,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,208,08:54,Brandin Podziemski,NA,NA,87,241,1,Amir Coffey,LAC,GSW,8,54,Missed Shot,Jump Shot,Above the Break 3,Right Side Center(RC),24+ ft.,25,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,208,08:54,Brandin Podziemski,NA,NA,87,241,1,Ivica Zubac,LAC,GSW,8,54,Missed Shot,Jump Shot,Above the Break 3,Right Side Center(RC),24+ ft.,25,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,208,08:54,Brandin Podziemski,NA,NA,87,241,1,Kevin Porter Jr.,LAC,GSW,8,54,Missed Shot,Jump Shot,Above the Break 3,Right Side Center(RC),24+ ft.,25,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,208,08:54,Brandin Podziemski,NA,NA,87,241,1,Nicolas Batum,LAC,GSW,8,54,Missed Shot,Jump Shot,Above the Break 3,Right Side Center(RC),24+ ft.,25,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,208,08:54,Brandin Podziemski,NA,NA,87,241,1,Terance Mann,LAC,GSW,8,54,Missed Shot,Jump Shot,Above the Break 3,Right Side Center(RC),24+ ft.,25,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,210,08:45,Amir Coffey,Terance Mann,NA,143,209,1,Brandin Podziemski,GSW,LAC,8,45,Made Shot,Running Jump Shot,Above the Break 3,Right Side Center(RC),24+ ft.,25,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,210,08:45,Amir Coffey,Terance Mann,NA,143,209,1,Buddy Hield,GSW,LAC,8,45,Made Shot,Running Jump Shot,Above the Break 3,Right Side Center(RC),24+ ft.,25,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,210,08:45,Amir Coffey,Terance Mann,NA,143,209,1,Jonathan Kuminga,GSW,LAC,8,45,Made Shot,Running Jump Shot,Above the Break 3,Right Side Center(RC),24+ ft.,25,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,210,08:45,Amir Coffey,Terance Mann,NA,143,209,1,Moses Moody,GSW,LAC,8,45,Made Shot,Running Jump Shot,Above the Break 3,Right Side Center(RC),24+ ft.,25,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,210,08:45,Amir Coffey,Terance Mann,NA,143,209,1,Trayce Jackson-Davis,GSW,LAC,8,45,Made Shot,Running Jump Shot,Above the Break 3,Right Side Center(RC),24+ ft.,25,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,212,08:29,Moses Moody,NA,NA,-147,199,1,Amir Coffey,LAC,GSW,8,29,Missed Shot,Jump Shot,Above the Break 3,Left Side Center(LC),24+ ft.,24,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,212,08:29,Moses Moody,NA,NA,-147,199,1,Ivica Zubac,LAC,GSW,8,29,Missed Shot,Jump Shot,Above the Break 3,Left Side Center(LC),24+ ft.,24,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,212,08:29,Moses Moody,NA,NA,-147,199,1,Kevin Porter Jr.,LAC,GSW,8,29,Missed Shot,Jump Shot,Above the Break 3,Left Side Center(LC),24+ ft.,24,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,212,08:29,Moses Moody,NA,NA,-147,199,1,Nicolas Batum,LAC,GSW,8,29,Missed Shot,Jump Shot,Above the Break 3,Left Side Center(LC),24+ ft.,24,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,212,08:29,Moses Moody,NA,NA,-147,199,1,Terance Mann,LAC,GSW,8,29,Missed Shot,Jump Shot,Above the Break 3,Left Side Center(LC),24+ ft.,24,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,216,08:10,Moses Moody,Buddy Hield,NA,-130,215,1,Amir Coffey,LAC,GSW,8,10,Made Shot,Running Jump Shot,Above the Break 3,Left Side Center(LC),24+ ft.,25,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,216,08:10,Moses Moody,Buddy Hield,NA,-130,215,1,Ivica Zubac,LAC,GSW,8,10,Made Shot,Running Jump Shot,Above the Break 3,Left Side Center(LC),24+ ft.,25,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,216,08:10,Moses Moody,Buddy Hield,NA,-130,215,1,Kevin Porter Jr.,LAC,GSW,8,10,Made Shot,Running Jump Shot,Above the Break 3,Left Side Center(LC),24+ ft.,25,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,216,08:10,Moses Moody,Buddy Hield,NA,-130,215,1,Nicolas Batum,LAC,GSW,8,10,Made Shot,Running Jump Shot,Above the Break 3,Left Side Center(LC),24+ ft.,25,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,216,08:10,Moses Moody,Buddy Hield,NA,-130,215,1,Terance Mann,LAC,GSW,8,10,Made Shot,Running Jump Shot,Above the Break 3,Left Side Center(LC),24+ ft.,25,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,223,07:53,James Harden,NA,NA,-39,41,1,Brandin Podziemski,GSW,LAC,7,53,Missed Shot,Driving Floating Bank Jump Shot,In The Paint (Non-RA),Center(C),Less Than 8 ft.,5,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,2,223,07:53,James Harden,NA,NA,-39,41,1,Jonathan Kuminga,GSW,LAC,7,53,Missed Shot,Driving Floating Bank Jump Shot,In The Paint (Non-RA),Center(C),Less Than 8 ft.,5,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,2,223,07:53,James Harden,NA,NA,-39,41,1,Lindy Waters III,GSW,LAC,7,53,Missed Shot,Driving Floating Bank Jump Shot,In The Paint (Non-RA),Center(C),Less Than 8 ft.,5,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,2,223,07:53,James Harden,NA,NA,-39,41,1,Moses Moody,GSW,LAC,7,53,Missed Shot,Driving Floating Bank Jump Shot,In The Paint (Non-RA),Center(C),Less Than 8 ft.,5,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,2,223,07:53,James Harden,NA,NA,-39,41,1,Trayce Jackson-Davis,GSW,LAC,7,53,Missed Shot,Driving Floating Bank Jump Shot,In The Paint (Non-RA),Center(C),Less Than 8 ft.,5,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,2,227,07:40,Terance Mann,Ivica Zubac,NA,20,15,1,Brandin Podziemski,GSW,LAC,7,40,Made Shot,Running Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,2,227,07:40,Terance Mann,Ivica Zubac,NA,20,15,1,Jonathan Kuminga,GSW,LAC,7,40,Made Shot,Running Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,2,227,07:40,Terance Mann,Ivica Zubac,NA,20,15,1,Lindy Waters III,GSW,LAC,7,40,Made Shot,Running Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,2,227,07:40,Terance Mann,Ivica Zubac,NA,20,15,1,Moses Moody,GSW,LAC,7,40,Made Shot,Running Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,2,227,07:40,Terance Mann,Ivica Zubac,NA,20,15,1,Trayce Jackson-Davis,GSW,LAC,7,40,Made Shot,Running Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,2,229,07:14,Trayce Jackson-Davis,Moses Moody,NA,21,14,1,Amir Coffey,LAC,GSW,7,14,Made Shot,Cutting Dunk Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,2,229,07:14,Trayce Jackson-Davis,Moses Moody,NA,21,14,1,Ivica Zubac,LAC,GSW,7,14,Made Shot,Cutting Dunk Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,2,229,07:14,Trayce Jackson-Davis,Moses Moody,NA,21,14,1,James Harden,LAC,GSW,7,14,Made Shot,Cutting Dunk Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,2,229,07:14,Trayce Jackson-Davis,Moses Moody,NA,21,14,1,Nicolas Batum,LAC,GSW,7,14,Made Shot,Cutting Dunk Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,2,229,07:14,Trayce Jackson-Davis,Moses Moody,NA,21,14,1,Terance Mann,LAC,GSW,7,14,Made Shot,Cutting Dunk Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,2,233,06:56,Trayce Jackson-Davis,NA,NA,-11,8,1,Amir Coffey,LAC,GSW,6,56,Made Shot,Running Dunk Shot,Restricted Area,Center(C),Less Than 8 ft.,1,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,2,233,06:56,Trayce Jackson-Davis,NA,NA,-11,8,1,Ivica Zubac,LAC,GSW,6,56,Made Shot,Running Dunk Shot,Restricted Area,Center(C),Less Than 8 ft.,1,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,2,233,06:56,Trayce Jackson-Davis,NA,NA,-11,8,1,James Harden,LAC,GSW,6,56,Made Shot,Running Dunk Shot,Restricted Area,Center(C),Less Than 8 ft.,1,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,2,233,06:56,Trayce Jackson-Davis,NA,NA,-11,8,1,Nicolas Batum,LAC,GSW,6,56,Made Shot,Running Dunk Shot,Restricted Area,Center(C),Less Than 8 ft.,1,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,2,233,06:56,Trayce Jackson-Davis,NA,NA,-11,8,1,Terance Mann,LAC,GSW,6,56,Made Shot,Running Dunk Shot,Restricted Area,Center(C),Less Than 8 ft.,1,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,2,234,06:38,Amir Coffey,NA,NA,-191,183,1,Brandin Podziemski,GSW,LAC,6,38,Missed Shot,Jump Shot,Above the Break 3,Left Side Center(LC),24+ ft.,26,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,234,06:38,Amir Coffey,NA,NA,-191,183,1,Jonathan Kuminga,GSW,LAC,6,38,Missed Shot,Jump Shot,Above the Break 3,Left Side Center(LC),24+ ft.,26,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,234,06:38,Amir Coffey,NA,NA,-191,183,1,Lindy Waters III,GSW,LAC,6,38,Missed Shot,Jump Shot,Above the Break 3,Left Side Center(LC),24+ ft.,26,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,234,06:38,Amir Coffey,NA,NA,-191,183,1,Moses Moody,GSW,LAC,6,38,Missed Shot,Jump Shot,Above the Break 3,Left Side Center(LC),24+ ft.,26,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,234,06:38,Amir Coffey,NA,NA,-191,183,1,Trayce Jackson-Davis,GSW,LAC,6,38,Missed Shot,Jump Shot,Above the Break 3,Left Side Center(LC),24+ ft.,26,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,243,06:26,Nicolas Batum,Amir Coffey,NA,-238,36,1,Andrew Wiggins,GSW,LAC,6,26,Made Shot,Jump Shot,Left Corner 3,Left Side(L),24+ ft.,24,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,243,06:26,Nicolas Batum,Amir Coffey,NA,-238,36,1,Draymond Green,GSW,LAC,6,26,Made Shot,Jump Shot,Left Corner 3,Left Side(L),24+ ft.,24,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,243,06:26,Nicolas Batum,Amir Coffey,NA,-238,36,1,Lindy Waters III,GSW,LAC,6,26,Made Shot,Jump Shot,Left Corner 3,Left Side(L),24+ ft.,24,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,243,06:26,Nicolas Batum,Amir Coffey,NA,-238,36,1,Stephen Curry,GSW,LAC,6,26,Made Shot,Jump Shot,Left Corner 3,Left Side(L),24+ ft.,24,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,243,06:26,Nicolas Batum,Amir Coffey,NA,-238,36,1,Trayce Jackson-Davis,GSW,LAC,6,26,Made Shot,Jump Shot,Left Corner 3,Left Side(L),24+ ft.,24,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,247,06:07,Draymond Green,NA,NA,237,14,1,Amir Coffey,LAC,GSW,6,7,Missed Shot,Jump Shot,Right Corner 3,Right Side(R),24+ ft.,23,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,247,06:07,Draymond Green,NA,NA,237,14,1,Ivica Zubac,LAC,GSW,6,7,Missed Shot,Jump Shot,Right Corner 3,Right Side(R),24+ ft.,23,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,247,06:07,Draymond Green,NA,NA,237,14,1,James Harden,LAC,GSW,6,7,Missed Shot,Jump Shot,Right Corner 3,Right Side(R),24+ ft.,23,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,247,06:07,Draymond Green,NA,NA,237,14,1,Nicolas Batum,LAC,GSW,6,7,Missed Shot,Jump Shot,Right Corner 3,Right Side(R),24+ ft.,23,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,247,06:07,Draymond Green,NA,NA,237,14,1,Terance Mann,LAC,GSW,6,7,Missed Shot,Jump Shot,Right Corner 3,Right Side(R),24+ ft.,23,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,250,05:59,Terance Mann,NA,Trayce Jackson-Davis,4,20,1,Andrew Wiggins,GSW,LAC,5,59,Missed Shot,Running Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,2,250,05:59,Terance Mann,NA,Trayce Jackson-Davis,4,20,1,Draymond Green,GSW,LAC,5,59,Missed Shot,Running Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,2,250,05:59,Terance Mann,NA,Trayce Jackson-Davis,4,20,1,Lindy Waters III,GSW,LAC,5,59,Missed Shot,Running Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,2,250,05:59,Terance Mann,NA,Trayce Jackson-Davis,4,20,1,Stephen Curry,GSW,LAC,5,59,Missed Shot,Running Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,2,250,05:59,Terance Mann,NA,Trayce Jackson-Davis,4,20,1,Trayce Jackson-Davis,GSW,LAC,5,59,Missed Shot,Running Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,2,255,05:45,Stephen Curry,NA,NA,82,250,1,Amir Coffey,LAC,GSW,5,45,Missed Shot,Jump Shot,Above the Break 3,Right Side Center(RC),24+ ft.,26,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,255,05:45,Stephen Curry,NA,NA,82,250,1,Ivica Zubac,LAC,GSW,5,45,Missed Shot,Jump Shot,Above the Break 3,Right Side Center(RC),24+ ft.,26,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,255,05:45,Stephen Curry,NA,NA,82,250,1,James Harden,LAC,GSW,5,45,Missed Shot,Jump Shot,Above the Break 3,Right Side Center(RC),24+ ft.,26,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,255,05:45,Stephen Curry,NA,NA,82,250,1,Nicolas Batum,LAC,GSW,5,45,Missed Shot,Jump Shot,Above the Break 3,Right Side Center(RC),24+ ft.,26,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,255,05:45,Stephen Curry,NA,NA,82,250,1,Terance Mann,LAC,GSW,5,45,Missed Shot,Jump Shot,Above the Break 3,Right Side Center(RC),24+ ft.,26,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,257,05:29,Terance Mann,James Harden,NA,230,24,1,Andrew Wiggins,GSW,LAC,5,29,Made Shot,Jump Shot,Right Corner 3,Right Side(R),24+ ft.,23,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,257,05:29,Terance Mann,James Harden,NA,230,24,1,Draymond Green,GSW,LAC,5,29,Made Shot,Jump Shot,Right Corner 3,Right Side(R),24+ ft.,23,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,257,05:29,Terance Mann,James Harden,NA,230,24,1,Lindy Waters III,GSW,LAC,5,29,Made Shot,Jump Shot,Right Corner 3,Right Side(R),24+ ft.,23,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,257,05:29,Terance Mann,James Harden,NA,230,24,1,Stephen Curry,GSW,LAC,5,29,Made Shot,Jump Shot,Right Corner 3,Right Side(R),24+ ft.,23,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,257,05:29,Terance Mann,James Harden,NA,230,24,1,Trayce Jackson-Davis,GSW,LAC,5,29,Made Shot,Jump Shot,Right Corner 3,Right Side(R),24+ ft.,23,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,259,05:17,Andrew Wiggins,NA,NA,-123,217,1,Amir Coffey,LAC,GSW,5,17,Missed Shot,Pullup Jump shot,Above the Break 3,Left Side Center(LC),24+ ft.,24,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,259,05:17,Andrew Wiggins,NA,NA,-123,217,1,Ivica Zubac,LAC,GSW,5,17,Missed Shot,Pullup Jump shot,Above the Break 3,Left Side Center(LC),24+ ft.,24,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,259,05:17,Andrew Wiggins,NA,NA,-123,217,1,James Harden,LAC,GSW,5,17,Missed Shot,Pullup Jump shot,Above the Break 3,Left Side Center(LC),24+ ft.,24,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,259,05:17,Andrew Wiggins,NA,NA,-123,217,1,Nicolas Batum,LAC,GSW,5,17,Missed Shot,Pullup Jump shot,Above the Break 3,Left Side Center(LC),24+ ft.,24,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,259,05:17,Andrew Wiggins,NA,NA,-123,217,1,Terance Mann,LAC,GSW,5,17,Missed Shot,Pullup Jump shot,Above the Break 3,Left Side Center(LC),24+ ft.,24,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,261,04:57,Ivica Zubac,Terance Mann,NA,-53,19,1,Andrew Wiggins,GSW,LAC,4,57,Made Shot,Turnaround Hook Shot,In The Paint (Non-RA),Center(C),Less Than 8 ft.,5,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,2,261,04:57,Ivica Zubac,Terance Mann,NA,-53,19,1,Draymond Green,GSW,LAC,4,57,Made Shot,Turnaround Hook Shot,In The Paint (Non-RA),Center(C),Less Than 8 ft.,5,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,2,261,04:57,Ivica Zubac,Terance Mann,NA,-53,19,1,Lindy Waters III,GSW,LAC,4,57,Made Shot,Turnaround Hook Shot,In The Paint (Non-RA),Center(C),Less Than 8 ft.,5,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,2,261,04:57,Ivica Zubac,Terance Mann,NA,-53,19,1,Stephen Curry,GSW,LAC,4,57,Made Shot,Turnaround Hook Shot,In The Paint (Non-RA),Center(C),Less Than 8 ft.,5,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,2,261,04:57,Ivica Zubac,Terance Mann,NA,-53,19,1,Trayce Jackson-Davis,GSW,LAC,4,57,Made Shot,Turnaround Hook Shot,In The Paint (Non-RA),Center(C),Less Than 8 ft.,5,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,2,263,04:47,Stephen Curry,NA,NA,67,157,1,Amir Coffey,LAC,GSW,4,47,Made Shot,Floating Jump shot,Mid-Range,Right Side Center(RC),16-24 ft.,17,1,1,2pt,Greater Than 15 Ft
+2024-11-18,22400251,2,263,04:47,Stephen Curry,NA,NA,67,157,1,Ivica Zubac,LAC,GSW,4,47,Made Shot,Floating Jump shot,Mid-Range,Right Side Center(RC),16-24 ft.,17,1,1,2pt,Greater Than 15 Ft
+2024-11-18,22400251,2,263,04:47,Stephen Curry,NA,NA,67,157,1,James Harden,LAC,GSW,4,47,Made Shot,Floating Jump shot,Mid-Range,Right Side Center(RC),16-24 ft.,17,1,1,2pt,Greater Than 15 Ft
+2024-11-18,22400251,2,263,04:47,Stephen Curry,NA,NA,67,157,1,Nicolas Batum,LAC,GSW,4,47,Made Shot,Floating Jump shot,Mid-Range,Right Side Center(RC),16-24 ft.,17,1,1,2pt,Greater Than 15 Ft
+2024-11-18,22400251,2,263,04:47,Stephen Curry,NA,NA,67,157,1,Terance Mann,LAC,GSW,4,47,Made Shot,Floating Jump shot,Mid-Range,Right Side Center(RC),16-24 ft.,17,1,1,2pt,Greater Than 15 Ft
+2024-11-18,22400251,2,264,04:26,Nicolas Batum,Ivica Zubac,NA,-237,48,1,Andrew Wiggins,GSW,LAC,4,26,Made Shot,Jump Shot,Left Corner 3,Left Side(L),24+ ft.,24,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,264,04:26,Nicolas Batum,Ivica Zubac,NA,-237,48,1,Draymond Green,GSW,LAC,4,26,Made Shot,Jump Shot,Left Corner 3,Left Side(L),24+ ft.,24,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,264,04:26,Nicolas Batum,Ivica Zubac,NA,-237,48,1,Lindy Waters III,GSW,LAC,4,26,Made Shot,Jump Shot,Left Corner 3,Left Side(L),24+ ft.,24,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,264,04:26,Nicolas Batum,Ivica Zubac,NA,-237,48,1,Stephen Curry,GSW,LAC,4,26,Made Shot,Jump Shot,Left Corner 3,Left Side(L),24+ ft.,24,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,264,04:26,Nicolas Batum,Ivica Zubac,NA,-237,48,1,Trayce Jackson-Davis,GSW,LAC,4,26,Made Shot,Jump Shot,Left Corner 3,Left Side(L),24+ ft.,24,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,271,03:54,James Harden,NA,Stephen Curry,97,117,0,Andrew Wiggins,GSW,LAC,3,54,Missed Shot,Step Back Jump shot,Mid-Range,Right Side(R),8-16 ft.,15,1,0,2pt,10-15 Ft
+2024-11-18,22400251,2,271,03:54,James Harden,NA,Stephen Curry,97,117,0,Draymond Green,GSW,LAC,3,54,Missed Shot,Step Back Jump shot,Mid-Range,Right Side(R),8-16 ft.,15,1,0,2pt,10-15 Ft
+2024-11-18,22400251,2,271,03:54,James Harden,NA,Stephen Curry,97,117,0,Lindy Waters III,GSW,LAC,3,54,Missed Shot,Step Back Jump shot,Mid-Range,Right Side(R),8-16 ft.,15,1,0,2pt,10-15 Ft
+2024-11-18,22400251,2,271,03:54,James Harden,NA,Stephen Curry,97,117,0,Stephen Curry,GSW,LAC,3,54,Missed Shot,Step Back Jump shot,Mid-Range,Right Side(R),8-16 ft.,15,1,0,2pt,10-15 Ft
+2024-11-18,22400251,2,271,03:54,James Harden,NA,Stephen Curry,97,117,0,Trayce Jackson-Davis,GSW,LAC,3,54,Missed Shot,Step Back Jump shot,Mid-Range,Right Side(R),8-16 ft.,15,1,0,2pt,10-15 Ft
+2024-11-18,22400251,2,331,03:52,Terance Mann,NA,Andrew Wiggins,162,220,0,Andrew Wiggins,GSW,LAC,3,52,Missed Shot,Jump Shot,Above the Break 3,Right Side Center(RC),24+ ft.,27,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,331,03:52,Terance Mann,NA,Andrew Wiggins,162,220,0,Draymond Green,GSW,LAC,3,52,Missed Shot,Jump Shot,Above the Break 3,Right Side Center(RC),24+ ft.,27,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,331,03:52,Terance Mann,NA,Andrew Wiggins,162,220,0,Lindy Waters III,GSW,LAC,3,52,Missed Shot,Jump Shot,Above the Break 3,Right Side Center(RC),24+ ft.,27,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,331,03:52,Terance Mann,NA,Andrew Wiggins,162,220,0,Stephen Curry,GSW,LAC,3,52,Missed Shot,Jump Shot,Above the Break 3,Right Side Center(RC),24+ ft.,27,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,331,03:52,Terance Mann,NA,Andrew Wiggins,162,220,0,Trayce Jackson-Davis,GSW,LAC,3,52,Missed Shot,Jump Shot,Above the Break 3,Right Side Center(RC),24+ ft.,27,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,290,02:57,James Harden,NA,NA,-21,21,1,Andrew Wiggins,GSW,LAC,2,57,Made Shot,Running Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,2,290,02:57,James Harden,NA,NA,-21,21,1,Draymond Green,GSW,LAC,2,57,Made Shot,Running Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,2,290,02:57,James Harden,NA,NA,-21,21,1,Lindy Waters III,GSW,LAC,2,57,Made Shot,Running Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,2,290,02:57,James Harden,NA,NA,-21,21,1,Stephen Curry,GSW,LAC,2,57,Made Shot,Running Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,2,290,02:57,James Harden,NA,NA,-21,21,1,Trayce Jackson-Davis,GSW,LAC,2,57,Made Shot,Running Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,2,292,02:37,Andrew Wiggins,NA,NA,56,60,1,Derrick Jones Jr.,LAC,GSW,2,37,Missed Shot,Hook Shot,In The Paint (Non-RA),Right Side(R),8-16 ft.,8,1,0,2pt,Less Than 10 Ft
+2024-11-18,22400251,2,292,02:37,Andrew Wiggins,NA,NA,56,60,1,Ivica Zubac,LAC,GSW,2,37,Missed Shot,Hook Shot,In The Paint (Non-RA),Right Side(R),8-16 ft.,8,1,0,2pt,Less Than 10 Ft
+2024-11-18,22400251,2,292,02:37,Andrew Wiggins,NA,NA,56,60,1,James Harden,LAC,GSW,2,37,Missed Shot,Hook Shot,In The Paint (Non-RA),Right Side(R),8-16 ft.,8,1,0,2pt,Less Than 10 Ft
+2024-11-18,22400251,2,292,02:37,Andrew Wiggins,NA,NA,56,60,1,Kris Dunn,LAC,GSW,2,37,Missed Shot,Hook Shot,In The Paint (Non-RA),Right Side(R),8-16 ft.,8,1,0,2pt,Less Than 10 Ft
+2024-11-18,22400251,2,292,02:37,Andrew Wiggins,NA,NA,56,60,1,Norman Powell,LAC,GSW,2,37,Missed Shot,Hook Shot,In The Paint (Non-RA),Right Side(R),8-16 ft.,8,1,0,2pt,Less Than 10 Ft
+2024-11-18,22400251,2,294,02:13,Norman Powell,NA,NA,10,12,1,Andrew Wiggins,GSW,LAC,2,13,Missed Shot,Driving Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,1,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,2,294,02:13,Norman Powell,NA,NA,10,12,1,Draymond Green,GSW,LAC,2,13,Missed Shot,Driving Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,1,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,2,294,02:13,Norman Powell,NA,NA,10,12,1,Lindy Waters III,GSW,LAC,2,13,Missed Shot,Driving Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,1,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,2,294,02:13,Norman Powell,NA,NA,10,12,1,Stephen Curry,GSW,LAC,2,13,Missed Shot,Driving Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,1,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,2,294,02:13,Norman Powell,NA,NA,10,12,1,Trayce Jackson-Davis,GSW,LAC,2,13,Missed Shot,Driving Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,1,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,2,296,02:04,Lindy Waters III,NA,NA,114,13,0,Derrick Jones Jr.,LAC,GSW,2,4,Missed Shot,Floating Jump shot,Mid-Range,Right Side(R),8-16 ft.,11,1,0,2pt,10-15 Ft
+2024-11-18,22400251,2,296,02:04,Lindy Waters III,NA,NA,114,13,0,Ivica Zubac,LAC,GSW,2,4,Missed Shot,Floating Jump shot,Mid-Range,Right Side(R),8-16 ft.,11,1,0,2pt,10-15 Ft
+2024-11-18,22400251,2,296,02:04,Lindy Waters III,NA,NA,114,13,0,James Harden,LAC,GSW,2,4,Missed Shot,Floating Jump shot,Mid-Range,Right Side(R),8-16 ft.,11,1,0,2pt,10-15 Ft
+2024-11-18,22400251,2,296,02:04,Lindy Waters III,NA,NA,114,13,0,Kris Dunn,LAC,GSW,2,4,Missed Shot,Floating Jump shot,Mid-Range,Right Side(R),8-16 ft.,11,1,0,2pt,10-15 Ft
+2024-11-18,22400251,2,296,02:04,Lindy Waters III,NA,NA,114,13,0,Norman Powell,LAC,GSW,2,4,Missed Shot,Floating Jump shot,Mid-Range,Right Side(R),8-16 ft.,11,1,0,2pt,10-15 Ft
+2024-11-18,22400251,2,298,01:58,Lindy Waters III,NA,NA,0,0,1,Derrick Jones Jr.,LAC,GSW,1,58,Missed Shot,Tip Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,0,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,2,298,01:58,Lindy Waters III,NA,NA,0,0,1,Ivica Zubac,LAC,GSW,1,58,Missed Shot,Tip Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,0,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,2,298,01:58,Lindy Waters III,NA,NA,0,0,1,James Harden,LAC,GSW,1,58,Missed Shot,Tip Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,0,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,2,298,01:58,Lindy Waters III,NA,NA,0,0,1,Kris Dunn,LAC,GSW,1,58,Missed Shot,Tip Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,0,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,2,298,01:58,Lindy Waters III,NA,NA,0,0,1,Norman Powell,LAC,GSW,1,58,Missed Shot,Tip Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,0,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,2,305,01:44,Stephen Curry,NA,NA,-132,220,1,Derrick Jones Jr.,LAC,GSW,1,44,Missed Shot,Pullup Jump shot,Above the Break 3,Left Side Center(LC),24+ ft.,25,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,305,01:44,Stephen Curry,NA,NA,-132,220,1,Ivica Zubac,LAC,GSW,1,44,Missed Shot,Pullup Jump shot,Above the Break 3,Left Side Center(LC),24+ ft.,25,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,305,01:44,Stephen Curry,NA,NA,-132,220,1,James Harden,LAC,GSW,1,44,Missed Shot,Pullup Jump shot,Above the Break 3,Left Side Center(LC),24+ ft.,25,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,305,01:44,Stephen Curry,NA,NA,-132,220,1,Kris Dunn,LAC,GSW,1,44,Missed Shot,Pullup Jump shot,Above the Break 3,Left Side Center(LC),24+ ft.,25,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,305,01:44,Stephen Curry,NA,NA,-132,220,1,Norman Powell,LAC,GSW,1,44,Missed Shot,Pullup Jump shot,Above the Break 3,Left Side Center(LC),24+ ft.,25,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,312,01:26,Draymond Green,Jonathan Kuminga,NA,-23,10,1,Derrick Jones Jr.,LAC,GSW,1,26,Made Shot,Running Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,2,312,01:26,Draymond Green,Jonathan Kuminga,NA,-23,10,1,Ivica Zubac,LAC,GSW,1,26,Made Shot,Running Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,2,312,01:26,Draymond Green,Jonathan Kuminga,NA,-23,10,1,James Harden,LAC,GSW,1,26,Made Shot,Running Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,2,312,01:26,Draymond Green,Jonathan Kuminga,NA,-23,10,1,Kris Dunn,LAC,GSW,1,26,Made Shot,Running Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,2,312,01:26,Draymond Green,Jonathan Kuminga,NA,-23,10,1,Norman Powell,LAC,GSW,1,26,Made Shot,Running Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,2,314,01:01,Norman Powell,James Harden,NA,-18,19,1,Draymond Green,GSW,LAC,1,1,Made Shot,Driving Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,2,314,01:01,Norman Powell,James Harden,NA,-18,19,1,Gary Payton II,GSW,LAC,1,1,Made Shot,Driving Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,2,314,01:01,Norman Powell,James Harden,NA,-18,19,1,Jonathan Kuminga,GSW,LAC,1,1,Made Shot,Driving Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,2,314,01:01,Norman Powell,James Harden,NA,-18,19,1,Lindy Waters III,GSW,LAC,1,1,Made Shot,Driving Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,2,314,01:01,Norman Powell,James Harden,NA,-18,19,1,Stephen Curry,GSW,LAC,1,1,Made Shot,Driving Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,2,316,00:52.7,Draymond Green,Stephen Curry,NA,-71,235,1,Derrick Jones Jr.,LAC,GSW,0,52,Made Shot,Jump Shot,Above the Break 3,Center(C),24+ ft.,24,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,316,00:52.7,Draymond Green,Stephen Curry,NA,-71,235,1,Ivica Zubac,LAC,GSW,0,52,Made Shot,Jump Shot,Above the Break 3,Center(C),24+ ft.,24,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,316,00:52.7,Draymond Green,Stephen Curry,NA,-71,235,1,James Harden,LAC,GSW,0,52,Made Shot,Jump Shot,Above the Break 3,Center(C),24+ ft.,24,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,316,00:52.7,Draymond Green,Stephen Curry,NA,-71,235,1,Kris Dunn,LAC,GSW,0,52,Made Shot,Jump Shot,Above the Break 3,Center(C),24+ ft.,24,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,316,00:52.7,Draymond Green,Stephen Curry,NA,-71,235,1,Norman Powell,LAC,GSW,0,52,Made Shot,Jump Shot,Above the Break 3,Center(C),24+ ft.,24,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,321,00:33.6,Stephen Curry,NA,NA,-11,261,1,Derrick Jones Jr.,LAC,GSW,0,33,Made Shot,Pullup Jump shot,Above the Break 3,Center(C),24+ ft.,26,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,321,00:33.6,Stephen Curry,NA,NA,-11,261,1,Ivica Zubac,LAC,GSW,0,33,Made Shot,Pullup Jump shot,Above the Break 3,Center(C),24+ ft.,26,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,321,00:33.6,Stephen Curry,NA,NA,-11,261,1,James Harden,LAC,GSW,0,33,Made Shot,Pullup Jump shot,Above the Break 3,Center(C),24+ ft.,26,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,321,00:33.6,Stephen Curry,NA,NA,-11,261,1,Kris Dunn,LAC,GSW,0,33,Made Shot,Pullup Jump shot,Above the Break 3,Center(C),24+ ft.,26,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,321,00:33.6,Stephen Curry,NA,NA,-11,261,1,Norman Powell,LAC,GSW,0,33,Made Shot,Pullup Jump shot,Above the Break 3,Center(C),24+ ft.,26,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,322,00:12.1,James Harden,NA,NA,159,206,1,Draymond Green,GSW,LAC,0,12,Missed Shot,Step Back Jump shot,Above the Break 3,Right Side Center(RC),24+ ft.,26,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,322,00:12.1,James Harden,NA,NA,159,206,1,Gary Payton II,GSW,LAC,0,12,Missed Shot,Step Back Jump shot,Above the Break 3,Right Side Center(RC),24+ ft.,26,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,322,00:12.1,James Harden,NA,NA,159,206,1,Jonathan Kuminga,GSW,LAC,0,12,Missed Shot,Step Back Jump shot,Above the Break 3,Right Side Center(RC),24+ ft.,26,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,322,00:12.1,James Harden,NA,NA,159,206,1,Lindy Waters III,GSW,LAC,0,12,Missed Shot,Step Back Jump shot,Above the Break 3,Right Side Center(RC),24+ ft.,26,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,322,00:12.1,James Harden,NA,NA,159,206,1,Stephen Curry,GSW,LAC,0,12,Missed Shot,Step Back Jump shot,Above the Break 3,Right Side Center(RC),24+ ft.,26,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,2,329,00:00.7,Norman Powell,NA,NA,-18,19,1,Gary Payton II,GSW,LAC,0,0,Made Shot,Driving Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,2,329,00:00.7,Norman Powell,NA,NA,-18,19,1,Jonathan Kuminga,GSW,LAC,0,0,Made Shot,Driving Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,2,329,00:00.7,Norman Powell,NA,NA,-18,19,1,Kyle Anderson,GSW,LAC,0,0,Made Shot,Driving Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,2,329,00:00.7,Norman Powell,NA,NA,-18,19,1,Lindy Waters III,GSW,LAC,0,0,Made Shot,Driving Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,2,329,00:00.7,Norman Powell,NA,NA,-18,19,1,Stephen Curry,GSW,LAC,0,0,Made Shot,Driving Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,3,341,11:49,Stephen Curry,Draymond Green,NA,-114,234,1,Derrick Jones Jr.,LAC,GSW,11,49,Made Shot,Step Back Jump shot,Above the Break 3,Left Side Center(LC),24+ ft.,25,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,341,11:49,Stephen Curry,Draymond Green,NA,-114,234,1,Ivica Zubac,LAC,GSW,11,49,Made Shot,Step Back Jump shot,Above the Break 3,Left Side Center(LC),24+ ft.,25,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,341,11:49,Stephen Curry,Draymond Green,NA,-114,234,1,James Harden,LAC,GSW,11,49,Made Shot,Step Back Jump shot,Above the Break 3,Left Side Center(LC),24+ ft.,25,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,341,11:49,Stephen Curry,Draymond Green,NA,-114,234,1,Kris Dunn,LAC,GSW,11,49,Made Shot,Step Back Jump shot,Above the Break 3,Left Side Center(LC),24+ ft.,25,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,341,11:49,Stephen Curry,Draymond Green,NA,-114,234,1,Norman Powell,LAC,GSW,11,49,Made Shot,Step Back Jump shot,Above the Break 3,Left Side Center(LC),24+ ft.,25,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,344,11:24,Derrick Jones Jr.,NA,NA,-13,0,0,Andrew Wiggins,GSW,LAC,11,24,Missed Shot,Alley Oop Layup shot,Restricted Area,Center(C),Less Than 8 ft.,1,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,3,344,11:24,Derrick Jones Jr.,NA,NA,-13,0,0,Draymond Green,GSW,LAC,11,24,Missed Shot,Alley Oop Layup shot,Restricted Area,Center(C),Less Than 8 ft.,1,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,3,344,11:24,Derrick Jones Jr.,NA,NA,-13,0,0,Lindy Waters III,GSW,LAC,11,24,Missed Shot,Alley Oop Layup shot,Restricted Area,Center(C),Less Than 8 ft.,1,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,3,344,11:24,Derrick Jones Jr.,NA,NA,-13,0,0,Stephen Curry,GSW,LAC,11,24,Missed Shot,Alley Oop Layup shot,Restricted Area,Center(C),Less Than 8 ft.,1,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,3,344,11:24,Derrick Jones Jr.,NA,NA,-13,0,0,Trayce Jackson-Davis,GSW,LAC,11,24,Missed Shot,Alley Oop Layup shot,Restricted Area,Center(C),Less Than 8 ft.,1,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,3,346,11:19,Derrick Jones Jr.,NA,NA,0,0,1,Andrew Wiggins,GSW,LAC,11,19,Made Shot,Tip Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,0,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,3,346,11:19,Derrick Jones Jr.,NA,NA,0,0,1,Draymond Green,GSW,LAC,11,19,Made Shot,Tip Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,0,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,3,346,11:19,Derrick Jones Jr.,NA,NA,0,0,1,Lindy Waters III,GSW,LAC,11,19,Made Shot,Tip Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,0,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,3,346,11:19,Derrick Jones Jr.,NA,NA,0,0,1,Stephen Curry,GSW,LAC,11,19,Made Shot,Tip Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,0,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,3,346,11:19,Derrick Jones Jr.,NA,NA,0,0,1,Trayce Jackson-Davis,GSW,LAC,11,19,Made Shot,Tip Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,0,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,3,348,11:08,Stephen Curry,NA,NA,0,88,1,Derrick Jones Jr.,LAC,GSW,11,8,Missed Shot,Driving Floating Jump Shot,In The Paint (Non-RA),Center(C),8-16 ft.,8,1,0,2pt,Less Than 10 Ft
+2024-11-18,22400251,3,348,11:08,Stephen Curry,NA,NA,0,88,1,Ivica Zubac,LAC,GSW,11,8,Missed Shot,Driving Floating Jump Shot,In The Paint (Non-RA),Center(C),8-16 ft.,8,1,0,2pt,Less Than 10 Ft
+2024-11-18,22400251,3,348,11:08,Stephen Curry,NA,NA,0,88,1,James Harden,LAC,GSW,11,8,Missed Shot,Driving Floating Jump Shot,In The Paint (Non-RA),Center(C),8-16 ft.,8,1,0,2pt,Less Than 10 Ft
+2024-11-18,22400251,3,348,11:08,Stephen Curry,NA,NA,0,88,1,Kris Dunn,LAC,GSW,11,8,Missed Shot,Driving Floating Jump Shot,In The Paint (Non-RA),Center(C),8-16 ft.,8,1,0,2pt,Less Than 10 Ft
+2024-11-18,22400251,3,348,11:08,Stephen Curry,NA,NA,0,88,1,Norman Powell,LAC,GSW,11,8,Missed Shot,Driving Floating Jump Shot,In The Paint (Non-RA),Center(C),8-16 ft.,8,1,0,2pt,Less Than 10 Ft
+2024-11-18,22400251,3,350,11:01,Kris Dunn,NA,NA,16,9,1,Andrew Wiggins,GSW,LAC,11,1,Missed Shot,Running Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,1,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,3,350,11:01,Kris Dunn,NA,NA,16,9,1,Draymond Green,GSW,LAC,11,1,Missed Shot,Running Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,1,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,3,350,11:01,Kris Dunn,NA,NA,16,9,1,Lindy Waters III,GSW,LAC,11,1,Missed Shot,Running Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,1,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,3,350,11:01,Kris Dunn,NA,NA,16,9,1,Stephen Curry,GSW,LAC,11,1,Missed Shot,Running Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,1,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,3,350,11:01,Kris Dunn,NA,NA,16,9,1,Trayce Jackson-Davis,GSW,LAC,11,1,Missed Shot,Running Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,1,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,3,352,10:53,Lindy Waters III,NA,NA,-185,185,0,Derrick Jones Jr.,LAC,GSW,10,53,Missed Shot,Running Jump Shot,Above the Break 3,Left Side Center(LC),24+ ft.,26,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,352,10:53,Lindy Waters III,NA,NA,-185,185,0,Ivica Zubac,LAC,GSW,10,53,Missed Shot,Running Jump Shot,Above the Break 3,Left Side Center(LC),24+ ft.,26,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,352,10:53,Lindy Waters III,NA,NA,-185,185,0,James Harden,LAC,GSW,10,53,Missed Shot,Running Jump Shot,Above the Break 3,Left Side Center(LC),24+ ft.,26,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,352,10:53,Lindy Waters III,NA,NA,-185,185,0,Kris Dunn,LAC,GSW,10,53,Missed Shot,Running Jump Shot,Above the Break 3,Left Side Center(LC),24+ ft.,26,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,352,10:53,Lindy Waters III,NA,NA,-185,185,0,Norman Powell,LAC,GSW,10,53,Missed Shot,Running Jump Shot,Above the Break 3,Left Side Center(LC),24+ ft.,26,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,359,10:29,Kris Dunn,NA,NA,234,28,1,Andrew Wiggins,GSW,LAC,10,29,Missed Shot,Jump Shot,Right Corner 3,Right Side(R),24+ ft.,23,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,359,10:29,Kris Dunn,NA,NA,234,28,1,Draymond Green,GSW,LAC,10,29,Missed Shot,Jump Shot,Right Corner 3,Right Side(R),24+ ft.,23,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,359,10:29,Kris Dunn,NA,NA,234,28,1,Lindy Waters III,GSW,LAC,10,29,Missed Shot,Jump Shot,Right Corner 3,Right Side(R),24+ ft.,23,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,359,10:29,Kris Dunn,NA,NA,234,28,1,Stephen Curry,GSW,LAC,10,29,Missed Shot,Jump Shot,Right Corner 3,Right Side(R),24+ ft.,23,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,359,10:29,Kris Dunn,NA,NA,234,28,1,Trayce Jackson-Davis,GSW,LAC,10,29,Missed Shot,Jump Shot,Right Corner 3,Right Side(R),24+ ft.,23,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,361,10:11,Lindy Waters III,NA,NA,-156,209,1,Derrick Jones Jr.,LAC,GSW,10,11,Missed Shot,Jump Shot,Above the Break 3,Left Side Center(LC),24+ ft.,26,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,361,10:11,Lindy Waters III,NA,NA,-156,209,1,Ivica Zubac,LAC,GSW,10,11,Missed Shot,Jump Shot,Above the Break 3,Left Side Center(LC),24+ ft.,26,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,361,10:11,Lindy Waters III,NA,NA,-156,209,1,James Harden,LAC,GSW,10,11,Missed Shot,Jump Shot,Above the Break 3,Left Side Center(LC),24+ ft.,26,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,361,10:11,Lindy Waters III,NA,NA,-156,209,1,Kris Dunn,LAC,GSW,10,11,Missed Shot,Jump Shot,Above the Break 3,Left Side Center(LC),24+ ft.,26,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,361,10:11,Lindy Waters III,NA,NA,-156,209,1,Norman Powell,LAC,GSW,10,11,Missed Shot,Jump Shot,Above the Break 3,Left Side Center(LC),24+ ft.,26,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,363,10:00,Norman Powell,NA,NA,-59,14,1,Andrew Wiggins,GSW,LAC,10,0,Missed Shot,Driving Floating Bank Jump Shot,In The Paint (Non-RA),Center(C),Less Than 8 ft.,6,1,0,2pt,Less Than 10 Ft
+2024-11-18,22400251,3,363,10:00,Norman Powell,NA,NA,-59,14,1,Draymond Green,GSW,LAC,10,0,Missed Shot,Driving Floating Bank Jump Shot,In The Paint (Non-RA),Center(C),Less Than 8 ft.,6,1,0,2pt,Less Than 10 Ft
+2024-11-18,22400251,3,363,10:00,Norman Powell,NA,NA,-59,14,1,Lindy Waters III,GSW,LAC,10,0,Missed Shot,Driving Floating Bank Jump Shot,In The Paint (Non-RA),Center(C),Less Than 8 ft.,6,1,0,2pt,Less Than 10 Ft
+2024-11-18,22400251,3,363,10:00,Norman Powell,NA,NA,-59,14,1,Stephen Curry,GSW,LAC,10,0,Missed Shot,Driving Floating Bank Jump Shot,In The Paint (Non-RA),Center(C),Less Than 8 ft.,6,1,0,2pt,Less Than 10 Ft
+2024-11-18,22400251,3,363,10:00,Norman Powell,NA,NA,-59,14,1,Trayce Jackson-Davis,GSW,LAC,10,0,Missed Shot,Driving Floating Bank Jump Shot,In The Paint (Non-RA),Center(C),Less Than 8 ft.,6,1,0,2pt,Less Than 10 Ft
+2024-11-18,22400251,3,365,09:49,Trayce Jackson-Davis,NA,NA,-17,17,1,Derrick Jones Jr.,LAC,GSW,9,49,Missed Shot,Driving Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,3,365,09:49,Trayce Jackson-Davis,NA,NA,-17,17,1,Ivica Zubac,LAC,GSW,9,49,Missed Shot,Driving Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,3,365,09:49,Trayce Jackson-Davis,NA,NA,-17,17,1,James Harden,LAC,GSW,9,49,Missed Shot,Driving Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,3,365,09:49,Trayce Jackson-Davis,NA,NA,-17,17,1,Kris Dunn,LAC,GSW,9,49,Missed Shot,Driving Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,3,365,09:49,Trayce Jackson-Davis,NA,NA,-17,17,1,Norman Powell,LAC,GSW,9,49,Missed Shot,Driving Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,3,367,09:27,Kris Dunn,James Harden,NA,-230,35,1,Andrew Wiggins,GSW,LAC,9,27,Made Shot,Jump Shot,Left Corner 3,Left Side(L),24+ ft.,23,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,367,09:27,Kris Dunn,James Harden,NA,-230,35,1,Draymond Green,GSW,LAC,9,27,Made Shot,Jump Shot,Left Corner 3,Left Side(L),24+ ft.,23,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,367,09:27,Kris Dunn,James Harden,NA,-230,35,1,Lindy Waters III,GSW,LAC,9,27,Made Shot,Jump Shot,Left Corner 3,Left Side(L),24+ ft.,23,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,367,09:27,Kris Dunn,James Harden,NA,-230,35,1,Stephen Curry,GSW,LAC,9,27,Made Shot,Jump Shot,Left Corner 3,Left Side(L),24+ ft.,23,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,367,09:27,Kris Dunn,James Harden,NA,-230,35,1,Trayce Jackson-Davis,GSW,LAC,9,27,Made Shot,Jump Shot,Left Corner 3,Left Side(L),24+ ft.,23,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,370,09:13,Andrew Wiggins,Trayce Jackson-Davis,NA,-165,200,1,Derrick Jones Jr.,LAC,GSW,9,13,Made Shot,Jump Shot,Above the Break 3,Left Side Center(LC),24+ ft.,25,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,370,09:13,Andrew Wiggins,Trayce Jackson-Davis,NA,-165,200,1,Ivica Zubac,LAC,GSW,9,13,Made Shot,Jump Shot,Above the Break 3,Left Side Center(LC),24+ ft.,25,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,370,09:13,Andrew Wiggins,Trayce Jackson-Davis,NA,-165,200,1,James Harden,LAC,GSW,9,13,Made Shot,Jump Shot,Above the Break 3,Left Side Center(LC),24+ ft.,25,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,370,09:13,Andrew Wiggins,Trayce Jackson-Davis,NA,-165,200,1,Kris Dunn,LAC,GSW,9,13,Made Shot,Jump Shot,Above the Break 3,Left Side Center(LC),24+ ft.,25,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,370,09:13,Andrew Wiggins,Trayce Jackson-Davis,NA,-165,200,1,Norman Powell,LAC,GSW,9,13,Made Shot,Jump Shot,Above the Break 3,Left Side Center(LC),24+ ft.,25,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,375,08:33,Stephen Curry,Draymond Green,NA,137,224,1,Derrick Jones Jr.,LAC,GSW,8,33,Made Shot,Step Back Jump shot,Above the Break 3,Right Side Center(RC),24+ ft.,26,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,375,08:33,Stephen Curry,Draymond Green,NA,137,224,1,Ivica Zubac,LAC,GSW,8,33,Made Shot,Step Back Jump shot,Above the Break 3,Right Side Center(RC),24+ ft.,26,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,375,08:33,Stephen Curry,Draymond Green,NA,137,224,1,James Harden,LAC,GSW,8,33,Made Shot,Step Back Jump shot,Above the Break 3,Right Side Center(RC),24+ ft.,26,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,375,08:33,Stephen Curry,Draymond Green,NA,137,224,1,Kris Dunn,LAC,GSW,8,33,Made Shot,Step Back Jump shot,Above the Break 3,Right Side Center(RC),24+ ft.,26,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,375,08:33,Stephen Curry,Draymond Green,NA,137,224,1,Norman Powell,LAC,GSW,8,33,Made Shot,Step Back Jump shot,Above the Break 3,Right Side Center(RC),24+ ft.,26,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,377,08:12,Kris Dunn,James Harden,NA,0,61,1,Andrew Wiggins,GSW,LAC,8,12,Made Shot,Floating Jump shot,In The Paint (Non-RA),Center(C),Less Than 8 ft.,6,1,1,2pt,Less Than 10 Ft
+2024-11-18,22400251,3,377,08:12,Kris Dunn,James Harden,NA,0,61,1,Draymond Green,GSW,LAC,8,12,Made Shot,Floating Jump shot,In The Paint (Non-RA),Center(C),Less Than 8 ft.,6,1,1,2pt,Less Than 10 Ft
+2024-11-18,22400251,3,377,08:12,Kris Dunn,James Harden,NA,0,61,1,Lindy Waters III,GSW,LAC,8,12,Made Shot,Floating Jump shot,In The Paint (Non-RA),Center(C),Less Than 8 ft.,6,1,1,2pt,Less Than 10 Ft
+2024-11-18,22400251,3,377,08:12,Kris Dunn,James Harden,NA,0,61,1,Stephen Curry,GSW,LAC,8,12,Made Shot,Floating Jump shot,In The Paint (Non-RA),Center(C),Less Than 8 ft.,6,1,1,2pt,Less Than 10 Ft
+2024-11-18,22400251,3,377,08:12,Kris Dunn,James Harden,NA,0,61,1,Trayce Jackson-Davis,GSW,LAC,8,12,Made Shot,Floating Jump shot,In The Paint (Non-RA),Center(C),Less Than 8 ft.,6,1,1,2pt,Less Than 10 Ft
+2024-11-18,22400251,3,382,07:47,Stephen Curry,Trayce Jackson-Davis,NA,228,19,1,Derrick Jones Jr.,LAC,GSW,7,47,Made Shot,Pullup Jump shot,Right Corner 3,Right Side(R),24+ ft.,22,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,382,07:47,Stephen Curry,Trayce Jackson-Davis,NA,228,19,1,Ivica Zubac,LAC,GSW,7,47,Made Shot,Pullup Jump shot,Right Corner 3,Right Side(R),24+ ft.,22,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,382,07:47,Stephen Curry,Trayce Jackson-Davis,NA,228,19,1,James Harden,LAC,GSW,7,47,Made Shot,Pullup Jump shot,Right Corner 3,Right Side(R),24+ ft.,22,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,382,07:47,Stephen Curry,Trayce Jackson-Davis,NA,228,19,1,Kris Dunn,LAC,GSW,7,47,Made Shot,Pullup Jump shot,Right Corner 3,Right Side(R),24+ ft.,22,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,382,07:47,Stephen Curry,Trayce Jackson-Davis,NA,228,19,1,Norman Powell,LAC,GSW,7,47,Made Shot,Pullup Jump shot,Right Corner 3,Right Side(R),24+ ft.,22,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,387,07:23,Trayce Jackson-Davis,Stephen Curry,NA,-22,19,1,Derrick Jones Jr.,LAC,GSW,7,23,Made Shot,Alley Oop Layup shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,3,387,07:23,Trayce Jackson-Davis,Stephen Curry,NA,-22,19,1,Ivica Zubac,LAC,GSW,7,23,Made Shot,Alley Oop Layup shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,3,387,07:23,Trayce Jackson-Davis,Stephen Curry,NA,-22,19,1,James Harden,LAC,GSW,7,23,Made Shot,Alley Oop Layup shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,3,387,07:23,Trayce Jackson-Davis,Stephen Curry,NA,-22,19,1,Kris Dunn,LAC,GSW,7,23,Made Shot,Alley Oop Layup shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,3,387,07:23,Trayce Jackson-Davis,Stephen Curry,NA,-22,19,1,Norman Powell,LAC,GSW,7,23,Made Shot,Alley Oop Layup shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,3,389,07:08,Ivica Zubac,James Harden,NA,-1,88,1,Andrew Wiggins,GSW,LAC,7,8,Made Shot,Hook Shot,In The Paint (Non-RA),Center(C),8-16 ft.,8,1,1,2pt,Less Than 10 Ft
+2024-11-18,22400251,3,389,07:08,Ivica Zubac,James Harden,NA,-1,88,1,Draymond Green,GSW,LAC,7,8,Made Shot,Hook Shot,In The Paint (Non-RA),Center(C),8-16 ft.,8,1,1,2pt,Less Than 10 Ft
+2024-11-18,22400251,3,389,07:08,Ivica Zubac,James Harden,NA,-1,88,1,Lindy Waters III,GSW,LAC,7,8,Made Shot,Hook Shot,In The Paint (Non-RA),Center(C),8-16 ft.,8,1,1,2pt,Less Than 10 Ft
+2024-11-18,22400251,3,389,07:08,Ivica Zubac,James Harden,NA,-1,88,1,Stephen Curry,GSW,LAC,7,8,Made Shot,Hook Shot,In The Paint (Non-RA),Center(C),8-16 ft.,8,1,1,2pt,Less Than 10 Ft
+2024-11-18,22400251,3,389,07:08,Ivica Zubac,James Harden,NA,-1,88,1,Trayce Jackson-Davis,GSW,LAC,7,8,Made Shot,Hook Shot,In The Paint (Non-RA),Center(C),8-16 ft.,8,1,1,2pt,Less Than 10 Ft
+2024-11-18,22400251,3,392,06:49,Stephen Curry,NA,NA,-112,230,1,Derrick Jones Jr.,LAC,GSW,6,49,Missed Shot,Step Back Jump shot,Above the Break 3,Left Side Center(LC),24+ ft.,25,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,392,06:49,Stephen Curry,NA,NA,-112,230,1,Ivica Zubac,LAC,GSW,6,49,Missed Shot,Step Back Jump shot,Above the Break 3,Left Side Center(LC),24+ ft.,25,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,392,06:49,Stephen Curry,NA,NA,-112,230,1,James Harden,LAC,GSW,6,49,Missed Shot,Step Back Jump shot,Above the Break 3,Left Side Center(LC),24+ ft.,25,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,392,06:49,Stephen Curry,NA,NA,-112,230,1,Kris Dunn,LAC,GSW,6,49,Missed Shot,Step Back Jump shot,Above the Break 3,Left Side Center(LC),24+ ft.,25,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,392,06:49,Stephen Curry,NA,NA,-112,230,1,Norman Powell,LAC,GSW,6,49,Missed Shot,Step Back Jump shot,Above the Break 3,Left Side Center(LC),24+ ft.,25,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,394,06:39,Norman Powell,NA,NA,-34,8,1,Andrew Wiggins,GSW,LAC,6,39,Missed Shot,Driving Floating Bank Jump Shot,Restricted Area,Center(C),Less Than 8 ft.,3,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,3,394,06:39,Norman Powell,NA,NA,-34,8,1,Draymond Green,GSW,LAC,6,39,Missed Shot,Driving Floating Bank Jump Shot,Restricted Area,Center(C),Less Than 8 ft.,3,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,3,394,06:39,Norman Powell,NA,NA,-34,8,1,Lindy Waters III,GSW,LAC,6,39,Missed Shot,Driving Floating Bank Jump Shot,Restricted Area,Center(C),Less Than 8 ft.,3,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,3,394,06:39,Norman Powell,NA,NA,-34,8,1,Stephen Curry,GSW,LAC,6,39,Missed Shot,Driving Floating Bank Jump Shot,Restricted Area,Center(C),Less Than 8 ft.,3,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,3,394,06:39,Norman Powell,NA,NA,-34,8,1,Trayce Jackson-Davis,GSW,LAC,6,39,Missed Shot,Driving Floating Bank Jump Shot,Restricted Area,Center(C),Less Than 8 ft.,3,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,3,396,06:30,Trayce Jackson-Davis,Lindy Waters III,NA,1,33,1,Derrick Jones Jr.,LAC,GSW,6,30,Made Shot,Cutting Finger Roll Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,3,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,3,396,06:30,Trayce Jackson-Davis,Lindy Waters III,NA,1,33,1,Ivica Zubac,LAC,GSW,6,30,Made Shot,Cutting Finger Roll Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,3,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,3,396,06:30,Trayce Jackson-Davis,Lindy Waters III,NA,1,33,1,James Harden,LAC,GSW,6,30,Made Shot,Cutting Finger Roll Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,3,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,3,396,06:30,Trayce Jackson-Davis,Lindy Waters III,NA,1,33,1,Kris Dunn,LAC,GSW,6,30,Made Shot,Cutting Finger Roll Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,3,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,3,396,06:30,Trayce Jackson-Davis,Lindy Waters III,NA,1,33,1,Norman Powell,LAC,GSW,6,30,Made Shot,Cutting Finger Roll Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,3,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,3,398,06:13,Kris Dunn,NA,NA,-224,125,1,Andrew Wiggins,GSW,LAC,6,13,Missed Shot,Jump Shot,Above the Break 3,Left Side Center(LC),24+ ft.,25,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,398,06:13,Kris Dunn,NA,NA,-224,125,1,Draymond Green,GSW,LAC,6,13,Missed Shot,Jump Shot,Above the Break 3,Left Side Center(LC),24+ ft.,25,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,398,06:13,Kris Dunn,NA,NA,-224,125,1,Lindy Waters III,GSW,LAC,6,13,Missed Shot,Jump Shot,Above the Break 3,Left Side Center(LC),24+ ft.,25,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,398,06:13,Kris Dunn,NA,NA,-224,125,1,Stephen Curry,GSW,LAC,6,13,Missed Shot,Jump Shot,Above the Break 3,Left Side Center(LC),24+ ft.,25,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,398,06:13,Kris Dunn,NA,NA,-224,125,1,Trayce Jackson-Davis,GSW,LAC,6,13,Missed Shot,Jump Shot,Above the Break 3,Left Side Center(LC),24+ ft.,25,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,400,06:01,Draymond Green,NA,NA,-39,124,1,Derrick Jones Jr.,LAC,GSW,6,1,Missed Shot,Floating Jump shot,In The Paint (Non-RA),Center(C),8-16 ft.,12,1,0,2pt,10-15 Ft
+2024-11-18,22400251,3,400,06:01,Draymond Green,NA,NA,-39,124,1,Ivica Zubac,LAC,GSW,6,1,Missed Shot,Floating Jump shot,In The Paint (Non-RA),Center(C),8-16 ft.,12,1,0,2pt,10-15 Ft
+2024-11-18,22400251,3,400,06:01,Draymond Green,NA,NA,-39,124,1,James Harden,LAC,GSW,6,1,Missed Shot,Floating Jump shot,In The Paint (Non-RA),Center(C),8-16 ft.,12,1,0,2pt,10-15 Ft
+2024-11-18,22400251,3,400,06:01,Draymond Green,NA,NA,-39,124,1,Kris Dunn,LAC,GSW,6,1,Missed Shot,Floating Jump shot,In The Paint (Non-RA),Center(C),8-16 ft.,12,1,0,2pt,10-15 Ft
+2024-11-18,22400251,3,400,06:01,Draymond Green,NA,NA,-39,124,1,Norman Powell,LAC,GSW,6,1,Missed Shot,Floating Jump shot,In The Paint (Non-RA),Center(C),8-16 ft.,12,1,0,2pt,10-15 Ft
+2024-11-18,22400251,3,402,05:46,Norman Powell,James Harden,NA,-55,247,1,Andrew Wiggins,GSW,LAC,5,46,Made Shot,Jump Shot,Above the Break 3,Center(C),24+ ft.,25,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,402,05:46,Norman Powell,James Harden,NA,-55,247,1,Draymond Green,GSW,LAC,5,46,Made Shot,Jump Shot,Above the Break 3,Center(C),24+ ft.,25,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,402,05:46,Norman Powell,James Harden,NA,-55,247,1,Lindy Waters III,GSW,LAC,5,46,Made Shot,Jump Shot,Above the Break 3,Center(C),24+ ft.,25,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,402,05:46,Norman Powell,James Harden,NA,-55,247,1,Stephen Curry,GSW,LAC,5,46,Made Shot,Jump Shot,Above the Break 3,Center(C),24+ ft.,25,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,402,05:46,Norman Powell,James Harden,NA,-55,247,1,Trayce Jackson-Davis,GSW,LAC,5,46,Made Shot,Jump Shot,Above the Break 3,Center(C),24+ ft.,25,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,420,05:08,Andrew Wiggins,Stephen Curry,NA,-22,17,1,Amir Coffey,LAC,GSW,5,8,Made Shot,Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,3,420,05:08,Andrew Wiggins,Stephen Curry,NA,-22,17,1,Derrick Jones Jr.,LAC,GSW,5,8,Made Shot,Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,3,420,05:08,Andrew Wiggins,Stephen Curry,NA,-22,17,1,James Harden,LAC,GSW,5,8,Made Shot,Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,3,420,05:08,Andrew Wiggins,Stephen Curry,NA,-22,17,1,Kevin Porter Jr.,LAC,GSW,5,8,Made Shot,Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,3,420,05:08,Andrew Wiggins,Stephen Curry,NA,-22,17,1,Mo Bamba,LAC,GSW,5,8,Made Shot,Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,3,422,04:41,Kevin Porter Jr.,NA,NA,-102,110,1,Andrew Wiggins,GSW,LAC,4,41,Missed Shot,Turnaround Jump Shot,Mid-Range,Left Side(L),8-16 ft.,15,1,0,2pt,10-15 Ft
+2024-11-18,22400251,3,422,04:41,Kevin Porter Jr.,NA,NA,-102,110,1,Buddy Hield,GSW,LAC,4,41,Missed Shot,Turnaround Jump Shot,Mid-Range,Left Side(L),8-16 ft.,15,1,0,2pt,10-15 Ft
+2024-11-18,22400251,3,422,04:41,Kevin Porter Jr.,NA,NA,-102,110,1,Draymond Green,GSW,LAC,4,41,Missed Shot,Turnaround Jump Shot,Mid-Range,Left Side(L),8-16 ft.,15,1,0,2pt,10-15 Ft
+2024-11-18,22400251,3,422,04:41,Kevin Porter Jr.,NA,NA,-102,110,1,Gary Payton II,GSW,LAC,4,41,Missed Shot,Turnaround Jump Shot,Mid-Range,Left Side(L),8-16 ft.,15,1,0,2pt,10-15 Ft
+2024-11-18,22400251,3,422,04:41,Kevin Porter Jr.,NA,NA,-102,110,1,Stephen Curry,GSW,LAC,4,41,Missed Shot,Turnaround Jump Shot,Mid-Range,Left Side(L),8-16 ft.,15,1,0,2pt,10-15 Ft
+2024-11-18,22400251,3,424,04:30,Stephen Curry,NA,NA,-211,239,0,Amir Coffey,LAC,GSW,4,30,Missed Shot,Pullup Jump shot,Above the Break 3,Left Side Center(LC),24+ ft.,31,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,424,04:30,Stephen Curry,NA,NA,-211,239,0,Derrick Jones Jr.,LAC,GSW,4,30,Missed Shot,Pullup Jump shot,Above the Break 3,Left Side Center(LC),24+ ft.,31,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,424,04:30,Stephen Curry,NA,NA,-211,239,0,James Harden,LAC,GSW,4,30,Missed Shot,Pullup Jump shot,Above the Break 3,Left Side Center(LC),24+ ft.,31,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,424,04:30,Stephen Curry,NA,NA,-211,239,0,Kevin Porter Jr.,LAC,GSW,4,30,Missed Shot,Pullup Jump shot,Above the Break 3,Left Side Center(LC),24+ ft.,31,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,424,04:30,Stephen Curry,NA,NA,-211,239,0,Mo Bamba,LAC,GSW,4,30,Missed Shot,Pullup Jump shot,Above the Break 3,Left Side Center(LC),24+ ft.,31,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,426,04:24,Buddy Hield,NA,NA,208,156,1,Amir Coffey,LAC,GSW,4,24,Missed Shot,Jump Shot,Above the Break 3,Right Side Center(RC),24+ ft.,25,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,426,04:24,Buddy Hield,NA,NA,208,156,1,Derrick Jones Jr.,LAC,GSW,4,24,Missed Shot,Jump Shot,Above the Break 3,Right Side Center(RC),24+ ft.,25,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,426,04:24,Buddy Hield,NA,NA,208,156,1,James Harden,LAC,GSW,4,24,Missed Shot,Jump Shot,Above the Break 3,Right Side Center(RC),24+ ft.,25,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,426,04:24,Buddy Hield,NA,NA,208,156,1,Kevin Porter Jr.,LAC,GSW,4,24,Missed Shot,Jump Shot,Above the Break 3,Right Side Center(RC),24+ ft.,25,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,426,04:24,Buddy Hield,NA,NA,208,156,1,Mo Bamba,LAC,GSW,4,24,Missed Shot,Jump Shot,Above the Break 3,Right Side Center(RC),24+ ft.,25,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,428,04:07,Amir Coffey,NA,NA,-50,4,1,Andrew Wiggins,GSW,LAC,4,7,Missed Shot,Layup Shot,In The Paint (Non-RA),Center(C),Less Than 8 ft.,5,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,3,428,04:07,Amir Coffey,NA,NA,-50,4,1,Buddy Hield,GSW,LAC,4,7,Missed Shot,Layup Shot,In The Paint (Non-RA),Center(C),Less Than 8 ft.,5,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,3,428,04:07,Amir Coffey,NA,NA,-50,4,1,Draymond Green,GSW,LAC,4,7,Missed Shot,Layup Shot,In The Paint (Non-RA),Center(C),Less Than 8 ft.,5,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,3,428,04:07,Amir Coffey,NA,NA,-50,4,1,Gary Payton II,GSW,LAC,4,7,Missed Shot,Layup Shot,In The Paint (Non-RA),Center(C),Less Than 8 ft.,5,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,3,428,04:07,Amir Coffey,NA,NA,-50,4,1,Stephen Curry,GSW,LAC,4,7,Missed Shot,Layup Shot,In The Paint (Non-RA),Center(C),Less Than 8 ft.,5,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,3,430,04:03,Buddy Hield,NA,NA,-189,174,1,Amir Coffey,LAC,GSW,4,3,Missed Shot,Running Jump Shot,Above the Break 3,Left Side Center(LC),24+ ft.,25,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,430,04:03,Buddy Hield,NA,NA,-189,174,1,Derrick Jones Jr.,LAC,GSW,4,3,Missed Shot,Running Jump Shot,Above the Break 3,Left Side Center(LC),24+ ft.,25,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,430,04:03,Buddy Hield,NA,NA,-189,174,1,James Harden,LAC,GSW,4,3,Missed Shot,Running Jump Shot,Above the Break 3,Left Side Center(LC),24+ ft.,25,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,430,04:03,Buddy Hield,NA,NA,-189,174,1,Kevin Porter Jr.,LAC,GSW,4,3,Missed Shot,Running Jump Shot,Above the Break 3,Left Side Center(LC),24+ ft.,25,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,430,04:03,Buddy Hield,NA,NA,-189,174,1,Mo Bamba,LAC,GSW,4,3,Missed Shot,Running Jump Shot,Above the Break 3,Left Side Center(LC),24+ ft.,25,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,432,03:41,Derrick Jones Jr.,NA,NA,233,78,1,Andrew Wiggins,GSW,LAC,3,41,Missed Shot,Jump Shot,Right Corner 3,Right Side(R),24+ ft.,24,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,432,03:41,Derrick Jones Jr.,NA,NA,233,78,1,Buddy Hield,GSW,LAC,3,41,Missed Shot,Jump Shot,Right Corner 3,Right Side(R),24+ ft.,24,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,432,03:41,Derrick Jones Jr.,NA,NA,233,78,1,Draymond Green,GSW,LAC,3,41,Missed Shot,Jump Shot,Right Corner 3,Right Side(R),24+ ft.,24,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,432,03:41,Derrick Jones Jr.,NA,NA,233,78,1,Gary Payton II,GSW,LAC,3,41,Missed Shot,Jump Shot,Right Corner 3,Right Side(R),24+ ft.,24,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,432,03:41,Derrick Jones Jr.,NA,NA,233,78,1,Stephen Curry,GSW,LAC,3,41,Missed Shot,Jump Shot,Right Corner 3,Right Side(R),24+ ft.,24,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,434,03:35,Andrew Wiggins,Stephen Curry,NA,1,19,1,Amir Coffey,LAC,GSW,3,35,Made Shot,Running Finger Roll Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,1,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,3,434,03:35,Andrew Wiggins,Stephen Curry,NA,1,19,1,Derrick Jones Jr.,LAC,GSW,3,35,Made Shot,Running Finger Roll Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,1,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,3,434,03:35,Andrew Wiggins,Stephen Curry,NA,1,19,1,James Harden,LAC,GSW,3,35,Made Shot,Running Finger Roll Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,1,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,3,434,03:35,Andrew Wiggins,Stephen Curry,NA,1,19,1,Kevin Porter Jr.,LAC,GSW,3,35,Made Shot,Running Finger Roll Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,1,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,3,434,03:35,Andrew Wiggins,Stephen Curry,NA,1,19,1,Mo Bamba,LAC,GSW,3,35,Made Shot,Running Finger Roll Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,1,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,3,445,03:20,Nicolas Batum,NA,NA,234,57,1,Brandin Podziemski,GSW,LAC,3,20,Missed Shot,Step Back Jump shot,Right Corner 3,Right Side(R),24+ ft.,24,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,445,03:20,Nicolas Batum,NA,NA,234,57,1,Buddy Hield,GSW,LAC,3,20,Missed Shot,Step Back Jump shot,Right Corner 3,Right Side(R),24+ ft.,24,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,445,03:20,Nicolas Batum,NA,NA,234,57,1,Gary Payton II,GSW,LAC,3,20,Missed Shot,Step Back Jump shot,Right Corner 3,Right Side(R),24+ ft.,24,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,445,03:20,Nicolas Batum,NA,NA,234,57,1,Jonathan Kuminga,GSW,LAC,3,20,Missed Shot,Step Back Jump shot,Right Corner 3,Right Side(R),24+ ft.,24,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,445,03:20,Nicolas Batum,NA,NA,234,57,1,Kyle Anderson,GSW,LAC,3,20,Missed Shot,Step Back Jump shot,Right Corner 3,Right Side(R),24+ ft.,24,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,447,03:10,Jonathan Kuminga,NA,NA,-42,21,1,Amir Coffey,LAC,GSW,3,10,Missed Shot,Layup Shot,In The Paint (Non-RA),Center(C),Less Than 8 ft.,4,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,3,447,03:10,Jonathan Kuminga,NA,NA,-42,21,1,James Harden,LAC,GSW,3,10,Missed Shot,Layup Shot,In The Paint (Non-RA),Center(C),Less Than 8 ft.,4,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,3,447,03:10,Jonathan Kuminga,NA,NA,-42,21,1,Kevin Porter Jr.,LAC,GSW,3,10,Missed Shot,Layup Shot,In The Paint (Non-RA),Center(C),Less Than 8 ft.,4,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,3,447,03:10,Jonathan Kuminga,NA,NA,-42,21,1,Mo Bamba,LAC,GSW,3,10,Missed Shot,Layup Shot,In The Paint (Non-RA),Center(C),Less Than 8 ft.,4,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,3,447,03:10,Jonathan Kuminga,NA,NA,-42,21,1,Nicolas Batum,LAC,GSW,3,10,Missed Shot,Layup Shot,In The Paint (Non-RA),Center(C),Less Than 8 ft.,4,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,3,452,02:48,Jonathan Kuminga,Gary Payton II,NA,-163,208,1,Amir Coffey,LAC,GSW,2,48,Made Shot,Jump Shot,Above the Break 3,Left Side Center(LC),24+ ft.,26,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,452,02:48,Jonathan Kuminga,Gary Payton II,NA,-163,208,1,James Harden,LAC,GSW,2,48,Made Shot,Jump Shot,Above the Break 3,Left Side Center(LC),24+ ft.,26,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,452,02:48,Jonathan Kuminga,Gary Payton II,NA,-163,208,1,Kevin Porter Jr.,LAC,GSW,2,48,Made Shot,Jump Shot,Above the Break 3,Left Side Center(LC),24+ ft.,26,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,452,02:48,Jonathan Kuminga,Gary Payton II,NA,-163,208,1,Mo Bamba,LAC,GSW,2,48,Made Shot,Jump Shot,Above the Break 3,Left Side Center(LC),24+ ft.,26,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,452,02:48,Jonathan Kuminga,Gary Payton II,NA,-163,208,1,Nicolas Batum,LAC,GSW,2,48,Made Shot,Jump Shot,Above the Break 3,Left Side Center(LC),24+ ft.,26,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,454,02:30,James Harden,NA,NA,-17,9,1,Brandin Podziemski,GSW,LAC,2,30,Missed Shot,Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,1,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,3,454,02:30,James Harden,NA,NA,-17,9,1,Buddy Hield,GSW,LAC,2,30,Missed Shot,Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,1,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,3,454,02:30,James Harden,NA,NA,-17,9,1,Gary Payton II,GSW,LAC,2,30,Missed Shot,Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,1,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,3,454,02:30,James Harden,NA,NA,-17,9,1,Jonathan Kuminga,GSW,LAC,2,30,Missed Shot,Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,1,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,3,454,02:30,James Harden,NA,NA,-17,9,1,Kyle Anderson,GSW,LAC,2,30,Missed Shot,Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,1,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,3,459,01:56,Kevin Porter Jr.,Terance Mann,NA,20,105,1,Brandin Podziemski,GSW,LAC,1,56,Made Shot,Jump Shot,In The Paint (Non-RA),Center(C),8-16 ft.,10,1,1,2pt,10-15 Ft
+2024-11-18,22400251,3,459,01:56,Kevin Porter Jr.,Terance Mann,NA,20,105,1,Buddy Hield,GSW,LAC,1,56,Made Shot,Jump Shot,In The Paint (Non-RA),Center(C),8-16 ft.,10,1,1,2pt,10-15 Ft
+2024-11-18,22400251,3,459,01:56,Kevin Porter Jr.,Terance Mann,NA,20,105,1,Gary Payton II,GSW,LAC,1,56,Made Shot,Jump Shot,In The Paint (Non-RA),Center(C),8-16 ft.,10,1,1,2pt,10-15 Ft
+2024-11-18,22400251,3,459,01:56,Kevin Porter Jr.,Terance Mann,NA,20,105,1,Jonathan Kuminga,GSW,LAC,1,56,Made Shot,Jump Shot,In The Paint (Non-RA),Center(C),8-16 ft.,10,1,1,2pt,10-15 Ft
+2024-11-18,22400251,3,459,01:56,Kevin Porter Jr.,Terance Mann,NA,20,105,1,Kyle Anderson,GSW,LAC,1,56,Made Shot,Jump Shot,In The Paint (Non-RA),Center(C),8-16 ft.,10,1,1,2pt,10-15 Ft
+2024-11-18,22400251,3,461,01:43,Buddy Hield,Jonathan Kuminga,NA,-92,248,1,Amir Coffey,LAC,GSW,1,43,Made Shot,Jump Shot,Above the Break 3,Left Side Center(LC),24+ ft.,26,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,461,01:43,Buddy Hield,Jonathan Kuminga,NA,-92,248,1,James Harden,LAC,GSW,1,43,Made Shot,Jump Shot,Above the Break 3,Left Side Center(LC),24+ ft.,26,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,461,01:43,Buddy Hield,Jonathan Kuminga,NA,-92,248,1,Kevin Porter Jr.,LAC,GSW,1,43,Made Shot,Jump Shot,Above the Break 3,Left Side Center(LC),24+ ft.,26,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,461,01:43,Buddy Hield,Jonathan Kuminga,NA,-92,248,1,Nicolas Batum,LAC,GSW,1,43,Made Shot,Jump Shot,Above the Break 3,Left Side Center(LC),24+ ft.,26,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,461,01:43,Buddy Hield,Jonathan Kuminga,NA,-92,248,1,Terance Mann,LAC,GSW,1,43,Made Shot,Jump Shot,Above the Break 3,Left Side Center(LC),24+ ft.,26,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,463,01:16,James Harden,NA,NA,-70,236,1,Brandin Podziemski,GSW,LAC,1,16,Missed Shot,Step Back Jump shot,Above the Break 3,Center(C),24+ ft.,24,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,463,01:16,James Harden,NA,NA,-70,236,1,Buddy Hield,GSW,LAC,1,16,Missed Shot,Step Back Jump shot,Above the Break 3,Center(C),24+ ft.,24,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,463,01:16,James Harden,NA,NA,-70,236,1,Gary Payton II,GSW,LAC,1,16,Missed Shot,Step Back Jump shot,Above the Break 3,Center(C),24+ ft.,24,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,463,01:16,James Harden,NA,NA,-70,236,1,Jonathan Kuminga,GSW,LAC,1,16,Missed Shot,Step Back Jump shot,Above the Break 3,Center(C),24+ ft.,24,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,463,01:16,James Harden,NA,NA,-70,236,1,Kyle Anderson,GSW,LAC,1,16,Missed Shot,Step Back Jump shot,Above the Break 3,Center(C),24+ ft.,24,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,466,00:59.0,Jonathan Kuminga,NA,Kevin Porter Jr.,-18,74,1,Amir Coffey,LAC,GSW,0,59,Missed Shot,Driving Layup Shot,In The Paint (Non-RA),Center(C),Less Than 8 ft.,7,1,0,2pt,Less Than 10 Ft
+2024-11-18,22400251,3,466,00:59.0,Jonathan Kuminga,NA,Kevin Porter Jr.,-18,74,1,James Harden,LAC,GSW,0,59,Missed Shot,Driving Layup Shot,In The Paint (Non-RA),Center(C),Less Than 8 ft.,7,1,0,2pt,Less Than 10 Ft
+2024-11-18,22400251,3,466,00:59.0,Jonathan Kuminga,NA,Kevin Porter Jr.,-18,74,1,Kevin Porter Jr.,LAC,GSW,0,59,Missed Shot,Driving Layup Shot,In The Paint (Non-RA),Center(C),Less Than 8 ft.,7,1,0,2pt,Less Than 10 Ft
+2024-11-18,22400251,3,466,00:59.0,Jonathan Kuminga,NA,Kevin Porter Jr.,-18,74,1,Nicolas Batum,LAC,GSW,0,59,Missed Shot,Driving Layup Shot,In The Paint (Non-RA),Center(C),Less Than 8 ft.,7,1,0,2pt,Less Than 10 Ft
+2024-11-18,22400251,3,466,00:59.0,Jonathan Kuminga,NA,Kevin Porter Jr.,-18,74,1,Terance Mann,LAC,GSW,0,59,Missed Shot,Driving Layup Shot,In The Paint (Non-RA),Center(C),Less Than 8 ft.,7,1,0,2pt,Less Than 10 Ft
+2024-11-18,22400251,3,469,00:41.9,Nicolas Batum,NA,NA,-26,5,1,Brandin Podziemski,GSW,LAC,0,41,Missed Shot,Reverse Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,3,469,00:41.9,Nicolas Batum,NA,NA,-26,5,1,Buddy Hield,GSW,LAC,0,41,Missed Shot,Reverse Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,3,469,00:41.9,Nicolas Batum,NA,NA,-26,5,1,Gary Payton II,GSW,LAC,0,41,Missed Shot,Reverse Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,3,469,00:41.9,Nicolas Batum,NA,NA,-26,5,1,Jonathan Kuminga,GSW,LAC,0,41,Missed Shot,Reverse Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,3,469,00:41.9,Nicolas Batum,NA,NA,-26,5,1,Kyle Anderson,GSW,LAC,0,41,Missed Shot,Reverse Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,3,471,00:26.0,Jonathan Kuminga,NA,NA,158,198,0,Amir Coffey,LAC,GSW,0,26,Missed Shot,Jump Shot,Above the Break 3,Right Side Center(RC),24+ ft.,25,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,471,00:26.0,Jonathan Kuminga,NA,NA,158,198,0,James Harden,LAC,GSW,0,26,Missed Shot,Jump Shot,Above the Break 3,Right Side Center(RC),24+ ft.,25,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,471,00:26.0,Jonathan Kuminga,NA,NA,158,198,0,Kevin Porter Jr.,LAC,GSW,0,26,Missed Shot,Jump Shot,Above the Break 3,Right Side Center(RC),24+ ft.,25,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,471,00:26.0,Jonathan Kuminga,NA,NA,158,198,0,Nicolas Batum,LAC,GSW,0,26,Missed Shot,Jump Shot,Above the Break 3,Right Side Center(RC),24+ ft.,25,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,471,00:26.0,Jonathan Kuminga,NA,NA,158,198,0,Terance Mann,LAC,GSW,0,26,Missed Shot,Jump Shot,Above the Break 3,Right Side Center(RC),24+ ft.,25,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,473,00:09.7,Kyle Anderson,NA,NA,-98,131,1,Amir Coffey,LAC,GSW,0,9,Missed Shot,Turnaround Fadeaway shot,Mid-Range,Left Side Center(LC),16-24 ft.,16,1,0,2pt,Greater Than 15 Ft
+2024-11-18,22400251,3,473,00:09.7,Kyle Anderson,NA,NA,-98,131,1,James Harden,LAC,GSW,0,9,Missed Shot,Turnaround Fadeaway shot,Mid-Range,Left Side Center(LC),16-24 ft.,16,1,0,2pt,Greater Than 15 Ft
+2024-11-18,22400251,3,473,00:09.7,Kyle Anderson,NA,NA,-98,131,1,Kevin Porter Jr.,LAC,GSW,0,9,Missed Shot,Turnaround Fadeaway shot,Mid-Range,Left Side Center(LC),16-24 ft.,16,1,0,2pt,Greater Than 15 Ft
+2024-11-18,22400251,3,473,00:09.7,Kyle Anderson,NA,NA,-98,131,1,Nicolas Batum,LAC,GSW,0,9,Missed Shot,Turnaround Fadeaway shot,Mid-Range,Left Side Center(LC),16-24 ft.,16,1,0,2pt,Greater Than 15 Ft
+2024-11-18,22400251,3,473,00:09.7,Kyle Anderson,NA,NA,-98,131,1,Terance Mann,LAC,GSW,0,9,Missed Shot,Turnaround Fadeaway shot,Mid-Range,Left Side Center(LC),16-24 ft.,16,1,0,2pt,Greater Than 15 Ft
+2024-11-18,22400251,3,482,00:00.3,Brandin Podziemski,NA,NA,-212,719,1,Amir Coffey,LAC,GSW,0,0,Missed Shot,Jump Shot,Backcourt,Back Court(BC),Back Court Shot,74,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,482,00:00.3,Brandin Podziemski,NA,NA,-212,719,1,James Harden,LAC,GSW,0,0,Missed Shot,Jump Shot,Backcourt,Back Court(BC),Back Court Shot,74,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,482,00:00.3,Brandin Podziemski,NA,NA,-212,719,1,Kevin Porter Jr.,LAC,GSW,0,0,Missed Shot,Jump Shot,Backcourt,Back Court(BC),Back Court Shot,74,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,482,00:00.3,Brandin Podziemski,NA,NA,-212,719,1,Nicolas Batum,LAC,GSW,0,0,Missed Shot,Jump Shot,Backcourt,Back Court(BC),Back Court Shot,74,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,3,482,00:00.3,Brandin Podziemski,NA,NA,-212,719,1,Terance Mann,LAC,GSW,0,0,Missed Shot,Jump Shot,Backcourt,Back Court(BC),Back Court Shot,74,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,493,11:41,Terance Mann,Kevin Porter Jr.,NA,10,7,1,Brandin Podziemski,GSW,LAC,11,41,Made Shot,Driving Dunk Shot,Restricted Area,Center(C),Less Than 8 ft.,1,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,4,493,11:41,Terance Mann,Kevin Porter Jr.,NA,10,7,1,Buddy Hield,GSW,LAC,11,41,Made Shot,Driving Dunk Shot,Restricted Area,Center(C),Less Than 8 ft.,1,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,4,493,11:41,Terance Mann,Kevin Porter Jr.,NA,10,7,1,Jonathan Kuminga,GSW,LAC,11,41,Made Shot,Driving Dunk Shot,Restricted Area,Center(C),Less Than 8 ft.,1,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,4,493,11:41,Terance Mann,Kevin Porter Jr.,NA,10,7,1,Kyle Anderson,GSW,LAC,11,41,Made Shot,Driving Dunk Shot,Restricted Area,Center(C),Less Than 8 ft.,1,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,4,493,11:41,Terance Mann,Kevin Porter Jr.,NA,10,7,1,Moses Moody,GSW,LAC,11,41,Made Shot,Driving Dunk Shot,Restricted Area,Center(C),Less Than 8 ft.,1,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,4,495,11:21,Moses Moody,NA,NA,-237,21,1,Amir Coffey,LAC,GSW,11,21,Missed Shot,Jump Shot,Left Corner 3,Left Side(L),24+ ft.,23,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,495,11:21,Moses Moody,NA,NA,-237,21,1,Ivica Zubac,LAC,GSW,11,21,Missed Shot,Jump Shot,Left Corner 3,Left Side(L),24+ ft.,23,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,495,11:21,Moses Moody,NA,NA,-237,21,1,Kevin Porter Jr.,LAC,GSW,11,21,Missed Shot,Jump Shot,Left Corner 3,Left Side(L),24+ ft.,23,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,495,11:21,Moses Moody,NA,NA,-237,21,1,Nicolas Batum,LAC,GSW,11,21,Missed Shot,Jump Shot,Left Corner 3,Left Side(L),24+ ft.,23,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,495,11:21,Moses Moody,NA,NA,-237,21,1,Terance Mann,LAC,GSW,11,21,Missed Shot,Jump Shot,Left Corner 3,Left Side(L),24+ ft.,23,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,506,10:34,Kevin Porter Jr.,NA,NA,47,122,1,Brandin Podziemski,GSW,LAC,10,34,Missed Shot,Fadeaway Jump Shot,In The Paint (Non-RA),Center(C),8-16 ft.,12,1,0,2pt,10-15 Ft
+2024-11-18,22400251,4,506,10:34,Kevin Porter Jr.,NA,NA,47,122,1,Buddy Hield,GSW,LAC,10,34,Missed Shot,Fadeaway Jump Shot,In The Paint (Non-RA),Center(C),8-16 ft.,12,1,0,2pt,10-15 Ft
+2024-11-18,22400251,4,506,10:34,Kevin Porter Jr.,NA,NA,47,122,1,Jonathan Kuminga,GSW,LAC,10,34,Missed Shot,Fadeaway Jump Shot,In The Paint (Non-RA),Center(C),8-16 ft.,12,1,0,2pt,10-15 Ft
+2024-11-18,22400251,4,506,10:34,Kevin Porter Jr.,NA,NA,47,122,1,Kyle Anderson,GSW,LAC,10,34,Missed Shot,Fadeaway Jump Shot,In The Paint (Non-RA),Center(C),8-16 ft.,12,1,0,2pt,10-15 Ft
+2024-11-18,22400251,4,506,10:34,Kevin Porter Jr.,NA,NA,47,122,1,Moses Moody,GSW,LAC,10,34,Missed Shot,Fadeaway Jump Shot,In The Paint (Non-RA),Center(C),8-16 ft.,12,1,0,2pt,10-15 Ft
+2024-11-18,22400251,4,508,10:20,Jonathan Kuminga,NA,NA,1,101,0,Amir Coffey,LAC,GSW,10,20,Missed Shot,Turnaround Fadeaway shot,In The Paint (Non-RA),Center(C),8-16 ft.,10,1,0,2pt,10-15 Ft
+2024-11-18,22400251,4,508,10:20,Jonathan Kuminga,NA,NA,1,101,0,Ivica Zubac,LAC,GSW,10,20,Missed Shot,Turnaround Fadeaway shot,In The Paint (Non-RA),Center(C),8-16 ft.,10,1,0,2pt,10-15 Ft
+2024-11-18,22400251,4,508,10:20,Jonathan Kuminga,NA,NA,1,101,0,Kevin Porter Jr.,LAC,GSW,10,20,Missed Shot,Turnaround Fadeaway shot,In The Paint (Non-RA),Center(C),8-16 ft.,10,1,0,2pt,10-15 Ft
+2024-11-18,22400251,4,508,10:20,Jonathan Kuminga,NA,NA,1,101,0,Nicolas Batum,LAC,GSW,10,20,Missed Shot,Turnaround Fadeaway shot,In The Paint (Non-RA),Center(C),8-16 ft.,10,1,0,2pt,10-15 Ft
+2024-11-18,22400251,4,508,10:20,Jonathan Kuminga,NA,NA,1,101,0,Terance Mann,LAC,GSW,10,20,Missed Shot,Turnaround Fadeaway shot,In The Paint (Non-RA),Center(C),8-16 ft.,10,1,0,2pt,10-15 Ft
+2024-11-18,22400251,4,510,10:15,Brandin Podziemski,NA,NA,0,0,1,Amir Coffey,LAC,GSW,10,15,Missed Shot,Tip Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,0,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,4,510,10:15,Brandin Podziemski,NA,NA,0,0,1,Ivica Zubac,LAC,GSW,10,15,Missed Shot,Tip Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,0,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,4,510,10:15,Brandin Podziemski,NA,NA,0,0,1,Kevin Porter Jr.,LAC,GSW,10,15,Missed Shot,Tip Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,0,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,4,510,10:15,Brandin Podziemski,NA,NA,0,0,1,Nicolas Batum,LAC,GSW,10,15,Missed Shot,Tip Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,0,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,4,510,10:15,Brandin Podziemski,NA,NA,0,0,1,Terance Mann,LAC,GSW,10,15,Missed Shot,Tip Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,0,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,4,512,10:11,Terance Mann,NA,NA,20,8,1,Brandin Podziemski,GSW,LAC,10,11,Missed Shot,Running Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,4,512,10:11,Terance Mann,NA,NA,20,8,1,Buddy Hield,GSW,LAC,10,11,Missed Shot,Running Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,4,512,10:11,Terance Mann,NA,NA,20,8,1,Jonathan Kuminga,GSW,LAC,10,11,Missed Shot,Running Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,4,512,10:11,Terance Mann,NA,NA,20,8,1,Kyle Anderson,GSW,LAC,10,11,Missed Shot,Running Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,4,512,10:11,Terance Mann,NA,NA,20,8,1,Moses Moody,GSW,LAC,10,11,Missed Shot,Running Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,4,515,09:53,Brandin Podziemski,NA,Kevin Porter Jr.,20,8,1,Amir Coffey,LAC,GSW,9,53,Missed Shot,Cutting Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,4,515,09:53,Brandin Podziemski,NA,Kevin Porter Jr.,20,8,1,Ivica Zubac,LAC,GSW,9,53,Missed Shot,Cutting Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,4,515,09:53,Brandin Podziemski,NA,Kevin Porter Jr.,20,8,1,Kevin Porter Jr.,LAC,GSW,9,53,Missed Shot,Cutting Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,4,515,09:53,Brandin Podziemski,NA,Kevin Porter Jr.,20,8,1,Nicolas Batum,LAC,GSW,9,53,Missed Shot,Cutting Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,4,515,09:53,Brandin Podziemski,NA,Kevin Porter Jr.,20,8,1,Terance Mann,LAC,GSW,9,53,Missed Shot,Cutting Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,4,518,09:47,Amir Coffey,NA,NA,162,198,1,Brandin Podziemski,GSW,LAC,9,47,Missed Shot,Running Jump Shot,Above the Break 3,Right Side Center(RC),24+ ft.,25,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,518,09:47,Amir Coffey,NA,NA,162,198,1,Buddy Hield,GSW,LAC,9,47,Missed Shot,Running Jump Shot,Above the Break 3,Right Side Center(RC),24+ ft.,25,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,518,09:47,Amir Coffey,NA,NA,162,198,1,Jonathan Kuminga,GSW,LAC,9,47,Missed Shot,Running Jump Shot,Above the Break 3,Right Side Center(RC),24+ ft.,25,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,518,09:47,Amir Coffey,NA,NA,162,198,1,Kyle Anderson,GSW,LAC,9,47,Missed Shot,Running Jump Shot,Above the Break 3,Right Side Center(RC),24+ ft.,25,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,518,09:47,Amir Coffey,NA,NA,162,198,1,Moses Moody,GSW,LAC,9,47,Missed Shot,Running Jump Shot,Above the Break 3,Right Side Center(RC),24+ ft.,25,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,520,09:36,Jonathan Kuminga,NA,NA,-33,21,1,Amir Coffey,LAC,GSW,9,36,Made Shot,Driving Reverse Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,3,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,4,520,09:36,Jonathan Kuminga,NA,NA,-33,21,1,Ivica Zubac,LAC,GSW,9,36,Made Shot,Driving Reverse Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,3,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,4,520,09:36,Jonathan Kuminga,NA,NA,-33,21,1,Kevin Porter Jr.,LAC,GSW,9,36,Made Shot,Driving Reverse Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,3,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,4,520,09:36,Jonathan Kuminga,NA,NA,-33,21,1,Nicolas Batum,LAC,GSW,9,36,Made Shot,Driving Reverse Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,3,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,4,520,09:36,Jonathan Kuminga,NA,NA,-33,21,1,Terance Mann,LAC,GSW,9,36,Made Shot,Driving Reverse Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,3,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,4,525,09:09,Jonathan Kuminga,Kyle Anderson,NA,22,19,1,Amir Coffey,LAC,GSW,9,9,Made Shot,Cutting Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,4,525,09:09,Jonathan Kuminga,Kyle Anderson,NA,22,19,1,Ivica Zubac,LAC,GSW,9,9,Made Shot,Cutting Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,4,525,09:09,Jonathan Kuminga,Kyle Anderson,NA,22,19,1,Kevin Porter Jr.,LAC,GSW,9,9,Made Shot,Cutting Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,4,525,09:09,Jonathan Kuminga,Kyle Anderson,NA,22,19,1,Nicolas Batum,LAC,GSW,9,9,Made Shot,Cutting Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,4,525,09:09,Jonathan Kuminga,Kyle Anderson,NA,22,19,1,Terance Mann,LAC,GSW,9,9,Made Shot,Cutting Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,4,527,08:54,Amir Coffey,Terance Mann,NA,40,244,1,Brandin Podziemski,GSW,LAC,8,54,Made Shot,Jump Shot,Above the Break 3,Center(C),24+ ft.,24,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,527,08:54,Amir Coffey,Terance Mann,NA,40,244,1,Buddy Hield,GSW,LAC,8,54,Made Shot,Jump Shot,Above the Break 3,Center(C),24+ ft.,24,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,527,08:54,Amir Coffey,Terance Mann,NA,40,244,1,Jonathan Kuminga,GSW,LAC,8,54,Made Shot,Jump Shot,Above the Break 3,Center(C),24+ ft.,24,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,527,08:54,Amir Coffey,Terance Mann,NA,40,244,1,Kyle Anderson,GSW,LAC,8,54,Made Shot,Jump Shot,Above the Break 3,Center(C),24+ ft.,24,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,527,08:54,Amir Coffey,Terance Mann,NA,40,244,1,Moses Moody,GSW,LAC,8,54,Made Shot,Jump Shot,Above the Break 3,Center(C),24+ ft.,24,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,529,08:44,Kyle Anderson,NA,NA,22,256,1,Amir Coffey,LAC,GSW,8,44,Missed Shot,Jump Shot,Above the Break 3,Center(C),24+ ft.,25,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,529,08:44,Kyle Anderson,NA,NA,22,256,1,Ivica Zubac,LAC,GSW,8,44,Missed Shot,Jump Shot,Above the Break 3,Center(C),24+ ft.,25,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,529,08:44,Kyle Anderson,NA,NA,22,256,1,Kevin Porter Jr.,LAC,GSW,8,44,Missed Shot,Jump Shot,Above the Break 3,Center(C),24+ ft.,25,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,529,08:44,Kyle Anderson,NA,NA,22,256,1,Nicolas Batum,LAC,GSW,8,44,Missed Shot,Jump Shot,Above the Break 3,Center(C),24+ ft.,25,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,529,08:44,Kyle Anderson,NA,NA,22,256,1,Terance Mann,LAC,GSW,8,44,Missed Shot,Jump Shot,Above the Break 3,Center(C),24+ ft.,25,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,531,08:32,Kevin Porter Jr.,Terance Mann,NA,-15,7,1,Brandin Podziemski,GSW,LAC,8,32,Made Shot,Driving Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,1,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,4,531,08:32,Kevin Porter Jr.,Terance Mann,NA,-15,7,1,Buddy Hield,GSW,LAC,8,32,Made Shot,Driving Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,1,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,4,531,08:32,Kevin Porter Jr.,Terance Mann,NA,-15,7,1,Jonathan Kuminga,GSW,LAC,8,32,Made Shot,Driving Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,1,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,4,531,08:32,Kevin Porter Jr.,Terance Mann,NA,-15,7,1,Kyle Anderson,GSW,LAC,8,32,Made Shot,Driving Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,1,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,4,531,08:32,Kevin Porter Jr.,Terance Mann,NA,-15,7,1,Moses Moody,GSW,LAC,8,32,Made Shot,Driving Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,1,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,4,547,08:19,Andrew Wiggins,Draymond Green,NA,18,15,1,Amir Coffey,LAC,GSW,8,19,Made Shot,Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,4,547,08:19,Andrew Wiggins,Draymond Green,NA,18,15,1,Ivica Zubac,LAC,GSW,8,19,Made Shot,Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,4,547,08:19,Andrew Wiggins,Draymond Green,NA,18,15,1,James Harden,LAC,GSW,8,19,Made Shot,Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,4,547,08:19,Andrew Wiggins,Draymond Green,NA,18,15,1,Nicolas Batum,LAC,GSW,8,19,Made Shot,Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,4,547,08:19,Andrew Wiggins,Draymond Green,NA,18,15,1,Terance Mann,LAC,GSW,8,19,Made Shot,Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,4,549,07:56,Terance Mann,NA,NA,235,71,1,Andrew Wiggins,GSW,LAC,7,56,Missed Shot,Pullup Jump shot,Right Corner 3,Right Side(R),24+ ft.,24,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,549,07:56,Terance Mann,NA,NA,235,71,1,Buddy Hield,GSW,LAC,7,56,Missed Shot,Pullup Jump shot,Right Corner 3,Right Side(R),24+ ft.,24,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,549,07:56,Terance Mann,NA,NA,235,71,1,Draymond Green,GSW,LAC,7,56,Missed Shot,Pullup Jump shot,Right Corner 3,Right Side(R),24+ ft.,24,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,549,07:56,Terance Mann,NA,NA,235,71,1,Moses Moody,GSW,LAC,7,56,Missed Shot,Pullup Jump shot,Right Corner 3,Right Side(R),24+ ft.,24,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,549,07:56,Terance Mann,NA,NA,235,71,1,Stephen Curry,GSW,LAC,7,56,Missed Shot,Pullup Jump shot,Right Corner 3,Right Side(R),24+ ft.,24,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,551,07:42,Stephen Curry,Draymond Green,NA,-18,22,1,Amir Coffey,LAC,GSW,7,42,Made Shot,Cutting Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,4,551,07:42,Stephen Curry,Draymond Green,NA,-18,22,1,Ivica Zubac,LAC,GSW,7,42,Made Shot,Cutting Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,4,551,07:42,Stephen Curry,Draymond Green,NA,-18,22,1,James Harden,LAC,GSW,7,42,Made Shot,Cutting Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,4,551,07:42,Stephen Curry,Draymond Green,NA,-18,22,1,Nicolas Batum,LAC,GSW,7,42,Made Shot,Cutting Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,4,551,07:42,Stephen Curry,Draymond Green,NA,-18,22,1,Terance Mann,LAC,GSW,7,42,Made Shot,Cutting Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,4,553,07:17,Terance Mann,James Harden,NA,237,24,1,Andrew Wiggins,GSW,LAC,7,17,Made Shot,Jump Shot,Right Corner 3,Right Side(R),24+ ft.,23,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,553,07:17,Terance Mann,James Harden,NA,237,24,1,Buddy Hield,GSW,LAC,7,17,Made Shot,Jump Shot,Right Corner 3,Right Side(R),24+ ft.,23,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,553,07:17,Terance Mann,James Harden,NA,237,24,1,Draymond Green,GSW,LAC,7,17,Made Shot,Jump Shot,Right Corner 3,Right Side(R),24+ ft.,23,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,553,07:17,Terance Mann,James Harden,NA,237,24,1,Moses Moody,GSW,LAC,7,17,Made Shot,Jump Shot,Right Corner 3,Right Side(R),24+ ft.,23,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,553,07:17,Terance Mann,James Harden,NA,237,24,1,Stephen Curry,GSW,LAC,7,17,Made Shot,Jump Shot,Right Corner 3,Right Side(R),24+ ft.,23,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,555,07:04,Draymond Green,NA,NA,9,12,1,Amir Coffey,LAC,GSW,7,4,Missed Shot,Driving Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,1,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,4,555,07:04,Draymond Green,NA,NA,9,12,1,Ivica Zubac,LAC,GSW,7,4,Missed Shot,Driving Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,1,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,4,555,07:04,Draymond Green,NA,NA,9,12,1,James Harden,LAC,GSW,7,4,Missed Shot,Driving Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,1,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,4,555,07:04,Draymond Green,NA,NA,9,12,1,Nicolas Batum,LAC,GSW,7,4,Missed Shot,Driving Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,1,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,4,555,07:04,Draymond Green,NA,NA,9,12,1,Terance Mann,LAC,GSW,7,4,Missed Shot,Driving Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,1,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,4,557,06:55,Amir Coffey,NA,NA,-228,31,1,Andrew Wiggins,GSW,LAC,6,55,Missed Shot,Jump Shot,Left Corner 3,Left Side(L),24+ ft.,23,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,557,06:55,Amir Coffey,NA,NA,-228,31,1,Buddy Hield,GSW,LAC,6,55,Missed Shot,Jump Shot,Left Corner 3,Left Side(L),24+ ft.,23,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,557,06:55,Amir Coffey,NA,NA,-228,31,1,Draymond Green,GSW,LAC,6,55,Missed Shot,Jump Shot,Left Corner 3,Left Side(L),24+ ft.,23,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,557,06:55,Amir Coffey,NA,NA,-228,31,1,Moses Moody,GSW,LAC,6,55,Missed Shot,Jump Shot,Left Corner 3,Left Side(L),24+ ft.,23,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,557,06:55,Amir Coffey,NA,NA,-228,31,1,Stephen Curry,GSW,LAC,6,55,Missed Shot,Jump Shot,Left Corner 3,Left Side(L),24+ ft.,23,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,573,06:20,Lindy Waters III,Stephen Curry,NA,-239,41,1,Amir Coffey,LAC,GSW,6,20,Made Shot,Jump Shot,Left Corner 3,Left Side(L),24+ ft.,24,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,573,06:20,Lindy Waters III,Stephen Curry,NA,-239,41,1,Ivica Zubac,LAC,GSW,6,20,Made Shot,Jump Shot,Left Corner 3,Left Side(L),24+ ft.,24,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,573,06:20,Lindy Waters III,Stephen Curry,NA,-239,41,1,James Harden,LAC,GSW,6,20,Made Shot,Jump Shot,Left Corner 3,Left Side(L),24+ ft.,24,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,573,06:20,Lindy Waters III,Stephen Curry,NA,-239,41,1,Norman Powell,LAC,GSW,6,20,Made Shot,Jump Shot,Left Corner 3,Left Side(L),24+ ft.,24,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,573,06:20,Lindy Waters III,Stephen Curry,NA,-239,41,1,Terance Mann,LAC,GSW,6,20,Made Shot,Jump Shot,Left Corner 3,Left Side(L),24+ ft.,24,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,575,06:03,Norman Powell,Terance Mann,NA,-80,236,1,Andrew Wiggins,GSW,LAC,6,3,Made Shot,Jump Shot,Above the Break 3,Left Side Center(LC),24+ ft.,24,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,575,06:03,Norman Powell,Terance Mann,NA,-80,236,1,Draymond Green,GSW,LAC,6,3,Made Shot,Jump Shot,Above the Break 3,Left Side Center(LC),24+ ft.,24,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,575,06:03,Norman Powell,Terance Mann,NA,-80,236,1,Lindy Waters III,GSW,LAC,6,3,Made Shot,Jump Shot,Above the Break 3,Left Side Center(LC),24+ ft.,24,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,575,06:03,Norman Powell,Terance Mann,NA,-80,236,1,Moses Moody,GSW,LAC,6,3,Made Shot,Jump Shot,Above the Break 3,Left Side Center(LC),24+ ft.,24,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,575,06:03,Norman Powell,Terance Mann,NA,-80,236,1,Stephen Curry,GSW,LAC,6,3,Made Shot,Jump Shot,Above the Break 3,Left Side Center(LC),24+ ft.,24,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,578,05:43,Stephen Curry,NA,NA,61,300,1,Amir Coffey,LAC,GSW,5,43,Made Shot,Pullup Jump shot,Above the Break 3,Center(C),24+ ft.,30,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,578,05:43,Stephen Curry,NA,NA,61,300,1,Ivica Zubac,LAC,GSW,5,43,Made Shot,Pullup Jump shot,Above the Break 3,Center(C),24+ ft.,30,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,578,05:43,Stephen Curry,NA,NA,61,300,1,James Harden,LAC,GSW,5,43,Made Shot,Pullup Jump shot,Above the Break 3,Center(C),24+ ft.,30,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,578,05:43,Stephen Curry,NA,NA,61,300,1,Norman Powell,LAC,GSW,5,43,Made Shot,Pullup Jump shot,Above the Break 3,Center(C),24+ ft.,30,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,578,05:43,Stephen Curry,NA,NA,61,300,1,Terance Mann,LAC,GSW,5,43,Made Shot,Pullup Jump shot,Above the Break 3,Center(C),24+ ft.,30,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,583,05:17,Stephen Curry,NA,NA,-21,19,1,Amir Coffey,LAC,GSW,5,17,Made Shot,Driving Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,4,583,05:17,Stephen Curry,NA,NA,-21,19,1,Ivica Zubac,LAC,GSW,5,17,Made Shot,Driving Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,4,583,05:17,Stephen Curry,NA,NA,-21,19,1,James Harden,LAC,GSW,5,17,Made Shot,Driving Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,4,583,05:17,Stephen Curry,NA,NA,-21,19,1,Norman Powell,LAC,GSW,5,17,Made Shot,Driving Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,4,583,05:17,Stephen Curry,NA,NA,-21,19,1,Terance Mann,LAC,GSW,5,17,Made Shot,Driving Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,4,584,04:59,Norman Powell,James Harden,NA,-89,239,1,Andrew Wiggins,GSW,LAC,4,59,Made Shot,Jump Shot,Above the Break 3,Left Side Center(LC),24+ ft.,25,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,584,04:59,Norman Powell,James Harden,NA,-89,239,1,Draymond Green,GSW,LAC,4,59,Made Shot,Jump Shot,Above the Break 3,Left Side Center(LC),24+ ft.,25,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,584,04:59,Norman Powell,James Harden,NA,-89,239,1,Lindy Waters III,GSW,LAC,4,59,Made Shot,Jump Shot,Above the Break 3,Left Side Center(LC),24+ ft.,25,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,584,04:59,Norman Powell,James Harden,NA,-89,239,1,Moses Moody,GSW,LAC,4,59,Made Shot,Jump Shot,Above the Break 3,Left Side Center(LC),24+ ft.,25,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,584,04:59,Norman Powell,James Harden,NA,-89,239,1,Stephen Curry,GSW,LAC,4,59,Made Shot,Jump Shot,Above the Break 3,Left Side Center(LC),24+ ft.,25,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,586,04:44,Stephen Curry,NA,NA,76,255,1,Amir Coffey,LAC,GSW,4,44,Missed Shot,Jump Shot,Above the Break 3,Center(C),24+ ft.,26,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,586,04:44,Stephen Curry,NA,NA,76,255,1,Ivica Zubac,LAC,GSW,4,44,Missed Shot,Jump Shot,Above the Break 3,Center(C),24+ ft.,26,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,586,04:44,Stephen Curry,NA,NA,76,255,1,James Harden,LAC,GSW,4,44,Missed Shot,Jump Shot,Above the Break 3,Center(C),24+ ft.,26,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,586,04:44,Stephen Curry,NA,NA,76,255,1,Norman Powell,LAC,GSW,4,44,Missed Shot,Jump Shot,Above the Break 3,Center(C),24+ ft.,26,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,586,04:44,Stephen Curry,NA,NA,76,255,1,Terance Mann,LAC,GSW,4,44,Missed Shot,Jump Shot,Above the Break 3,Center(C),24+ ft.,26,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,591,04:21,Norman Powell,NA,NA,115,3,1,Andrew Wiggins,GSW,LAC,4,21,Missed Shot,Fadeaway Jump Shot,Mid-Range,Right Side(R),8-16 ft.,11,1,0,2pt,10-15 Ft
+2024-11-18,22400251,4,591,04:21,Norman Powell,NA,NA,115,3,1,Buddy Hield,GSW,LAC,4,21,Missed Shot,Fadeaway Jump Shot,Mid-Range,Right Side(R),8-16 ft.,11,1,0,2pt,10-15 Ft
+2024-11-18,22400251,4,591,04:21,Norman Powell,NA,NA,115,3,1,Draymond Green,GSW,LAC,4,21,Missed Shot,Fadeaway Jump Shot,Mid-Range,Right Side(R),8-16 ft.,11,1,0,2pt,10-15 Ft
+2024-11-18,22400251,4,591,04:21,Norman Powell,NA,NA,115,3,1,Lindy Waters III,GSW,LAC,4,21,Missed Shot,Fadeaway Jump Shot,Mid-Range,Right Side(R),8-16 ft.,11,1,0,2pt,10-15 Ft
+2024-11-18,22400251,4,591,04:21,Norman Powell,NA,NA,115,3,1,Stephen Curry,GSW,LAC,4,21,Missed Shot,Fadeaway Jump Shot,Mid-Range,Right Side(R),8-16 ft.,11,1,0,2pt,10-15 Ft
+2024-11-18,22400251,4,595,04:06,Amir Coffey,James Harden,NA,0,14,1,Andrew Wiggins,GSW,LAC,4,6,Made Shot,Running Dunk Shot,Restricted Area,Center(C),Less Than 8 ft.,1,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,4,595,04:06,Amir Coffey,James Harden,NA,0,14,1,Buddy Hield,GSW,LAC,4,6,Made Shot,Running Dunk Shot,Restricted Area,Center(C),Less Than 8 ft.,1,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,4,595,04:06,Amir Coffey,James Harden,NA,0,14,1,Draymond Green,GSW,LAC,4,6,Made Shot,Running Dunk Shot,Restricted Area,Center(C),Less Than 8 ft.,1,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,4,595,04:06,Amir Coffey,James Harden,NA,0,14,1,Lindy Waters III,GSW,LAC,4,6,Made Shot,Running Dunk Shot,Restricted Area,Center(C),Less Than 8 ft.,1,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,4,595,04:06,Amir Coffey,James Harden,NA,0,14,1,Stephen Curry,GSW,LAC,4,6,Made Shot,Running Dunk Shot,Restricted Area,Center(C),Less Than 8 ft.,1,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,4,600,03:26,Buddy Hield,NA,NA,94,241,0,Amir Coffey,LAC,GSW,3,26,Missed Shot,Pullup Jump shot,Above the Break 3,Right Side Center(RC),24+ ft.,25,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,600,03:26,Buddy Hield,NA,NA,94,241,0,Ivica Zubac,LAC,GSW,3,26,Missed Shot,Pullup Jump shot,Above the Break 3,Right Side Center(RC),24+ ft.,25,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,600,03:26,Buddy Hield,NA,NA,94,241,0,James Harden,LAC,GSW,3,26,Missed Shot,Pullup Jump shot,Above the Break 3,Right Side Center(RC),24+ ft.,25,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,600,03:26,Buddy Hield,NA,NA,94,241,0,Norman Powell,LAC,GSW,3,26,Missed Shot,Pullup Jump shot,Above the Break 3,Right Side Center(RC),24+ ft.,25,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,600,03:26,Buddy Hield,NA,NA,94,241,0,Terance Mann,LAC,GSW,3,26,Missed Shot,Pullup Jump shot,Above the Break 3,Right Side Center(RC),24+ ft.,25,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,606,03:00,Ivica Zubac,NA,NA,-62,5,0,Andrew Wiggins,GSW,LAC,3,0,Missed Shot,Hook Shot,In The Paint (Non-RA),Center(C),Less Than 8 ft.,6,1,0,2pt,Less Than 10 Ft
+2024-11-18,22400251,4,606,03:00,Ivica Zubac,NA,NA,-62,5,0,Buddy Hield,GSW,LAC,3,0,Missed Shot,Hook Shot,In The Paint (Non-RA),Center(C),Less Than 8 ft.,6,1,0,2pt,Less Than 10 Ft
+2024-11-18,22400251,4,606,03:00,Ivica Zubac,NA,NA,-62,5,0,Draymond Green,GSW,LAC,3,0,Missed Shot,Hook Shot,In The Paint (Non-RA),Center(C),Less Than 8 ft.,6,1,0,2pt,Less Than 10 Ft
+2024-11-18,22400251,4,606,03:00,Ivica Zubac,NA,NA,-62,5,0,Lindy Waters III,GSW,LAC,3,0,Missed Shot,Hook Shot,In The Paint (Non-RA),Center(C),Less Than 8 ft.,6,1,0,2pt,Less Than 10 Ft
+2024-11-18,22400251,4,606,03:00,Ivica Zubac,NA,NA,-62,5,0,Stephen Curry,GSW,LAC,3,0,Missed Shot,Hook Shot,In The Paint (Non-RA),Center(C),Less Than 8 ft.,6,1,0,2pt,Less Than 10 Ft
+2024-11-18,22400251,4,610,02:30,Norman Powell,James Harden,NA,12,246,1,Andrew Wiggins,GSW,LAC,2,30,Made Shot,Jump Shot,Above the Break 3,Center(C),24+ ft.,24,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,610,02:30,Norman Powell,James Harden,NA,12,246,1,Buddy Hield,GSW,LAC,2,30,Made Shot,Jump Shot,Above the Break 3,Center(C),24+ ft.,24,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,610,02:30,Norman Powell,James Harden,NA,12,246,1,Draymond Green,GSW,LAC,2,30,Made Shot,Jump Shot,Above the Break 3,Center(C),24+ ft.,24,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,610,02:30,Norman Powell,James Harden,NA,12,246,1,Lindy Waters III,GSW,LAC,2,30,Made Shot,Jump Shot,Above the Break 3,Center(C),24+ ft.,24,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,610,02:30,Norman Powell,James Harden,NA,12,246,1,Stephen Curry,GSW,LAC,2,30,Made Shot,Jump Shot,Above the Break 3,Center(C),24+ ft.,24,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,615,02:19,Andrew Wiggins,NA,James Harden,-40,52,0,Amir Coffey,LAC,GSW,2,19,Missed Shot,Driving Layup Shot,In The Paint (Non-RA),Center(C),Less Than 8 ft.,6,1,0,2pt,Less Than 10 Ft
+2024-11-18,22400251,4,615,02:19,Andrew Wiggins,NA,James Harden,-40,52,0,Derrick Jones Jr.,LAC,GSW,2,19,Missed Shot,Driving Layup Shot,In The Paint (Non-RA),Center(C),Less Than 8 ft.,6,1,0,2pt,Less Than 10 Ft
+2024-11-18,22400251,4,615,02:19,Andrew Wiggins,NA,James Harden,-40,52,0,James Harden,LAC,GSW,2,19,Missed Shot,Driving Layup Shot,In The Paint (Non-RA),Center(C),Less Than 8 ft.,6,1,0,2pt,Less Than 10 Ft
+2024-11-18,22400251,4,615,02:19,Andrew Wiggins,NA,James Harden,-40,52,0,Norman Powell,LAC,GSW,2,19,Missed Shot,Driving Layup Shot,In The Paint (Non-RA),Center(C),Less Than 8 ft.,6,1,0,2pt,Less Than 10 Ft
+2024-11-18,22400251,4,615,02:19,Andrew Wiggins,NA,James Harden,-40,52,0,Terance Mann,LAC,GSW,2,19,Missed Shot,Driving Layup Shot,In The Paint (Non-RA),Center(C),Less Than 8 ft.,6,1,0,2pt,Less Than 10 Ft
+2024-11-18,22400251,4,621,02:12,Andrew Wiggins,Stephen Curry,NA,206,145,1,Amir Coffey,LAC,GSW,2,12,Made Shot,Jump Shot,Above the Break 3,Right Side Center(RC),24+ ft.,25,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,621,02:12,Andrew Wiggins,Stephen Curry,NA,206,145,1,Derrick Jones Jr.,LAC,GSW,2,12,Made Shot,Jump Shot,Above the Break 3,Right Side Center(RC),24+ ft.,25,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,621,02:12,Andrew Wiggins,Stephen Curry,NA,206,145,1,James Harden,LAC,GSW,2,12,Made Shot,Jump Shot,Above the Break 3,Right Side Center(RC),24+ ft.,25,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,621,02:12,Andrew Wiggins,Stephen Curry,NA,206,145,1,Norman Powell,LAC,GSW,2,12,Made Shot,Jump Shot,Above the Break 3,Right Side Center(RC),24+ ft.,25,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,621,02:12,Andrew Wiggins,Stephen Curry,NA,206,145,1,Terance Mann,LAC,GSW,2,12,Made Shot,Jump Shot,Above the Break 3,Right Side Center(RC),24+ ft.,25,1,1,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,623,01:44,Terance Mann,NA,NA,-25,246,1,Andrew Wiggins,GSW,LAC,1,44,Missed Shot,Pullup Jump shot,Above the Break 3,Center(C),24+ ft.,24,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,623,01:44,Terance Mann,NA,NA,-25,246,1,Buddy Hield,GSW,LAC,1,44,Missed Shot,Pullup Jump shot,Above the Break 3,Center(C),24+ ft.,24,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,623,01:44,Terance Mann,NA,NA,-25,246,1,Draymond Green,GSW,LAC,1,44,Missed Shot,Pullup Jump shot,Above the Break 3,Center(C),24+ ft.,24,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,623,01:44,Terance Mann,NA,NA,-25,246,1,Lindy Waters III,GSW,LAC,1,44,Missed Shot,Pullup Jump shot,Above the Break 3,Center(C),24+ ft.,24,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,623,01:44,Terance Mann,NA,NA,-25,246,1,Stephen Curry,GSW,LAC,1,44,Missed Shot,Pullup Jump shot,Above the Break 3,Center(C),24+ ft.,24,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,625,01:37,Stephen Curry,NA,NA,-16,12,1,Amir Coffey,LAC,GSW,1,37,Made Shot,Driving Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,4,625,01:37,Stephen Curry,NA,NA,-16,12,1,Derrick Jones Jr.,LAC,GSW,1,37,Made Shot,Driving Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,4,625,01:37,Stephen Curry,NA,NA,-16,12,1,James Harden,LAC,GSW,1,37,Made Shot,Driving Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,4,625,01:37,Stephen Curry,NA,NA,-16,12,1,Norman Powell,LAC,GSW,1,37,Made Shot,Driving Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,4,625,01:37,Stephen Curry,NA,NA,-16,12,1,Terance Mann,LAC,GSW,1,37,Made Shot,Driving Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,4,627,01:09,Stephen Curry,NA,Amir Coffey,16,19,1,Amir Coffey,LAC,GSW,1,9,Missed Shot,Driving Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,4,627,01:09,Stephen Curry,NA,Amir Coffey,16,19,1,Derrick Jones Jr.,LAC,GSW,1,9,Missed Shot,Driving Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,4,627,01:09,Stephen Curry,NA,Amir Coffey,16,19,1,James Harden,LAC,GSW,1,9,Missed Shot,Driving Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,4,627,01:09,Stephen Curry,NA,Amir Coffey,16,19,1,Norman Powell,LAC,GSW,1,9,Missed Shot,Driving Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,4,627,01:09,Stephen Curry,NA,Amir Coffey,16,19,1,Terance Mann,LAC,GSW,1,9,Missed Shot,Driving Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,2,1,0,2pt,Less Than 6 Ft
+2024-11-18,22400251,4,630,00:43.3,James Harden,NA,NA,-13,247,1,Andrew Wiggins,GSW,LAC,0,43,Missed Shot,Pullup Jump shot,Above the Break 3,Center(C),24+ ft.,24,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,630,00:43.3,James Harden,NA,NA,-13,247,1,Buddy Hield,GSW,LAC,0,43,Missed Shot,Pullup Jump shot,Above the Break 3,Center(C),24+ ft.,24,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,630,00:43.3,James Harden,NA,NA,-13,247,1,Draymond Green,GSW,LAC,0,43,Missed Shot,Pullup Jump shot,Above the Break 3,Center(C),24+ ft.,24,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,630,00:43.3,James Harden,NA,NA,-13,247,1,Lindy Waters III,GSW,LAC,0,43,Missed Shot,Pullup Jump shot,Above the Break 3,Center(C),24+ ft.,24,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,630,00:43.3,James Harden,NA,NA,-13,247,1,Stephen Curry,GSW,LAC,0,43,Missed Shot,Pullup Jump shot,Above the Break 3,Center(C),24+ ft.,24,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,632,00:35.0,Andrew Wiggins,Draymond Green,NA,26,19,1,Amir Coffey,LAC,GSW,0,35,Made Shot,Cutting Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,3,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,4,632,00:35.0,Andrew Wiggins,Draymond Green,NA,26,19,1,Derrick Jones Jr.,LAC,GSW,0,35,Made Shot,Cutting Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,3,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,4,632,00:35.0,Andrew Wiggins,Draymond Green,NA,26,19,1,James Harden,LAC,GSW,0,35,Made Shot,Cutting Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,3,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,4,632,00:35.0,Andrew Wiggins,Draymond Green,NA,26,19,1,Norman Powell,LAC,GSW,0,35,Made Shot,Cutting Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,3,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,4,632,00:35.0,Andrew Wiggins,Draymond Green,NA,26,19,1,Terance Mann,LAC,GSW,0,35,Made Shot,Cutting Layup Shot,Restricted Area,Center(C),Less Than 8 ft.,3,1,1,2pt,Less Than 6 Ft
+2024-11-18,22400251,4,641,00:12.3,Stephen Curry,NA,NA,201,158,0,Amir Coffey,LAC,GSW,0,12,Missed Shot,Jump Shot,Above the Break 3,Right Side Center(RC),24+ ft.,25,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,641,00:12.3,Stephen Curry,NA,NA,201,158,0,Ivica Zubac,LAC,GSW,0,12,Missed Shot,Jump Shot,Above the Break 3,Right Side Center(RC),24+ ft.,25,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,641,00:12.3,Stephen Curry,NA,NA,201,158,0,James Harden,LAC,GSW,0,12,Missed Shot,Jump Shot,Above the Break 3,Right Side Center(RC),24+ ft.,25,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,641,00:12.3,Stephen Curry,NA,NA,201,158,0,Norman Powell,LAC,GSW,0,12,Missed Shot,Jump Shot,Above the Break 3,Right Side Center(RC),24+ ft.,25,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,641,00:12.3,Stephen Curry,NA,NA,201,158,0,Terance Mann,LAC,GSW,0,12,Missed Shot,Jump Shot,Above the Break 3,Right Side Center(RC),24+ ft.,25,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,643,00:02.2,Gary Payton II,NA,NA,113,236,1,Amir Coffey,LAC,GSW,0,2,Missed Shot,Jump Shot,Above the Break 3,Right Side Center(RC),24+ ft.,26,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,643,00:02.2,Gary Payton II,NA,NA,113,236,1,Ivica Zubac,LAC,GSW,0,2,Missed Shot,Jump Shot,Above the Break 3,Right Side Center(RC),24+ ft.,26,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,643,00:02.2,Gary Payton II,NA,NA,113,236,1,James Harden,LAC,GSW,0,2,Missed Shot,Jump Shot,Above the Break 3,Right Side Center(RC),24+ ft.,26,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,643,00:02.2,Gary Payton II,NA,NA,113,236,1,Norman Powell,LAC,GSW,0,2,Missed Shot,Jump Shot,Above the Break 3,Right Side Center(RC),24+ ft.,26,1,0,3pt,Greater Than 15 Ft
+2024-11-18,22400251,4,643,00:02.2,Gary Payton II,NA,NA,113,236,1,Terance Mann,LAC,GSW,0,2,Missed Shot,Jump Shot,Above the Break 3,Right Side Center(RC),24+ ft.,26,1,0,3pt,Greater Than 15 Ft
