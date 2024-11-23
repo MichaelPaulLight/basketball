@@ -1,7 +1,7 @@
 data {
   int<lower=1> N_shots;              // Number of shots
   int<lower=1> N_defenders;          // Number of unique defenders
-  int<lower=1> N_periods;            // Number of periods (4)
+  int<lower=1> N_periods;            // Number of periods
   int<lower=1> N_shot_types;         // Number of shot types (2: 2pt/3pt)
   int<lower=1> N_def_categories;     // Number of defense categories
   
@@ -15,6 +15,10 @@ data {
   // Defender dashboard aggregates - reshaped version
   int<lower=0> makes[N_defenders, N_periods, N_shot_types, N_def_categories];     // Number of makes
   int<lower=0> misses[N_defenders, N_periods, N_shot_types, N_def_categories];    // Number of misses
+  
+  // For shots with known defenders
+  int<lower=0, upper=1> has_known_defender[N_shots];  // Indicator if shot has known defender
+  int<lower=1, upper=5> known_defender_pos[N_shots];  // Position (1-5) of known defender in defenders array
 }
 
 parameters {
@@ -54,9 +58,16 @@ transformed parameters {
 }
 
 model {
-  // Prior 
+  // Prior on theta - different for known vs unknown defenders
   for (n in 1:N_shots) {
-    theta[n] ~ dirichlet(rep_vector(2.0, 5));
+    if (has_known_defender[n]) {
+      // For known defenders, force probability=1 for the known defender
+      theta[n] = rep_vector(0.0, 5);
+      theta[n, known_defender_pos[n]] = 1.0;
+    } else {
+      // For unknown defenders, use dirichlet prior as before
+      theta[n] ~ dirichlet(rep_vector(2.0, 5));
+    }
   }
   
   // Likelihood
