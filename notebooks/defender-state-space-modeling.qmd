@@ -155,6 +155,7 @@ shot_df <- (shot_df
               shot_distance < 6 ~ "Less Than 6 Ft",
               shot_distance < 10 ~ "Less Than 10 Ft",
               shot_distance > 15 ~ "Greater Than 15 Ft",
+              TRUE ~ "10-15 Ft"
             ))
 )
 
@@ -172,4 +173,218 @@ testy_agg <- (testy
          |> summarise(counts = n())
 )
 
+reshaped_agg <- (testy_agg
+  |> # get rid of shot_attempted_flag b/c it's always 1 
+    select(-shot_attempted_flag) 
+  |> # pivoting shot_made_flag to create makes/misses columns
+    pivot_wider(
+      names_from = shot_made_flag,
+      values_from = counts,
+      names_prefix = "count_",
+      values_fill = 0  # Important: fill NAs with 0
+    )
+  |> # renaming for clarity
+    rename(
+      misses = count_0,
+      makes = count_1
+    )
+)
+
+testy |> write_csv("22400251_pbp.csv")
+
+reshaped_agg |> write_csv("22400251_def-dash-agg.csv")
+
+```
+
+```{r}
+library(tidybayes)
+                   
+
+testy <- (
+  testy 
+  |> group_by(number_original) 
+  |> mutate(
+      defender_pos = row_number()
+      ) 
+  |> mutate(
+    has_known_defender = !is.na(known_defender),
+    known_defender_indicator = if_else(has_known_defender & known_defender == defender_name, 1, 0),
+      known_defender_pos = if_else(
+        has_known_defender & known_defender == defender_name,
+        defender_pos,
+        1L)  # arbitrary if not known
+      )
+)
+
+hyperparameters <- tibble(alpha_known = 1000.0,
+    alpha_unknown = 0.001,
+    alpha_regular = 2.0)
+
+compose_test <- compose_data(testy, reshaped_agg)
+
+compose_test$N <- compose_test$n
+
+```
+
+
+```{r}
+
+  # Read data 
+  pbp <- testy
+  def_dash <- reshaped_agg
+  
+  # Get dimensions 
+  N_shots <- n_distinct(pbp$number_original)
+  N_defenders <- n_distinct(def_dash$defender_name)
+  N_periods <- n_distinct(pbp$period)
+  N_shot_types <- n_distinct(pbp$shot_type)
+  N_def_categories <- n_distinct(def_dash$defense_category)
+  
+  # Create mappings
+  defender_to_id <- (reshaped_agg
+                     %>% distinct(defender_name)
+                     %>% arrange(defender_name)
+                     %>% mutate(id = row_number())
+                     %>% deframe()
+  )
+  
+  def_cat_to_id <- def_dash %>%
+    distinct(defense_category) %>%
+    arrange(defense_category) %>%
+    mutate(id = row_number()) %>%
+    deframe()
+  
+  # Process play-by-play data
+  shots_data <- pbp %>%
+    # Group by shot
+    group_by(number_original) %>%
+    mutate(
+      defender_id = defender_to_id[defender_name],
+      # Get position of each defender in the group (1-5)
+      defender_pos = row_number()
+    ) %>%
+    # Add shot info from first row of each group
+    mutate(
+      period = first(period),
+      shot_type = if_else(str_detect(first(shot_type), "2pt"), 1L, 2L),
+      def_category = def_cat_to_id[first(defense_category)],
+      shot_made = first(shot_made_flag),
+      has_known = !is.na(first(known_defender)) && first(known_defender) != "NA",
+      known_defender_name = first(known_defender)
+    ) %>%
+    # For shots with known defenders, find their position
+    group_by(number_original) %>%
+    mutate(
+      known_defender_pos = if_else(
+        has_known,
+        which(defender_name == known_defender_name)[1],
+        1L  # arbitrary if not known
+      )
+    ) %>%
+    # Create wide format for defenders
+    select(
+      number_original, period, shot_type, def_category, shot_made,
+      has_known, known_defender_pos, defender_id, defender_pos
+    ) %>%
+    pivot_wider(
+      names_from = defender_pos,
+      values_from = defender_id,
+      names_prefix = "defender_"
+    ) %>%
+    ungroup()
+  
+  # Process defender dashboard data
+  def_dash_processed <- def_dash %>%
+    mutate(
+      defender_id = defender_to_id[defender_name],
+      def_category_id = def_cat_to_id[defense_category],
+      shot_type = if_else(shot_type == "2pt", 1L, 2L)
+    )
+  
+  # Create makes/misses arrays
+  makes_array <- array(0L, dim = c(N_defenders, N_periods, N_shot_types, N_def_categories))
+  misses_array <- array(0L, dim = c(N_defenders, N_periods, N_shot_types, N_def_categories))
+  
+  def_dash_processed %>%
+    group_by(defender_id, period, shot_type, def_category_id) %>%
+    summarise(
+      makes = sum(makes),
+      misses = sum(misses),
+      .groups = "drop"
+    ) %>%
+    pwalk(function(defender_id, period, shot_type, def_category_id, makes, misses) {
+      makes_array[defender_id, period, shot_type, def_category_id] <<- makes
+      misses_array[defender_id, period, shot_type, def_category_id] <<- misses
+    })
+  
+  # Prepare Stan data list
+  stan_data <- list(
+    N_shots = N_shots,
+    N_defenders = N_defenders, 
+    N_periods = N_periods,
+    N_shot_types = N_shot_types,
+    N_def_categories = N_def_categories,
+    
+    # Play by play data
+    defenders = shots_data %>%
+      select(starts_with("defender_")) %>%
+      as.matrix(),
+    period = shots_data$period,
+    shot_type = shots_data$shot_type,
+    def_category = shots_data$def_category,
+    shot_made = shots_data$shot_made,
+    
+    # Defender dashboard aggregates
+    makes = makes_array,
+    misses = misses_array,
+    
+    # Known defender info
+    has_known_defender = shots_data$has_known,
+    known_defender_pos = shots_data$known_defender_pos,
+    
+    # Concentration parameters
+    alpha_known = 1000.0,
+    alpha_unknown = 0.001,
+    alpha_regular = 2.0
+  )
+  
+  out <- list(
+    stan_data = stan_data,
+    defender_to_id = defender_to_id
+  )
+}
+
+```
+
+
+```{r}
+model_data <- list(
+  # Dimensions
+  N = compose_test$n,
+  n_defender_name = compose_test$n_defender_name,
+  n_period = n_distinct(compose_test$period),
+  n_shot_type = compose_test$n_shot_type,
+  n_defense_category = compose_test$n_defense_category,
+  
+  # Play by play data
+  defender_name = compose_test$defender_name,
+  period = compose_test$period,
+  shot_type = compose_test$shot_type,
+  defense_category = compose_test$defense_category,
+  shot_made_flag = compose_test$shot_made_flag,
+  
+  # Defender dashboard aggregates
+  makes = compose_test$makes,      # Should be a 4D array [n_defender_name, n_period, n_shot_type, n_defense_category]
+  misses = compose_test$misses,    # Should be a 4D array [n_defender_name, n_period, n_shot_type, n_defense_category]
+  
+  # Known defender indicators
+  known_defender_indicator = compose_test$known_defender_indicator,
+  known_defender_pos = compose_test$known_defender_pos
+)
+
+# Fit the model
+# fit <- stan(
+#   file = "models/defender-hmm-binomial_full.stan", 
+#   data = model_data
+# )
 ```
