@@ -20,12 +20,13 @@ player_logs <- nba_leaguegamelog(season = "2024-25", player_or_team = "P") %>%
   mutate(team_location = ifelse(str_detect(matchup, "\\@"), "away", "home"),
          across(c(player_id, team_id), as.numeric))
 
-pbp_df <- read_parquet("../data/241119_pbp_gt.parquet")
+pbp_df <- read_parquet("../data/241205_pbp_gt.parquet")
 ```
 
 ```{r}
 
-pbp_df <- (
+# this dataframe is only shots
+pbp_df_shots_only <- (
   pbp_final_gt 
   |> group_by(game_id, slug_team)
   |> mutate(stint_home = ifelse(slug_team == team_home, cumsum(msg_type == 8) + 1, NA),
@@ -45,26 +46,54 @@ pbp_df <- (
          slug_team = ifelse(lineup_location == "home", team_home, team_away),
          slug_opp = ifelse(lineup_location == "away", team_home, team_away),
          stint = ifelse(lineup_location == "home", stint_home, stint_away))
-  # |> select(game_id, game_date, period, stint, number_event, msg_type, description, lineup, pts_team, pts_opp,
-  #         poss_team, poss_opp, secs_played, slug_team, slug_opp, garbage_time, player1, player2, player3)
   |> filter(str_detect(description, regex("shot", ignore_case = T)) & !str_detect(description, regex("clock", ignore_case = T)))
   |> mutate(shot_type = case_when(str_detect(description, "3pt") ~ "3pt",
                               TRUE ~ "2pt"))
   |> rename(known_defender = player3)
-  # |> group_by(game_id, game_date, period, stint, slug_team, slug_opp, lineup, garbage_time)
-  # |> summarise(across(c(pts_team, pts_opp, poss_team, poss_opp, secs_played), sum))
-  # |> ungroup()
-  # |> filter(secs_played + poss_opp + poss_team + pts_opp + pts_team > 0)
-  # |> group_by(game_id, slug_team)
-  # |> mutate(stint = row_number())
-  # |> ungroup()
 )
 
+# this dataframe is shots and steals
+
+pbp_df_shots_and_steals <- (
+  pbp_final_gt 
+  |> group_by(game_id, slug_team)
+  |> mutate(stint_home = ifelse(slug_team == team_home, cumsum(msg_type == 8) + 1, NA),
+         stint_away = ifelse(slug_team == team_away, cumsum(msg_type == 8) + 1, NA)) 
+  |> group_by(game_id) 
+  |> mutate(across(starts_with("stint"), ~ na.locf0(., fromLast = TRUE)),
+         across(starts_with("stint"), ~ na.locf(.))) 
+  |> ungroup() 
+  |> pivot_longer(cols = starts_with("lineup"),
+               names_to = "lineup_location",
+               values_to = "lineup",
+               names_prefix = "lineup_")
+  |> mutate(pts_team = ifelse(lineup_location == "home", shot_pts_home, shot_pts_away),
+         pts_opp = ifelse(lineup_location == "away", shot_pts_home, shot_pts_away),
+         poss_team = ifelse(lineup_location == "home", poss_home, poss_away),
+         poss_opp = ifelse(lineup_location == "away", poss_home, poss_away),
+         slug_team = ifelse(lineup_location == "home", team_home, team_away),
+         slug_opp = ifelse(lineup_location == "away", team_home, team_away),
+         stint = ifelse(lineup_location == "home", stint_home, stint_away))
+  |> filter(str_detect(description, regex("shot", ignore_case = T)) & !str_detect(description, regex("clock", ignore_case = T)) | str_detect(description, regex("steal", ignore_case = T)))
+  |> mutate(shot_type = case_when(str_detect(description, "3pt") ~ "3pt",
+                              TRUE ~ "2pt"))
+  |> rename(known_defender = player3)
+)
 ```
 
 
 ```{r}
-shot_pbp_by_defense <- (pbp_df 
+# this dataframe is only possessions that ended in a shot, with each defender on the floor for each posession 
+
+shot_pbp_by_defense <- (pbp_df_shots_only 
+|> filter(off_slug_team != slug_team)
+|> separate_longer_delim(cols = lineup, delim = ", ")
+|> rename(player_name = lineup)
+)  
+
+# this dataframe # this dataframe is only possessions that ended in a shot or steal, with each defender on the floor for each posession 
+
+shot_and_steal_pbp_by_defense <- (pbp_df_shots_and_steals
 |> filter(off_slug_team != slug_team)
 |> separate_longer_delim(cols = lineup, delim = ", ")
 |> rename(player_name = lineup)
@@ -73,6 +102,8 @@ shot_pbp_by_defense <- (pbp_df
 ```
 
 ```{r}
+# here we're joining the player logs to the shots/pbp dataframe in order to get the ids for the offenders, defenders, and assisters for each offensive play that resulted in a shot
+
 player_logs_for_join <- (
   player_logs
   |> select(player_name, player_id, team_id, team_abbreviation, game_id)
@@ -82,27 +113,108 @@ player_logs_for_join <- (
 
 shot_pbp_by_defense <- (shot_pbp_by_defense
   |> left_join(player_logs_for_join, by = join_by("player_name", "slug_team", "game_id"))
-  |> rename(defender_name = player_name)
+  |> rename(defender_name = player_name,
+            defender_id = player_id,
+            player_name = player1)
+  |> left_join(player_logs_for_join, by = join_by("player_name", "game_id"))
+  |> rename(offender_id = player_id,
+            offender_name = player_name,
+            player_name = player2)
+  |> left_join(player_logs_for_join, by = join_by("player_name", "game_id"))
+  |> rename(assister_id = player_id,
+            assister_name = player_name)
+)    
+
+shot_and_steal_pbp_by_defense <- (shot_and_steal_pbp_by_defense
+  |> left_join(player_logs_for_join, by = join_by("player_name", "slug_team", "game_id"))
+  |> rename(defender_name = player_name,
+            defender_id = player_id,
+            player_name = player1)
+  |> left_join(player_logs_for_join, by = join_by("player_name", "game_id"))
+  |> rename(offender_id = player_id,
+            offender_name = player_name,
+            player_name = player2)
+  |> left_join(player_logs_for_join, by = join_by("player_name", "game_id"))
+  |> rename(assister_id = player_id,
+            assister_name = player_name)
 )    
 ```
 
 ```{r}
+
+# very weirdly a few games from 11-17 don't have overall fga or fgm stats
+
 defender_dashboard <- nanoparquet::read_parquet("../data/defender_dashboard.parquet")
 
 defender_dashboard <- (
   defender_dashboard
   |> rename(defender_id = CLOSE_DEF_playerId)
-  |> filter(defender_id == 1627780 & date == "2024-11-18",
-            G == 1)
-  
+  |> filter(G == 1) # G == 1 is a bit of an artifact from the data collection process; filtering for it makes sure given stats correctly correspond to given games
+  |> clean_names()
+  |> distinct()
 )
 
-test <- (shot_pbp_by_defense 
-         |> filter(player_id == 1627780 & game_date == "2024-11-18")
-         |> mutate(make = ifelse(pts_opp > 0, 1, 0))
-         |> group_by(game_id, period, player_id, make, shot_type)
-         |> summarise(counts = n())
+closest_defender_dashboard <- nanoparquet::read_parquet("../data/closest_defender_shooting_dashboard.parquet")
+
+closest_defender_dashboard <- (
+  closest_defender_dashboard
+  |> clean_names()
+  |> rename(offender_id = player_id)
+  |> filter(g == 1) # g == 1 is a bit of an artifact from the data collection process; filtering for it makes sure given stats correctly correspond to given games
 )
+```
+
+```{r}
+
+defender_dashboard <- (defender_dashboard 
+                       |> select(date, period, defender_id, defense_category, d_fga, d_fgm) 
+                       |> mutate(d_fga = as.numeric(d_fga), d_fgm = as.numeric(d_fgm)) 
+                       |>  pivot_wider(names_from = defense_category, values_from = c(d_fgm, d_fga), values_fill = 0)
+                       |> clean_names()
+)
+
+
+defender_dashboard <- (defender_dashboard
+  |> mutate(d_fga_15_to_24_ft = d_fga_greater_than_15_ft - d_fga_3_pointers,
+            d_fgm_15_to_24_ft = d_fgm_greater_than_15_ft - d_fgm_3_pointers,
+            d_fga_6_to_10_ft = d_fga_less_than_10_ft - d_fga_less_than_6_ft,
+            d_fgm_6_to_10_ft = d_fgm_less_than_10_ft - d_fgm_less_than_6_ft,
+            d_fga_10_to_15_ft = d_fga_2_pointers - (d_fga_less_than_6_ft + d_fga_6_to_10_ft + d_fga_15_to_24_ft),
+            d_fgm_10_to_15_ft = d_fgm_2_pointers - (d_fgm_less_than_6_ft + d_fgm_6_to_10_ft + d_fgm_15_to_24_ft),
+            d_fga_24_plus = d_fga_greater_than_15_ft - d_fga_15_to_24_ft,
+            d_fgm_24_plus = d_fgm_greater_than_15_ft - d_fgm_15_to_24_ft,
+            fga_2_pt_check = d_fga_2_pointers - (d_fga_less_than_6_ft + d_fga_6_to_10_ft + d_fga_10_to_15_ft + d_fga_15_to_24_ft),
+            fgm_2_pt_check = d_fgm_2_pointers - (d_fgm_less_than_6_ft + d_fgm_6_to_10_ft + d_fgm_10_to_15_ft + d_fgm_15_to_24_ft),
+            fga_3_pt_check = d_fga_3_pointers - d_fga_24_plus,
+            fgm_3_pt_check = d_fgm_3_pointers - d_fgm_24_plus,
+  fga_overall_check = d_fga_overall - (d_fga_less_than_6_ft + d_fga_6_to_10_ft + d_fga_10_to_15_ft + d_fga_15_to_24_ft + d_fga_24_plus),
+  fgm_overall_check = d_fgm_overall - (d_fgm_less_than_6_ft + d_fgm_6_to_10_ft + d_fgm_10_to_15_ft + d_fgm_15_to_24_ft + d_fgm_24_plus)))
+
+defender_dashboard |> summarise(
+  sum(fga_2_pt_check),
+  sum(fgm_2_pt_check),
+  sum(fga_3_pt_check),
+  sum(fgm_3_pt_check),
+  sum(fga_overall_check),
+  sum(fgm_overall_check)
+)
+
+defender_dashboard <- (defender_dashboard |> select(-starts_with("fga_"), -starts_with("fgm_"))
+  |> pivot_longer(
+    cols = starts_with("d_"),
+    names_to = c("stat_type", "shot_type"),
+    names_pattern = "d_(fg[am])_(.+)",
+    values_to = "value"
+  ) 
+  # Now pivot wider to get fga/fgm as columns
+  |> pivot_wider(
+    names_from = stat_type,
+    values_from = value
+  )
+  |> filter(shot_type == "less_than_6_ft" | shot_type == "6_to_10_ft" | shot_type == "10_to_15_ft" | shot_type == "15_to_24_ft" | shot_type == "24_plus")
+)
+
+# this is where you got to before leaving the cafe, idiot!!
 
 ```
 
@@ -114,8 +226,8 @@ first_date <- player_logs %>%
 
 shot_df <- nba_shotchartdetail(
   context_measure = "FGA",
-  date_from = Sys.Date() - 3,
-  date_to = Sys.Date() - 2,
+  date_from = first_date$game_date,
+  date_to = Sys.Date() - 1,
   game_id = "",
   game_segment = "",
   last_n_games = 0,
@@ -139,6 +251,9 @@ shot_df <- nba_shotchartdetail(
 ```
 
 ```{r}
+
+# the following code is cleaning the shot_df dataframe, renaming columns, and creating a defense category column based on shot distance that matches the categories in defender_dashboard
+
 shot_df <- (shot_df 
             |> clean_names()
             |> mutate(game_id = as.numeric(game_id),
@@ -159,6 +274,20 @@ shot_df <- (shot_df
             ))
 )
 
+# the following joins the shot_df dataframe with the shot_pbp_by_defense dataframe to get the defender names for each shot
+
+shot_df <- (shot_df 
+          |> left_join(shot_pbp_by_defense, by = join_by(game_id, number_original, period, game_date))
+          |> select(game_date, game_id, period, number_original, clock, offender_name, assister_name, known_defender, locX, locY, defender_name, possession, slug_team, slug_opp, minutes_remaining, seconds_remaining, event_type, action_type, shot_zone_basic, shot_zone_area, shot_zone_range, shot_distance, shot_attempted_flag, shot_made_flag, shot_type, defense_category)
+)
+
+(shot_df
+  |>           
+          
+          
+          
+          
+          
 gp2_pbp <- (shot_df 
             |> filter(game_id == 22400251) 
 )
@@ -220,9 +349,48 @@ hyperparameters <- tibble(alpha_known = 1000.0,
     alpha_unknown = 0.001,
     alpha_regular = 2.0)
 
-compose_test <- compose_data(testy, reshaped_agg)
+compose_test <- compose_data(testy)
 
 compose_test$N <- compose_test$n
+
+
+
+reshaped_agg <- reshaped_agg |> 
+  mutate(defense_category = factor(
+    defense_category,
+    levels = c("Less Than 6 Ft", "Less Than 10 Ft", "10-15 Ft", "Greater Than 15 Ft")
+  ))
+
+compose_agg <- compose_data(reshaped_agg)
+
+# the following does the same thing to the reshaped_agg data as does compose_data(reshaped_agg), which results in compose_data(reshaped_agg)$makes and compose_data(reshaped_agg)$misses, equivalent to makes_array and misses_array
+makes_array <- reshaped_agg %>%
+  mutate(
+    shot_type_num = if_else(shot_type == "3pt", 2L, 1L),
+    defense_category_num = as.numeric(defense_category),
+    defender_id = n_distinct(defender_name)
+  ) %>%
+  arrange(defender_id, period, shot_type_num, defense_category_num) %>%
+  pull(makes)
+
+misses_array <- reshaped_agg %>%
+  mutate(
+    shot_type_num = if_else(shot_type == "3pt", 2L, 1L),
+    defense_category_num = as.numeric(defense_category),
+    defender_id = as.numeric(str_extract(defender_name, "\\d+"))
+  ) %>%
+  arrange(defender_id, period, shot_type_num, defense_category_num) %>%
+  pull(misses)
+
+stan_data$makes <- array(
+  compose_agg$makes,
+  dim = c(n_defender_name, n_period, n_shot_type, n_defense_category)
+)
+
+stan_data$misses <- array(
+  compose_agg$misses,
+  dim = c(n_defender_name, n_period, n_shot_type, n_defense_category)
+)
 
 ```
 
@@ -358,33 +526,136 @@ compose_test$N <- compose_test$n
 
 
 ```{r}
-model_data <- list(
-  # Dimensions
-  N = compose_test$n,
-  n_defender_name = compose_test$n_defender_name,
-  n_period = n_distinct(compose_test$period),
-  n_shot_type = compose_test$n_shot_type,
-  n_defense_category = compose_test$n_defense_category,
-  
-  # Play by play data
-  defender_name = compose_test$defender_name,
-  period = compose_test$period,
-  shot_type = compose_test$shot_type,
-  defense_category = compose_test$defense_category,
-  shot_made_flag = compose_test$shot_made_flag,
-  
-  # Defender dashboard aggregates
-  makes = compose_test$makes,      # Should be a 4D array [n_defender_name, n_period, n_shot_type, n_defense_category]
-  misses = compose_test$misses,    # Should be a 4D array [n_defender_name, n_period, n_shot_type, n_defense_category]
-  
-  # Known defender indicators
-  known_defender_indicator = compose_test$known_defender_indicator,
-  known_defender_pos = compose_test$known_defender_pos
+set.seed(42)
+
+# Constants
+N <- 100
+n_defender_name <- 10
+n_period <- 4
+n_shot_type <- 2
+n_defense_category <- 3
+
+# Create base shot data
+shots_df <- tibble(
+  shot_id = 1:N,
+  period = sample(1:n_period, N, replace = TRUE),
+  shot_type = sample(c("2PT", "3PT"), N, replace = TRUE, prob = c(0.7, 0.3)),
+  defense_category = factor(
+    sample(1:n_defense_category, N, replace = TRUE),
+    levels = 1:n_defense_category,
+    labels = c("Tight", "Moderate", "Loose")
+  ),
+  shot_made = rbinom(N, 1, 0.45)
 )
 
+# Create defenders data (5 defenders per shot)
+defenders_df <- crossing(
+  shot_id = 1:N,
+  defender_position = 1:5
+) %>%
+  mutate(
+    defender_id = sample(1:n_defender_name, n(), replace = TRUE),
+    defender_name = str_c("Player_", defender_id)
+  )
+
+# Create all possible combinations
+all_combinations <- crossing(
+  defender_name = str_c("Player_", 1:n_defender_name),
+  period = 1:n_period,
+  shot_type = c("2PT", "3PT"),
+  defense_category = c("Tight", "Moderate", "Loose")
+)
+
+# Join shots and defenders data and calculate stats
+defender_stats <- shots_df %>%
+  left_join(defenders_df, by = "shot_id") %>%
+  # First count actual occurrences
+  group_by(defender_name, period, shot_type, defense_category) %>%
+  summarise(
+    total_shots = n()/5,  # Divide by 5 since each shot appears 5 times
+    makes = sum(shot_made)/5,
+    misses = total_shots - makes,
+    .groups = "drop"
+  ) %>%
+  # Join with all possible combinations to ensure we have all combinations
+  right_join(all_combinations, by = c("defender_name", "period", "shot_type", "defense_category")) %>%
+  # Replace NA with 0
+  replace_na(list(total_shots = 0, makes = 0, misses = 0))
+
+# Create arrays for Stan
+makes_array <- defender_stats %>%
+  mutate(
+    shot_type_num = if_else(shot_type == "3PT", 2L, 1L),
+    defense_category_num = as.numeric(factor(defense_category, levels = c("Tight", "Moderate", "Loose"))),
+    defender_id = as.numeric(str_extract(defender_name, "\\d+"))
+  ) %>%
+  arrange(defender_id, period, shot_type_num, defense_category_num) %>%
+  pull(makes) %>%
+  as.integer()  # Ensure integer type
+
+misses_array <- defender_stats %>%
+  mutate(
+    shot_type_num = if_else(shot_type == "3PT", 2L, 1L),
+    defense_category_num = as.numeric(factor(defense_category, levels = c("Tight", "Moderate", "Loose"))),
+    defender_id = as.numeric(str_extract(defender_name, "\\d+"))
+  ) %>%
+  arrange(defender_id, period, shot_type_num, defense_category_num) %>%
+  pull(misses) %>%
+  as.integer()  # Ensure integer type
+
+# Create the arrays with explicit integer type
+stan_data <- list(
+  N = as.integer(N),
+  n_defender_name = as.integer(n_defender_name),
+  n_period = as.integer(n_period),
+  n_shot_type = as.integer(n_shot_type),
+  n_defense_category = as.integer(n_defense_category),
+  
+  defender_name = matrix(
+    as.integer(defenders_df %>%
+      group_by(shot_id) %>%
+      arrange(defender_position) %>%
+      pull(defender_id)),
+    nrow = N,
+    byrow = TRUE
+  ),
+  
+  period = as.integer(shots_df$period),
+  shot_type = as.integer(shots_df$shot_type == "3PT") + 1L,
+  defense_category = as.integer(shots_df$defense_category),
+  shot_made_flag = as.integer(shots_df$shot_made),
+  known_defender_indicator = as.integer(rbinom(N, 1, 0.7)),
+  known_defender_pos = as.integer(sample(1:5, N, replace = TRUE)),
+  
+  # Create arrays ensuring integer type
+  makes = array(
+    makes_array,
+    dim = c(n_defender_name, n_period, n_shot_type, n_defense_category)
+  ),
+  misses = array(
+    misses_array,
+    dim = c(n_defender_name, n_period, n_shot_type, n_defense_category)
+  ),
+  
+  # Hyperparameters (these stay as doubles)
+  alpha_known = 1000.0,
+  alpha_unknown = 0.001,
+  alpha_regular = 2.0
+)
+```
+
+```{r}
+library(cmdstanr)
+
+# Compile the model
+model <- cmdstan_model(stan_file = "../models/defender-hmm-binomial_full.stan")
+
 # Fit the model
-# fit <- stan(
-#   file = "models/defender-hmm-binomial_full.stan", 
-#   data = model_data
-# )
+fit_cmdstanr <- model$sample(
+  data = stan_data,
+  chains = 4,
+  parallel_chains = parallel::detectCores(),
+  iter_warmup = 1000,
+  iter_sampling = 1000
+)
 ```
