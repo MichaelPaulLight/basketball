@@ -95,6 +95,37 @@ if (dim(player_logs)[1] > 0) {
       pmap(possibly(function_closest_defender_shooting_dash, NULL)) 
 
     closest_defender_shooting_dash <- closest_defender_shooting_dash |> list_rbind()
+    
+    function_closest_defender_shooting_dash_10_plus <- function(game_dates, periods){
+      nba_playerdashptshots(
+        date_from = game_dates,
+        date_to = game_dates,
+        game_segment = "",
+        last_n_games = 0,
+        league_id = "00",
+        location = "",
+        month = 0,
+        opponent_team_id = 0,
+        outcome = "",
+        per_mode = "Totals",
+        period = periods,
+        player_id = 0,
+        season = year_to_season(most_recent_nba_season() - 1),
+        season_segment = "",
+        season_type = "Regular Season",
+        team_id = 0,
+        vs_conference = "",
+        vs_division = ""
+      ) |> 
+        pluck("ClosestDefender10ftPlusShooting") |>
+        mutate(date = game_dates,
+               period = periods)
+    }
+    
+    closest_defender_shooting_dash_10_plus <- game_by_period |> 
+      pmap(possibly(function_closest_defender_shooting_dash_10_plus, NULL)) 
+    
+    closest_defender_shooting_dash_10_plus <- closest_defender_shooting_dash_10_plus |> list_rbind()
 
     combined_def_file <- "../data/defender_dashboard.parquet"
     if (file.exists(combined_def_file)) {
@@ -110,6 +141,13 @@ if (dim(player_logs)[1] > 0) {
       closest_defender_shooting_dash <- bind_rows(existing_closest, closest_defender_shooting_dash)
     }
     write_parquet(closest_defender_shooting_dash, "../data/closest_defender_shooting_dashboard.parquet")
+    
+    combined_closest_10_plus_file <- "../data/closest_defender_shooting_dash_10_plus.parquet"
+    if (file.exists(combined_closest_10_plus_file)) {
+      existing_closest_10_plus <- read_parquet(combined_closest_10_plus_file)
+      closest_defender_shooting_dash_10_plus <- bind_rows(existing_closest_10_plus, closest_defender_shooting_dash_10_plus)
+    }
+    write_parquet(closest_defender_shooting_dash_10_plus, "../data/closest_defender_shooting_dash_10_plus.parquet")
     
     message("Successfully updated combined files")
     
