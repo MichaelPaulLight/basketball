@@ -161,7 +161,59 @@ closest_defender_dashboard <- (
   |> clean_names()
   |> rename(offender_id = player_id)
   |> filter(g == 1) # g == 1 is a bit of an artifact from the data collection process; filtering for it makes sure given stats correctly correspond to given games
+  |> distinct()
 )
+
+closest_defender_dashboard_10_plus <- nanoparquet::read_parquet("../data/closest_defender_shooting_dash_10_plus.parquet")
+
+closest_defender_dashboard_10_plus <- (
+  closest_defender_dashboard_10_plus
+  |> clean_names()
+  |> rename(offender_id = player_id)
+  |> filter(g == 1) # g == 1 is a bit of an artifact from the data collection process; filtering for it makes sure given stats correctly correspond to given games
+  |> distinct()
+)
+```
+
+Brief example illustrating motivation for using the closest defender shooting data to infer which specific shots were defended at which level of intensity:
+
+Looking at the 11-12 game between the Hawks and Celtics, and our favorite player Caché 'sacher, in the first period, Risacher takes seven total shots, 1 very tightly contested, 5 tightly contested, and 1 open shot. He only takes two of them from a distance greater than 10 feet from the basket, one three and the other a 2, one of which guarded at 2-4 feet and the other at 4-6 feet. If we look at risacher_shots_p1, the three was taken from 26-feet and blocked by Tatum; the other was a 12-foot Floating Jump Shot, which he missed. While it at first seems more that a defender guarding a shooter at 2-4 feet would be likelier to block a shot than one at 4-6 feet, when we look at the game tape, Risacher gets into his shooting motion when Tatum is 4-6 feet away; he gets into the shooting motion for the 12-footer while Al Horfard closes in to contest up close with an outstretched arm.
+
+Who cares? Why do we care? We care because now we know that the relationship between blocks and contesting defender distances might not be so intuitive. This is in part an artifact of the measurement process, which seems to record shot and closest defender data at the time the shooter enters their shooting motion, not when the ball is actually released. 
+
+This also means we can't use information about blocked shots to infer closest defender position, which is a bummer. 
+
+```{r}
+
+risacher_closest_def_10_plus_p1 <- closest_defender_dashboard_10_plus |> filter(player_id == "1642258" & date == "2024-11-12" & period == 1)
+
+risacher_shots_p1 <- shot_df |> filter(offender_name == "Zaccharie Risacher" & game_date == "2024-11-12" & period == 1)
+
+risacher_closest_def_p1 <- closest_defender_dashboard |> filter(offender_id == "1642258" & date == "2024-11-12" & period == 1)
+```
+
+```{r}
+
+closest_defender_dashboard_10_plus <- (closest_defender_dashboard_10_plus 
+                                       |> select(date, period, offender_id, close_def_dist_range, fgm, fga, fg2m, fg2a, fg3m, fg3a)
+                                       |> rename_with(
+  ~ paste0(.x, "_10_plus"),
+  starts_with("f")
+  )
+) 
+
+closest_defender_dashboard <- (closest_defender_dashboard
+                               |> select(date, period, offender_id, close_def_dist_range, fgm, fga, fg2m, fg2a, fg3m, fg3a) 
+                               |> left_join(closest_defender_dashboard_10_plus, by = join_by("date", "period", "offender_id", "close_def_dist_range"))
+                               |> mutate(across(fgm:fg3a_10_plus, ~ as.numeric(.)))
+)
+
+closest_defender_dashboard <- (closest_defender_dashboard
+                               |> mutate(across(everything(), ~replace_na(., 0)))
+)
+
+
+
 ```
 
 ```{r}
@@ -213,8 +265,6 @@ defender_dashboard <- (defender_dashboard |> select(-starts_with("fga_"), -start
   )
   |> filter(shot_type == "less_than_6_ft" | shot_type == "6_to_10_ft" | shot_type == "10_to_15_ft" | shot_type == "15_to_24_ft" | shot_type == "24_plus")
 )
-
-# this is where you got to before leaving the cafe, idiot!!
 
 ```
 
