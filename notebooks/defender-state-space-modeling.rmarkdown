@@ -4,14 +4,11 @@ format: html
 editor: visual
 ---
 
-
-
 ```{r}
 library(hoopR)
 library(tidyverse)
 library(nanoparquet)
 ```
-
 
 ```{r}
 player_logs <- nba_leaguegamelog(season = "2024-25", player_or_team = "P") %>%
@@ -80,7 +77,6 @@ pbp_df_shots_and_steals <- (
   |> rename(known_defender = player3)
 )
 ```
-
 
 ```{r}
 # this dataframe is only possessions that ended in a shot, with each defender on the floor for each posession 
@@ -175,6 +171,7 @@ closest_defender_dashboard_10_plus <- (
 )
 ```
 
+
 Brief example illustrating motivation for using the closest defender shooting data to infer which specific shots were defended at which level of intensity:
 
 Looking at the 11-12 game between the Hawks and Celtics, and our favorite player Caché 'sacher, in the first period, Risacher takes seven total shots, 1 very tightly contested, 5 tightly contested, and 1 open shot. He only takes two of them from a distance greater than 10 feet from the basket, one three and the other a 2, one of which guarded at 2-4 feet and the other at 4-6 feet. If we look at risacher_shots_p1, the three was taken from 26-feet and blocked by Tatum; the other was a 12-foot Floating Jump Shot, which he missed. While it at first seems more that a defender guarding a shooter at 2-4 feet would be likelier to block a shot than one at 4-6 feet, when we look at the game tape, Risacher gets into his shooting motion when Tatum is 4-6 feet away; he gets into the shooting motion for the 12-footer while Al Horfard closes in to contest up close with an outstretched arm.
@@ -182,6 +179,7 @@ Looking at the 11-12 game between the Hawks and Celtics, and our favorite player
 Who cares? Why do we care? We care because now we know that the relationship between blocks and contesting defender distances might not be so intuitive. This is in part an artifact of the measurement process, which seems to record shot and closest defender data at the time the shooter enters their shooting motion, not when the ball is actually released. 
 
 This also means we can't use information about blocked shots to infer closest defender position, which is a bummer. 
+
 
 ```{r}
 
@@ -212,28 +210,14 @@ closest_defender_dashboard <- (closest_defender_dashboard
                                |> mutate(across(everything(), ~replace_na(., 0)))
 )
 
-closest_defender_dashboard <- (closest_defender_dashboard
-  |> mutate(o_fga_0_to_10_ft = fg2a - fg2a_10_plus,
-            o_fgm_0_to_10_ft = fg2m - fg2m_10_plus)
-  |> rename(o_fga_10_to_24_ft = fg2a_10_plus,
-            o_fgm_10_to_24_ft = fg2m_10_plus,
-            o_fga_24_plus = fg3a_10_plus,
-            o_fgm_24_plus = fg3m_10_plus)
+test <- (closest_defender_dashboard
+  |> mutate(d_fga_0_to_10 = fg2a - fg2a_10_plus,
+            d_fgm_0_to_10 = fg2m - fg2m_10_plus)
+  |> rename(d_fga_10_to_24 = fg2a_10_plus,
+            d_fgm_10_to_24 = fg2m_10_plus,
+            d_fga_24_plus = fg3a_10_plus,
+            d_fgm_24_plus = fg3m_10_plus)
   |> select(-starts_with("fg"), -starts_with("fg"))
-)
-
-closest_defender_dashboard <- (closest_defender_dashboard
-  |> pivot_longer(
-    cols = starts_with("o_"),
-    names_to = c("stat_type", "shot_dist_range"),
-    names_pattern = "o_(fg[am])_(.+)",
-    values_to = "value"
-  ) 
-  # Now pivot wider to get fga/fgm as columns
-  |> pivot_wider(
-    names_from = stat_type,
-    values_from = value
-  )
 )
 
 
@@ -277,7 +261,7 @@ defender_dashboard |> summarise(
 defender_dashboard <- (defender_dashboard |> select(-starts_with("fga_"), -starts_with("fgm_"))
   |> pivot_longer(
     cols = starts_with("d_"),
-    names_to = c("stat_type", "shot_dist_range"),
+    names_to = c("stat_type", "shot_type"),
     names_pattern = "d_(fg[am])_(.+)",
     values_to = "value"
   ) 
@@ -286,7 +270,7 @@ defender_dashboard <- (defender_dashboard |> select(-starts_with("fga_"), -start
     names_from = stat_type,
     values_from = value
   )
-  |> filter(shot_dist_range == "less_than_6_ft" | shot_dist_range == "6_to_10_ft" | shot_dist_range == "10_to_15_ft" | shot_dist_range == "15_to_24_ft" | shot_dist_range == "24_plus")
+  |> filter(shot_type == "less_than_6_ft" | shot_type == "6_to_10_ft" | shot_type == "10_to_15_ft" | shot_type == "15_to_24_ft" | shot_type == "24_plus")
 )
 
 ```
@@ -467,7 +451,6 @@ stan_data$misses <- array(
 
 ```
 
-
 ```{r}
 
   # Read data 
@@ -596,7 +579,6 @@ stan_data$misses <- array(
 }
 
 ```
-
 
 ```{r}
 set.seed(42)
