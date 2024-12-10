@@ -4,14 +4,11 @@ format: html
 editor: visual
 ---
 
-
-
 ```{r}
 library(hoopR)
 library(tidyverse)
 library(nanoparquet)
 ```
-
 
 ```{r}
 player_logs <- nba_leaguegamelog(season = "2024-25", player_or_team = "P") %>%
@@ -80,7 +77,6 @@ pbp_df_shots_and_steals <- (
   |> rename(known_defender = player3)
 )
 ```
-
 
 ```{r}
 # this dataframe is only possessions that ended in a shot, with each defender on the floor for each posession 
@@ -179,9 +175,9 @@ Brief example illustrating motivation for using the closest defender shooting da
 
 Looking at the 11-12 game between the Hawks and Celtics, and our favorite player Caché 'sacher, in the first period, Risacher takes seven total shots, 1 very tightly contested, 5 tightly contested, and 1 open shot. He only takes two of them from a distance greater than 10 feet from the basket, one three and the other a 2, one of which guarded at 2-4 feet and the other at 4-6 feet. If we look at risacher_shots_p1, the three was taken from 26-feet and blocked by Tatum; the other was a 12-foot Floating Jump Shot, which he missed. While it at first seems more that a defender guarding a shooter at 2-4 feet would be likelier to block a shot than one at 4-6 feet, when we look at the game tape, Risacher gets into his shooting motion when Tatum is 4-6 feet away; he gets into the shooting motion for the 12-footer while Al Horfard closes in to contest up close with an outstretched arm.
 
-Who cares? Why do we care? We care because now we know that the relationship between blocks and contesting defender distances might not be so intuitive. This is in part an artifact of the measurement process, which seems to record shot and closest defender data at the time the shooter enters their shooting motion, not when the ball is actually released. 
+Who cares? Why do we care? We care because now we know that the relationship between blocks and contesting defender distances might not be so intuitive. This is in part an artifact of the measurement process, which seems to record shot and closest defender data at the time the shooter enters their shooting motion, not when the ball is actually released.
 
-This also means we can't use information about blocked shots to infer closest defender position, which is a bummer. 
+This also means we can't use information about blocked shots to infer closest defender position, which is a bummer.
 
 ```{r}
 
@@ -193,25 +189,35 @@ risacher_closest_def_p1 <- closest_defender_dashboard |> filter(offender_id == "
 ```
 
 ```{r}
-
+# Filter and rename columns for shots 10+ feet from defender
+# Append "_10_plus" to field goal attempt/made columns so that it's possible to differentiate after the following join
 closest_defender_dashboard_10_plus <- (closest_defender_dashboard_10_plus 
-                                       |> select(date, period, offender_id, close_def_dist_range, fgm, fga, fg2m, fg2a, fg3m, fg3a)
-                                       |> rename_with(
-  ~ paste0(.x, "_10_plus"),
-  starts_with("f")
+  |> select(date, period, offender_id, close_def_dist_range, fgm, fga, fg2m, fg2a, fg3m, fg3a)
+  |> rename_with(
+    ~ paste0(.x, "_10_plus"),
+    starts_with("f")
   )
 ) 
 
+# Join the full closest_defender_dashboard with the exclusive 10+ feet data
+# Convert all field goal columns to numeric
 closest_defender_dashboard <- (closest_defender_dashboard
-                               |> select(date, period, offender_id, close_def_dist_range, fgm, fga, fg2m, fg2a, fg3m, fg3a) 
-                               |> left_join(closest_defender_dashboard_10_plus, by = join_by("date", "period", "offender_id", "close_def_dist_range"))
-                               |> mutate(across(fgm:fg3a_10_plus, ~ as.numeric(.)))
+  |> select(date, period, offender_id, close_def_dist_range, fgm, fga, fg2m, fg2a, fg3m, fg3a) 
+  |> left_join(closest_defender_dashboard_10_plus, 
+               by = join_by("date", "period", "offender_id", "close_def_dist_range"))
+  |> mutate(across(fgm:fg3a_10_plus, ~ as.numeric(.)))
 )
 
+# Replace all NA values with 0
 closest_defender_dashboard <- (closest_defender_dashboard
-                               |> mutate(across(everything(), ~replace_na(., 0)))
+  |> mutate(across(everything(), ~replace_na(., 0)))
 )
 
+# I'm thinking about shot type as a function of distance-from-basket, so I use 2pt and 3pt categorization to infer shot distance in the closest_defender_dashboard and defender dashboard up ahead
+# Calculate shots from different distances:
+# - 0 to 10 feet (difference between total and 10+ feet)
+# - 10 to 24 feet (2-point shots 10+ feet)
+# - 24+ feet (3-point shots 10+ feet)
 closest_defender_dashboard <- (closest_defender_dashboard
   |> mutate(o_fga_0_to_10_ft = fg2a - fg2a_10_plus,
             o_fgm_0_to_10_ft = fg2m - fg2m_10_plus)
@@ -222,6 +228,9 @@ closest_defender_dashboard <- (closest_defender_dashboard
   |> select(-starts_with("fg"), -starts_with("fg"))
 )
 
+# Reshape data:
+# 1. First pivot longer to separate shot distance ranges
+# 2. Then pivot wider to separate field goals attempted (fga) and made (fgm)
 closest_defender_dashboard <- (closest_defender_dashboard
   |> pivot_longer(
     cols = starts_with("o_"),
@@ -229,7 +238,6 @@ closest_defender_dashboard <- (closest_defender_dashboard
     names_pattern = "o_(fg[am])_(.+)",
     values_to = "value"
   ) 
-  # Now pivot wider to get fga/fgm as columns
   |> pivot_wider(
     names_from = stat_type,
     values_from = value
@@ -240,31 +248,48 @@ closest_defender_dashboard <- (closest_defender_dashboard
 ```
 
 ```{r}
-
+# Initial data preparation:
+# - Select relevant columns for analysis
+# - Convert field goal attempts and makes to numeric
+# - Reshape data to have separate columns for each defense category
+# - Clean column names to ensure consistency
 defender_dashboard <- (defender_dashboard 
-                       |> select(date, period, defender_id, defense_category, d_fga, d_fgm) 
-                       |> mutate(d_fga = as.numeric(d_fga), d_fgm = as.numeric(d_fgm)) 
-                       |>  pivot_wider(names_from = defense_category, values_from = c(d_fgm, d_fga), values_fill = 0)
-                       |> clean_names()
+  |> select(date, period, defender_id, defense_category, d_fga, d_fgm) 
+  |> mutate(d_fga = as.numeric(d_fga), d_fgm = as.numeric(d_fgm)) 
+  |> pivot_wider(names_from = defense_category, 
+                values_from = c(d_fgm, d_fga), 
+                values_fill = 0)
+  |> clean_names()
 )
 
-
+# Calculate detailed shot distance breakdowns:
+# - Break down overlapping categories into specific distance ranges
+# - Add verification columns to ensure data consistency
+# This is necessary because the original data has overlapping categories
+# (e.g., "less_than_10_ft" includes "less_than_6_ft")
 defender_dashboard <- (defender_dashboard
+  # Calculate 15-24 ft shots (greater than 15 ft minus 3-pointers)
   |> mutate(d_fga_15_to_24_ft = d_fga_greater_than_15_ft - d_fga_3_pointers,
             d_fgm_15_to_24_ft = d_fgm_greater_than_15_ft - d_fgm_3_pointers,
+            # Calculate 6-10 ft shots
             d_fga_6_to_10_ft = d_fga_less_than_10_ft - d_fga_less_than_6_ft,
             d_fgm_6_to_10_ft = d_fgm_less_than_10_ft - d_fgm_less_than_6_ft,
+            # Calculate 10-15 ft shots as remainder of 2-pointers
             d_fga_10_to_15_ft = d_fga_2_pointers - (d_fga_less_than_6_ft + d_fga_6_to_10_ft + d_fga_15_to_24_ft),
             d_fgm_10_to_15_ft = d_fgm_2_pointers - (d_fgm_less_than_6_ft + d_fgm_6_to_10_ft + d_fgm_15_to_24_ft),
+            # Calculate 24+ ft shots (3-pointers)
             d_fga_24_plus = d_fga_greater_than_15_ft - d_fga_15_to_24_ft,
             d_fgm_24_plus = d_fgm_greater_than_15_ft - d_fgm_15_to_24_ft,
+            # Add verification columns to ensure calculations are correct
             fga_2_pt_check = d_fga_2_pointers - (d_fga_less_than_6_ft + d_fga_6_to_10_ft + d_fga_10_to_15_ft + d_fga_15_to_24_ft),
             fgm_2_pt_check = d_fgm_2_pointers - (d_fgm_less_than_6_ft + d_fgm_6_to_10_ft + d_fgm_10_to_15_ft + d_fgm_15_to_24_ft),
             fga_3_pt_check = d_fga_3_pointers - d_fga_24_plus,
             fgm_3_pt_check = d_fgm_3_pointers - d_fgm_24_plus,
-  fga_overall_check = d_fga_overall - (d_fga_less_than_6_ft + d_fga_6_to_10_ft + d_fga_10_to_15_ft + d_fga_15_to_24_ft + d_fga_24_plus),
-  fgm_overall_check = d_fgm_overall - (d_fgm_less_than_6_ft + d_fgm_6_to_10_ft + d_fgm_10_to_15_ft + d_fgm_15_to_24_ft + d_fgm_24_plus)))
+            fga_overall_check = d_fga_overall - (d_fga_less_than_6_ft + d_fga_6_to_10_ft + d_fga_10_to_15_ft + d_fga_15_to_24_ft + d_fga_24_plus),
+            fgm_overall_check = d_fgm_overall - (d_fgm_less_than_6_ft + d_fgm_6_to_10_ft + d_fgm_10_to_15_ft + d_fgm_15_to_24_ft + d_fgm_24_plus)))
 
+# Verify calculations by checking if all sums equal zero
+# If they do, our breakdowns are mathematically consistent
 defender_dashboard |> summarise(
   sum(fga_2_pt_check),
   sum(fgm_2_pt_check),
@@ -274,6 +299,12 @@ defender_dashboard |> summarise(
   sum(fgm_overall_check)
 )
 
+# Final data reshaping:
+# - Remove verification columns
+# - Reshape data for analysis by:
+#   1. Converting to long format to separate shot distances
+#   2. Converting back to wide format to separate attempts/makes
+# - Filter to keep only the five main distance ranges we calculated
 defender_dashboard <- (defender_dashboard |> select(-starts_with("fga_"), -starts_with("fgm_"))
   |> pivot_longer(
     cols = starts_with("d_"),
@@ -281,12 +312,15 @@ defender_dashboard <- (defender_dashboard |> select(-starts_with("fga_"), -start
     names_pattern = "d_(fg[am])_(.+)",
     values_to = "value"
   ) 
-  # Now pivot wider to get fga/fgm as columns
   |> pivot_wider(
     names_from = stat_type,
     values_from = value
   )
-  |> filter(shot_dist_range == "less_than_6_ft" | shot_dist_range == "6_to_10_ft" | shot_dist_range == "10_to_15_ft" | shot_dist_range == "15_to_24_ft" | shot_dist_range == "24_plus")
+  |> filter(shot_dist_range == "less_than_6_ft" | 
+            shot_dist_range == "6_to_10_ft" | 
+            shot_dist_range == "10_to_15_ft" | 
+            shot_dist_range == "15_to_24_ft" | 
+            shot_dist_range == "24_plus")
 )
 
 ```
@@ -467,7 +501,6 @@ stan_data$misses <- array(
 
 ```
 
-
 ```{r}
 
   # Read data 
@@ -596,7 +629,6 @@ stan_data$misses <- array(
 }
 
 ```
-
 
 ```{r}
 set.seed(42)
