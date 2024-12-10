@@ -219,10 +219,10 @@ closest_defender_dashboard <- (closest_defender_dashboard
 # - 10 to 24 feet (2-point shots 10+ feet)
 # - 24+ feet (3-point shots 10+ feet)
 closest_defender_dashboard <- (closest_defender_dashboard
-  |> mutate(o_fga_0_to_10_ft = fg2a - fg2a_10_plus,
-            o_fgm_0_to_10_ft = fg2m - fg2m_10_plus)
-  |> rename(o_fga_10_to_24_ft = fg2a_10_plus,
-            o_fgm_10_to_24_ft = fg2m_10_plus,
+  |> mutate(o_fga_0_through_9_ft = fg2a - fg2a_10_plus,
+            o_fgm_0_through_9_ft = fg2m - fg2m_10_plus)
+  |> rename(o_fga_10_through_23_ft = fg2a_10_plus,
+            o_fgm_10_through_23_ft = fg2m_10_plus,
             o_fga_24_plus = fg3a_10_plus,
             o_fgm_24_plus = fg3m_10_plus)
   |> select(-starts_with("fg"), -starts_with("fg"))
@@ -234,7 +234,7 @@ closest_defender_dashboard <- (closest_defender_dashboard
 closest_defender_dashboard <- (closest_defender_dashboard
   |> pivot_longer(
     cols = starts_with("o_"),
-    names_to = c("stat_type", "shot_dist_range"),
+    names_to = c("stat_type", "offender_shot_dist_range"),
     names_pattern = "o_(fg[am])_(.+)",
     values_to = "value"
   ) 
@@ -242,6 +242,10 @@ closest_defender_dashboard <- (closest_defender_dashboard
     names_from = stat_type,
     values_from = value
   )
+  |> rename(offender_fga = fga, offender_fgm = fgm)
+  |> mutate(game_date = as_date(date),
+            offender_id = as.numeric(offender_id))
+  |> select(-date)
 )
 
 
@@ -269,24 +273,24 @@ defender_dashboard <- (defender_dashboard
 # (e.g., "less_than_10_ft" includes "less_than_6_ft")
 defender_dashboard <- (defender_dashboard
   # Calculate 15-24 ft shots (greater than 15 ft minus 3-pointers)
-  |> mutate(d_fga_15_to_24_ft = d_fga_greater_than_15_ft - d_fga_3_pointers,
-            d_fgm_15_to_24_ft = d_fgm_greater_than_15_ft - d_fgm_3_pointers,
+  |> mutate(d_fga_16_through_23_ft = d_fga_greater_than_15_ft - d_fga_3_pointers,
+            d_fgm_16_through_23_ft = d_fgm_greater_than_15_ft - d_fgm_3_pointers,
             # Calculate 6-10 ft shots
-            d_fga_6_to_10_ft = d_fga_less_than_10_ft - d_fga_less_than_6_ft,
-            d_fgm_6_to_10_ft = d_fgm_less_than_10_ft - d_fgm_less_than_6_ft,
+            d_fga_6_through_9_ft = d_fga_less_than_10_ft - d_fga_less_than_6_ft,
+            d_fgm_6_through_9_ft = d_fgm_less_than_10_ft - d_fgm_less_than_6_ft,
             # Calculate 10-15 ft shots as remainder of 2-pointers
-            d_fga_10_to_15_ft = d_fga_2_pointers - (d_fga_less_than_6_ft + d_fga_6_to_10_ft + d_fga_15_to_24_ft),
-            d_fgm_10_to_15_ft = d_fgm_2_pointers - (d_fgm_less_than_6_ft + d_fgm_6_to_10_ft + d_fgm_15_to_24_ft),
+            d_fga_10_through_15_ft = d_fga_2_pointers - (d_fga_less_than_6_ft + d_fga_6_through_9_ft + d_fga_16_through_23_ft),
+            d_fgm_10_through_15_ft = d_fgm_2_pointers - (d_fgm_less_than_6_ft + d_fgm_6_through_9_ft + d_fgm_16_through_23_ft),
             # Calculate 24+ ft shots (3-pointers)
-            d_fga_24_plus = d_fga_greater_than_15_ft - d_fga_15_to_24_ft,
-            d_fgm_24_plus = d_fgm_greater_than_15_ft - d_fgm_15_to_24_ft,
+            d_fga_24_plus = d_fga_greater_than_15_ft - d_fga_16_through_23_ft,
+            d_fgm_24_plus = d_fgm_greater_than_15_ft - d_fgm_16_through_23_ft,
             # Add verification columns to ensure calculations are correct
-            fga_2_pt_check = d_fga_2_pointers - (d_fga_less_than_6_ft + d_fga_6_to_10_ft + d_fga_10_to_15_ft + d_fga_15_to_24_ft),
-            fgm_2_pt_check = d_fgm_2_pointers - (d_fgm_less_than_6_ft + d_fgm_6_to_10_ft + d_fgm_10_to_15_ft + d_fgm_15_to_24_ft),
+            fga_2_pt_check = d_fga_2_pointers - (d_fga_less_than_6_ft + d_fga_6_through_9_ft + d_fga_10_through_15_ft + d_fga_16_through_23_ft),
+            fgm_2_pt_check = d_fgm_2_pointers - (d_fgm_less_than_6_ft + d_fgm_6_through_9_ft + d_fgm_10_through_15_ft + d_fgm_16_through_23_ft),
             fga_3_pt_check = d_fga_3_pointers - d_fga_24_plus,
             fgm_3_pt_check = d_fgm_3_pointers - d_fgm_24_plus,
-            fga_overall_check = d_fga_overall - (d_fga_less_than_6_ft + d_fga_6_to_10_ft + d_fga_10_to_15_ft + d_fga_15_to_24_ft + d_fga_24_plus),
-            fgm_overall_check = d_fgm_overall - (d_fgm_less_than_6_ft + d_fgm_6_to_10_ft + d_fgm_10_to_15_ft + d_fgm_15_to_24_ft + d_fgm_24_plus)))
+            fga_overall_check = d_fga_overall - (d_fga_less_than_6_ft + d_fga_6_through_9_ft + d_fga_10_through_15_ft + d_fga_16_through_23_ft + d_fga_24_plus),
+            fgm_overall_check = d_fgm_overall - (d_fgm_less_than_6_ft + d_fgm_6_through_9_ft + d_fgm_10_through_15_ft + d_fgm_16_through_23_ft + d_fgm_24_plus)))
 
 # Verify calculations by checking if all sums equal zero
 # If they do, our breakdowns are mathematically consistent
@@ -308,7 +312,7 @@ defender_dashboard |> summarise(
 defender_dashboard <- (defender_dashboard |> select(-starts_with("fga_"), -starts_with("fgm_"))
   |> pivot_longer(
     cols = starts_with("d_"),
-    names_to = c("stat_type", "shot_dist_range"),
+    names_to = c("stat_type", "defender_shot_dist_range"),
     names_pattern = "d_(fg[am])_(.+)",
     values_to = "value"
   ) 
@@ -316,11 +320,15 @@ defender_dashboard <- (defender_dashboard |> select(-starts_with("fga_"), -start
     names_from = stat_type,
     values_from = value
   )
-  |> filter(shot_dist_range == "less_than_6_ft" | 
-            shot_dist_range == "6_to_10_ft" | 
-            shot_dist_range == "10_to_15_ft" | 
-            shot_dist_range == "15_to_24_ft" | 
-            shot_dist_range == "24_plus")
+  |> filter(defender_shot_dist_range == "less_than_6_ft" | 
+            defender_shot_dist_range == "6_through_9_ft" | 
+            defender_shot_dist_range == "10_through_15_ft" | 
+            defender_shot_dist_range == "16_through_23_ft" | 
+            defender_shot_dist_range == "24_plus")
+  |> rename(defender_fga = fga, defender_fgm = fgm)
+  |> mutate(game_date = as_date(date),
+            defender_id = as.numeric(defender_id))
+  |> select(-date)
 )
 
 ```
@@ -373,11 +381,17 @@ shot_df <- (shot_df
 
 shot_df <- (shot_df
             |> mutate(shot_distance = as.numeric(shot_distance))
-            |> mutate(defense_category = case_when(
-              shot_distance < 6 ~ "Less Than 6 Ft",
-              shot_distance < 10 ~ "Less Than 10 Ft",
-              shot_distance > 15 ~ "Greater Than 15 Ft",
-              TRUE ~ "10-15 Ft"
+            |> mutate(offender_shot_dist_range = case_when(
+              shot_distance < 10 ~ "0_through_9_ft",
+              shot_distance >= 10 & shot_distance < 24 ~ "10_through_23_ft",
+              TRUE ~ "24_plus")
+            )
+            |> mutate(defender_shot_dist_range = case_when(
+              shot_distance < 6 ~ "less_than_6_ft",
+              shot_distance >= 6 & shot_distance < 10 ~ "6_through_9_ft",
+              shot_distance >= 10 & shot_distance <= 15 ~ "10_through_15_ft",
+              shot_distance > 15 & shot_distance < 24 ~ "16_through_23_ft",
+              TRUE ~ "24_plus"
             ))
 )
 
@@ -385,13 +399,15 @@ shot_df <- (shot_df
 
 shot_df <- (shot_df 
           |> left_join(shot_pbp_by_defense, by = join_by(game_id, number_original, period, game_date))
-          |> select(game_date, game_id, period, number_original, clock, offender_name, assister_name, known_defender, locX, locY, defender_name, possession, slug_team, slug_opp, minutes_remaining, seconds_remaining, event_type, action_type, shot_zone_basic, shot_zone_area, shot_zone_range, shot_distance, shot_attempted_flag, shot_made_flag, shot_type, defense_category)
+          |> select(game_date, game_id, period, number_original, clock, offender_name, offender_id, assister_name, assister_id, known_defender, locX, locY, defender_name, defender_id, possession, slug_team, slug_opp, minutes_remaining, seconds_remaining, event_type, action_type, shot_zone_basic, shot_zone_area, shot_zone_range, shot_distance, shot_attempted_flag, shot_made_flag, shot_type, offender_shot_dist_range, defender_shot_dist_range)
 )
 
-(shot_df
-  |>           
+test <- (shot_df
+         |> left_join(defender_dashboard, by = join_by("game_date", "period", "defender_id", "defender_shot_dist_range"))
+         |> left_join(closest_defender_dashboard, by = join_by("game_date", "period", "offender_id", "offender_shot_dist_range"))
+)
           
-          
+# this is where we got before leaving the cafe you hot dog!!!!!!
           
           
           
