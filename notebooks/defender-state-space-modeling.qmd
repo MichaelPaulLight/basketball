@@ -397,14 +397,29 @@ shot_df <- (shot_df
 
 # the following joins the shot_df dataframe with the shot_pbp_by_defense dataframe to get the defender names for each shot
 
-shot_df <- (shot_df 
-          |> left_join(shot_pbp_by_defense, by = join_by(game_id, number_original, period, game_date))
-          |> select(game_date, game_id, period, number_original, clock, offender_name, offender_id, assister_name, assister_id, known_defender, locX, locY, defender_name, defender_id, possession, slug_team, slug_opp, minutes_remaining, seconds_remaining, event_type, action_type, shot_zone_basic, shot_zone_area, shot_zone_range, shot_distance, shot_attempted_flag, shot_made_flag, shot_type, offender_shot_dist_range, defender_shot_dist_range)
+shot_df_test <- (shot_df 
+          |> left_join(shot_pbp_by_defense, by = join_by("game_id", "number_original", "period", "game_date"))
+          |> select(game_date, game_id, slug_team.x, slug_opp, period, number_original, clock, offender_name, offender_id, assister_name, assister_id, known_defender, locX, locY, defender_name, defender_id, possession, minutes_remaining, seconds_remaining, event_type, action_type, shot_zone_basic, shot_zone_area, shot_zone_range, shot_distance, shot_attempted_flag, shot_made_flag, shot_type, offender_shot_dist_range, defender_shot_dist_range)
+          |> rename(slug_team_def = slug_team.x, slug_team_off = slug_opp)
 )
 
-test <- (shot_df
+test <- (shot_df_test
          |> left_join(defender_dashboard, by = join_by("game_date", "period", "defender_id", "defender_shot_dist_range"))
          |> left_join(closest_defender_dashboard, by = join_by("game_date", "period", "offender_id", "offender_shot_dist_range"))
+         |> mutate(across(ends_with("fgm"), ~replace_na(., 0)))
+         |> mutate(across(ends_with("fga"), ~replace_na(., 0)))
+         |> select(game_date:number_original, offender_name, assister_name, known_defender, defender_name, action_type:shot_zone_area, shot_distance, shot_made_flag, shot_type, offender_shot_dist_range:defender_shot_dist_range, close_def_dist_range, offender_fga, offender_fgm, defender_fga, defender_fgm)
+         |> group_by(game_date, game_id, period, offender_name, assister_name, known_defender, defender_name, action_type, shot_zone_basic, shot_zone_area, shot_distance, shot_type, offender_shot_dist_range, defender_shot_dist_range, close_def_dist_range)
+         |> summarize(across(ends_with("fgm"), sum),
+                      across(ends_with("fga"), sum))
+)
+
+non_agg_test <- (shot_df_test
+         |> left_join(defender_dashboard, by = join_by("game_date", "period", "defender_id", "defender_shot_dist_range"))
+         |> left_join(closest_defender_dashboard, by = join_by("game_date", "period", "offender_id", "offender_shot_dist_range"))
+         |> mutate(across(ends_with("fgm"), ~replace_na(., 0)))
+         |> mutate(across(ends_with("fga"), ~replace_na(., 0)))
+         |> select(game_date:number_original, offender_name, assister_name, known_defender, defender_name, action_type:shot_zone_area, shot_distance, shot_made_flag, shot_type, offender_shot_dist_range:defender_shot_dist_range, close_def_dist_range, offender_fga, offender_fgm, defender_fga, defender_fgm)
 )
           
 # this is where we got before leaving the cafe you hot dog!!!!!!
