@@ -8,27 +8,27 @@ player_logs <- nba_leaguegamelog(season = "2024-25", player_or_team = "P") %>%
   pluck("LeagueGameLog") %>%
   clean_names() %>%
   mutate(team_location = ifelse(str_detect(matchup, "\\@"), "away", "home"),
-         across(c(player_id, team_id), as.numeric)) 
+         across(c(player_id, team_id), as.numeric))
+
+existing_pbp <- list.files(path = "../../data", 
+                          pattern = "^\\d{6}_pbp_gt\\.parquet$", 
+                          full.names = TRUE) |>
+  sort(decreasing = TRUE) |>
+  first() |>
+  read_parquet()
 
 function_pbp <- function(x){
   nba_data_pbp(x) %>%
     mutate(game_id = x)
 }
 
-existing_pbp_parquet <- paste0(format(Sys.Date() - 1, "%y%m%d"), "_pbp_gt.parquet")
-
-existing_game_ids <- read_parquet(existing_pbp_parquet) |> 
-  select(game_id) |>
-  distinct(game_id) |> 
-  mutate(game_id = as.character(game_id)) |>
-  mutate(game_id = str_glue("00{game_id}"))
-  
-new_game_ids <- player_logs |> 
-  anti_join(existing_game_ids) |> 
+games <- player_logs |> 
+  mutate(game_date = as_date(game_date)) |>
+  anti_join(existing_pbp, by = join_by("game_date")) |>
   distinct(game_id) |> 
   pull(game_id)
 
-pbp_month <- map_df(new_game_ids, function_pbp)
+pbp_month <- map_df(games, function_pbp)
 
 nba_pbp_raw <- pbp_month %>%
   mutate(across(c(player1_id, player2_id, player3_id), as.numeric))
@@ -83,9 +83,6 @@ nba_pbp <- nba_pbp %>%
          vs = cumsum(coalesce(if_else(slug_team == team_away, shot_pts, 0), 0))) %>%
   ungroup() %>%
   arrange(game_id, number_event)
-
-
-
 
 players_subbed <- nba_pbp %>%
   filter(msg_type == 8) %>%
@@ -162,15 +159,10 @@ lineup_game <- nba_pbp %>%
          lineup_away = map_chr(str_split(lineup_away, ", "), ~ paste(sort(.), collapse = ", "))) %>%
   select(-c(starts_with("lineup_start"), starts_with("lineup_before"), starts_with("lineup_after")))
 
-
-
-
 poss_initial <- lineup_game %>%
   mutate(possession = case_when(msg_type %in% c(1, 2, 5) ~ 1,
                                 msg_type == 3 & act_type %in% c(12, 15) ~ 1,
                                 TRUE ~ 0))
-
-
 
 # finding lane violations that are not specified
 lane_description_missing <- poss_initial %>%
@@ -202,9 +194,6 @@ jumpball_turnovers <- poss_initial %>%
   transmute(game_id, number_event, off_slug_team = ifelse(slug_team == team_home, team_away, team_home), possession) %>%
   mutate(slug_team = off_slug_team)
 
-
-
-
 # identify and change consecutive possessions
 change_consec <- poss_initial %>%
   # Only perform rows_update if jumpball_turnovers has rows
@@ -227,8 +216,6 @@ poss_non_consec <- poss_initial %>%
   {if (nrow(change_consec) > 0)
     rows_update(., change_consec, by = c("game_id", "number_event"))
     else .}
-
-
 
 # find start of possessions
 start_possessions <- poss_non_consec %>%
@@ -277,9 +264,6 @@ addit_poss <- poss_non_consec %>%
 pbp_poss <- poss_non_consec %>%
   bind_rows(addit_poss) %>%
   arrange(game_id, number_event)
-
-
-
 
 ### find unidentified double technicals (instead of description showing double technical, there's one event for each but no FTs)
 unident_double_techs <- lineup_game %>%
@@ -391,6 +375,25 @@ pbp_final_gt <- pbp_poss_final %>%
   mutate(garbage_time = ifelse(garbage_time == 1 & number_event < max_nongarbage, 0, garbage_time)) %>%
   select(-c(starts_with("lineup_start_"), max_nongarbage, opt2, ord))
 
-parquet_file_name <- paste0(format(Sys.Date(), "%y%m%d"), "_pbp_gt.parquet")
+# joining with existing pbp_gt data
 
-write_parquet(pbp_final_gt, parquet_file_name)
+combined_pbp <- bind_rows(
+  existing_pbp,
+  pbp_final_gt |>  
+    anti_join(existing_pbp, by = c("game_id", "game_date"))
+) |> 
+  arrange(game_date, game_id, number_event)
+
+combined_pbp |> 
+  write_parquet(
+  str_glue("../../data/{format(Sys.Date(), '%y%m%d')}_pbp_gt.parquet")
+)
+
+fs::file_move(
+  path = list.files(path = "../../data", 
+                    pattern = "^\\d{6}_pbp_gt\\.parquet$", 
+                    full.names = TRUE) |>
+    sort(decreasing = TRUE) |>
+    first(),
+  new_path = str_glue("../../data/archive/{format(Sys.Date(), '%y%m%d')}_pbp_gt.parquet")
+)
