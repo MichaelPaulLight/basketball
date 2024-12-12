@@ -404,34 +404,39 @@ write_parquet(pbp_final_gt, file.path("..", "data", parquet_file_name))
 
 
 ```{r}
-lineup_stats <- pbp_final_gt %>%
-  group_by(game_id, slug_team) %>%
-  mutate(stint_home = ifelse(slug_team == team_home, cumsum(msg_type == 8) + 1, NA),
-         stint_away = ifelse(slug_team == team_away, cumsum(msg_type == 8) + 1, NA)) %>%
-  group_by(game_id) %>%
-  mutate(across(starts_with("stint"), ~ na.locf0(., fromLast = TRUE)),
-         across(starts_with("stint"), ~ na.locf(.))) %>%
-  ungroup() %>%
-  pivot_longer(cols = starts_with("lineup"),
+lineup_stats <- (
+  pbp_final_gt 
+  |> group_by(game_id, slug_team)
+  |> mutate(stint_home = ifelse(slug_team == team_home, cumsum(msg_type == 8) + 1, NA),
+         stint_away = ifelse(slug_team == team_away, cumsum(msg_type == 8) + 1, NA)) 
+  |> group_by(game_id) 
+  |> mutate(across(starts_with("stint"), ~ na.locf0(., fromLast = TRUE)),
+         across(starts_with("stint"), ~ na.locf(.))) 
+  |> ungroup() 
+  |> pivot_longer(cols = starts_with("lineup"),
                names_to = "lineup_location",
                values_to = "lineup",
-               names_prefix = "lineup_") %>%
-  mutate(pts_team = ifelse(lineup_location == "home", shot_pts_home, shot_pts_away),
+               names_prefix = "lineup_")
+  |> mutate(pts_team = ifelse(lineup_location == "home", shot_pts_home, shot_pts_away),
          pts_opp = ifelse(lineup_location == "away", shot_pts_home, shot_pts_away),
          poss_team = ifelse(lineup_location == "home", poss_home, poss_away),
          poss_opp = ifelse(lineup_location == "away", poss_home, poss_away),
          slug_team = ifelse(lineup_location == "home", team_home, team_away),
          slug_opp = ifelse(lineup_location == "away", team_home, team_away),
-         stint = ifelse(lineup_location == "home", stint_home, stint_away)) %>%
-  select(game_id, game_date, period, stint, number_event, msg_type, description, lineup, pts_team, pts_opp,
-         poss_team, poss_opp, secs_played, slug_team, slug_opp, garbage_time) %>%
-  group_by(game_id, game_date, period, stint, slug_team, slug_opp, lineup, garbage_time) %>%
-  summarise(across(c(pts_team, pts_opp, poss_team, poss_opp, secs_played), sum)) %>%
-  ungroup() %>%
-  filter(secs_played + poss_opp + poss_team + pts_opp + pts_team > 0) %>%
-  group_by(game_id, slug_team) %>%
-  mutate(stint = row_number()) %>%
-  ungroup()
+         stint = ifelse(lineup_location == "home", stint_home, stint_away))
+  |> select(game_id, game_date, period, stint, number_event, msg_type, description, lineup, pts_team, pts_opp,
+          poss_team, poss_opp, secs_played, slug_team, slug_opp, garbage_time)
+  |> group_by(game_id, game_date, period, stint, slug_team, slug_opp, lineup, garbage_time)
+  |> summarise(across(c(pts_team, pts_opp, poss_team, poss_opp, secs_played), sum))
+  |> ungroup()
+  |> filter(secs_played + poss_opp + poss_team + pts_opp + pts_team > 0)
+  |> group_by(game_id, slug_team)
+  |> mutate(stint = row_number(),
+            plus_minus = pts_team - pts_opp)
+  |> ungroup()
+)
+
+lineup_stats |> group_by(lineup) |> summarize(total_pm = sum(plus_minus), mean_pm = mean(plus_minus)) |> arrange(desc(total_pm))
 
 ```
 
