@@ -388,12 +388,3 @@ combined_pbp |>
   write_parquet(
   str_glue("../../data/{format(Sys.Date(), '%y%m%d')}_pbp_gt.parquet")
 )
-
-fs::file_move(
-  path = list.files(path = "../../data", 
-                    pattern = "^\\d{6}_pbp_gt\\.parquet$", 
-                    full.names = TRUE) |>
-    sort(decreasing = TRUE) |>
-    first(),
-  new_path = str_glue("../../data/archive/{format(Sys.Date(), '%y%m%d')}_pbp_gt.parquet")
-)
