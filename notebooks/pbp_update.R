@@ -282,55 +282,60 @@ techs <- lineup_game %>%
               values_from = number_event,
               names_prefix = "number_event_")
 
-## FLAGRANT - CLEAR PATH
-flagrant_clear <- lineup_game %>%
-  filter(msg_type == 3 & act_type %in% c(18:20, 25:26, 27:29)) %>%
-  select(game_id, secs_passed_game, number_event_ft = number_event, slug_team) %>%
-  left_join(lineup_game %>%
-              filter(msg_type == 6 & act_type %in% c(9, 14, 15)) %>%
-              transmute(game_id, secs_passed_game, number_event_foul = number_event, 
-                        slug_team = ifelse(slug_team == team_home, team_away, team_home)))
+# Combine all foul types into a single data frame
+get_foul_events <- function(lineup_game) {
+  # Get free throw events
+  ft_events <- lineup_game %>%
+    filter(msg_type == 3) %>%
+    select(game_id, secs_passed_game, number_event_ft = number_event, 
+           slug_team, description, act_type)
+  
+  # Get foul events
+  foul_events <- lineup_game %>%
+    filter(msg_type == 6, str_detect(description, "FT")) %>%
+    transmute(
+      game_id,
+      secs_passed_game,
+      number_event_foul = number_event,
+      slug_team = ifelse(slug_team == team_home, team_away, team_home)
+    )
+  
+  # Join FTs with fouls
+  ft_events %>%
+    left_join(foul_events, by = c("game_id", "secs_passed_game")) %>%
+    # Fill in any missing foul events with next available
+    group_by(game_id) %>%
+    mutate(number_event_foul = coalesce(number_event_foul, lead(number_event_foul))) %>%
+    ungroup()
+}
 
-## REGULAR FOULS
-other_fouls <- lineup_game %>%
-  filter(msg_type %in% c(3, 6)) %>%
-  filter(!str_detect(description, "Technical|Defense 3 Second"),
-         !(msg_type == 3 & act_type %in% c(18:20, 25:26, 27:29)),
-         !(msg_type == 6 & act_type %in% c(9, 14, 15)))
-
-regular_fouls <- other_fouls %>%
-  filter(msg_type == 3) %>%
-  select(game_id, secs_passed_game, number_event_ft = number_event, slug_team, player_fouled = player1) %>%
-  left_join(other_fouls %>%
-              filter(msg_type == 6 & str_detect(description, "FT")) %>%
-              transmute(game_id, secs_passed_game, number_event_foul = number_event, player_fouled = player3,
-                        slug_team = ifelse(slug_team == team_home, team_away, team_home)))
-
-regular_fouls <- regular_fouls %>%
-  left_join(other_fouls %>%
-              filter(msg_type == 6 & str_detect(description, "FT")) %>%
-              anti_join(regular_fouls %>%
-                          select(game_id, number_event = number_event_foul)) %>%
-              transmute(game_id, secs_passed_game, number_event_foul_y = number_event, 
-                        number_event_foul = NA,
-                        slug_team = ifelse(slug_team == team_home, team_away, team_home))) %>%
-  mutate(number_event_foul = coalesce(number_event_foul, number_event_foul_y)) %>%
-  select(-number_event_foul_y)
-
-# putting everything together
-fouls_stats <- bind_rows(regular_fouls, flagrant_clear, techs) %>%
-  select(game_id, secs_passed_game, number_event_ft, number_event_foul) %>%
-  left_join(pbp_poss %>%
-              select(game_id, number_event_ft = number_event, slug_team, shot_pts, team_home, team_away, possession)) %>%
-  group_by(game_id, slug_team, number_event = number_event_foul, team_home, team_away) %>%
-  summarise(total_fta = n(),
-            total_pts = sum(shot_pts),
-            total_poss = sum(possession)) %>%
-  ungroup() %>%
-  mutate(shot_pts_home = ifelse(slug_team == team_home, total_pts, 0),
-         shot_pts_away = ifelse(slug_team == team_away, total_pts, 0),
-         poss_home = ifelse(slug_team == team_home, total_poss, 0),
-         poss_away = ifelse(slug_team == team_away, total_poss, 0)) %>%
+# Calculate foul statistics
+fouls_stats <- get_foul_events(lineup_game) %>%
+  # Join with possession data
+  left_join(
+    pbp_poss %>%
+      select(game_id, number_event_ft = number_event, team_home, team_away,
+             shot_pts, possession),
+    by = c("game_id", "number_event_ft")
+  ) %>%
+  # Calculate stats by foul
+  group_by(game_id, number_event = number_event_foul) %>%
+  summarise(
+    total_fta = n(),
+    total_pts = sum(shot_pts, na.rm = TRUE),
+    total_poss = sum(possession, na.rm = TRUE),
+    slug_team = first(slug_team.x),
+    team_home = first(team_home),
+    team_away = first(team_away),
+    .groups = "drop"
+  ) %>%
+  # Calculate home/away splits
+  mutate(
+    shot_pts_home = ifelse(slug_team == team_home, total_pts, 0),
+    shot_pts_away = ifelse(slug_team == team_away, total_pts, 0),
+    poss_home = ifelse(slug_team == team_home, total_poss, 0),
+    poss_away = ifelse(slug_team == team_away, total_poss, 0)
+  ) %>%
   select(game_id, number_event, total_fta, shot_pts_home:poss_away)
 
 pbp_poss_final <- pbp_poss %>%
