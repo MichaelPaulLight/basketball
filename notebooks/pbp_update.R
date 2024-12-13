@@ -10,7 +10,7 @@ player_logs <- nba_leaguegamelog(season = "2024-25", player_or_team = "P") %>%
   mutate(team_location = ifelse(str_detect(matchup, "\\@"), "away", "home"),
          across(c(player_id, team_id), as.numeric))
 
-existing_pbp <- list.files(path = "../../data", 
+existing_pbp <- list.files(path = "../data", 
                           pattern = "^\\d{6}_pbp_gt\\.parquet$", 
                           full.names = TRUE) |>
   sort(decreasing = TRUE) |>
@@ -386,5 +386,5 @@ combined_pbp <- bind_rows(
 
 combined_pbp |> 
   write_parquet(
-  str_glue("../../data/{format(Sys.Date(), '%y%m%d')}_pbp_gt.parquet")
+  str_glue("../data/{format(Sys.Date(), '%y%m%d')}_pbp_gt.parquet")
 )
