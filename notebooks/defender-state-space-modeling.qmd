@@ -408,7 +408,21 @@ non_agg_test <- (shot_df_test
          |> mutate(shot_made_flag = as.numeric(shot_made_flag))
 )
           
-# this is where we got before leaving the cafe you hot dog!!!!!!
+period_agg <- (shot_df_test
+         |> left_join(defender_dashboard, by = join_by("game_date", "period", "defender_id", "defender_shot_dist_range"))
+         |> left_join(closest_defender_dashboard, by = join_by("game_date", "period", "offender_id", "offender_shot_dist_range"))
+         |> mutate(across(ends_with("fgm"), ~replace_na(., 0)))
+         |> mutate(across(ends_with("fga"), ~replace_na(., 0)))
+         |> select(game_date:number_original, offender_name, assister_name, known_defender, defender_name, action_type:shot_zone_area, shot_distance, shot_made_flag, shot_type, offender_shot_dist_range:defender_shot_dist_range, close_def_dist_range, offender_fga, offender_fgm, defender_fga, defender_fgm)
+         |> group_by(game_date, game_id, slug_team_off, slug_team_def, period, offender_name, defender_name, offender_shot_dist_range, defender_shot_dist_range, close_def_dist_range)
+         |> summarize(across(ends_with("fgm"), sum),
+                      across(ends_with("fga"), sum))
+)
+
+period_agg_small <- (period_agg
+  |> filter(game_date > "2024-12-11")
+)
+
 ```
 
 Brief example illustrating motivation for using the closest defender shooting data to infer which specific shots were defended at which level of intensity:
@@ -432,25 +446,194 @@ risacher_closest_def_p1 <- closest_defender_dashboard |> filter(offender_id == "
 ```{r}
 library(brms)
 
-non_agg_test_small <- (non_agg_test
-                       |> filter(game_date > "2024-12-10" & game_date < "2024-12-12"))
-
-shot_defense_model_01 <- brm(
-  formula = shot_made_flag ~ 
-    (1 | game_id) +     # Game-level variation
-    (1 | slug_team_off) +   # Offensive Team effect
+shot_defense_model_small_01 <- brm(
+  formula = offender_fgm ~ 
+    offender_fga +
+    defender_fga +
+    defender_fgm +
+    (1 | game_id) +     
+    (1 | slug_team_off) +
     (1 | slug_team_def) +
     (1 | offender_name) + 
     (1 | defender_name), 
-  data = non_agg_test_small,
+  data = period_agg_small,
   chains = 4,
   iter = 2000,
   file = "../models/shot-defense-model_small-01.rds"
 )
 
+shot_defense_model_small_02 <- brm(
+  formula = offender_fgm | trials(offender_fga) ~
+    defender_fga +
+    defender_fgm +
+    (1 | game_id) +     
+    (1 | slug_team_off) +
+    (1 | slug_team_def) +
+    (1 | offender_name) + 
+    (1 | defender_name),
+  family = binomial(),
+  data = period_agg_small,
+  chains = 4,
+  iter = 2000,
+  file = "../models/shot-defense-model_small-02.rds"
+)
+
 ```
 
+```{r}
 
+pp_check(shot_defense_model_small_01)
+
+pp_check(shot_defense_model_small_02)
+
+summary(shot_defense_model_small_02)
+
+marginal_effects(shot_defense_model_small_02)
+
+
+```
+```{r}
+
+period_agg_small_02 <- (period_agg
+  |> filter(game_date <= "2024-12-11" & game_date >= "2024-12-01")
+)
+
+shot_defense_model_small_03 <- update(
+  shot_defense_model_small_02,
+  newdata = period_agg_small_02,
+  chains = 4,
+  iter = 2000,
+  file = "../models/shot-defense-model_small-03.rds"
+)
+
+
+
+```
+
+```{r}
+
+pp_check(shot_defense_model_small_03)
+
+summary(shot_defense_model_small_03)
+
+marginal_effects(shot_defense_model_small_03)
+
+stancode(shot_defense_model_small_03)
+
+# Get random effects for defenders
+defender_effects <- ranef(shot_defense_model_small_03)$defender_name %>%
+  data.frame() %>%
+  rownames_to_column("defender_name") %>%
+  rename(estimate = Estimate.Intercept,
+         est_error = Est.Error.Intercept,
+         q2.5 = Q2.5.Intercept,
+         q97.5 = Q97.5.Intercept) %>%
+  arrange(desc(estimate))
+
+# Get random effects for offensive players
+offender_effects <- ranef(shot_defense_model_small_03)$offender_name %>%
+  data.frame() %>%
+  rownames_to_column("offender_name") %>%
+  rename(estimate = Estimate.Intercept,
+         est_error = Est.Error.Intercept,
+         q2.5 = Q2.5.Intercept,
+         q97.5 = Q97.5.Intercept) %>%
+  arrange(desc(estimate))
+
+# View top defenders and offensive players
+head(defender_effects)
+head(offender_effects)
+
+# Optional: visualize the distributions
+library(ggplot2)
+
+ggplot(defender_effects, aes(y = reorder(defender_name, estimate), x = estimate)) +
+  geom_point() +
+  geom_errorbarh(aes(xmin = q2.5, xmax = q97.5)) +
+  labs(y = "Defender", x = "Effect on Shot Success (log-odds)") +
+  theme_minimal()
+
+```
+
+```{r}
+period_agg_small_03 <- (period_agg
+  |> filter(game_date <= "2024-12-01" & game_date >= "2024-11-15")
+)
+
+shot_defense_model_small_04 <- update(
+  shot_defense_model_small_03,
+  newdata = period_agg_small_03,
+  chains = 4,
+  iter = 2000,
+  file = "../models/shot-defense-model_small-04.rds"
+)
+
+```
+```{r}
+
+summary(shot_defense_model_small_04)
+
+pp_check(shot_defense_model_small_04)
+
+# Get random effects for defenders
+defender_effects <- ranef(shot_defense_model_small_04)$defender_name %>%
+  data.frame() %>%
+  rownames_to_column("defender_name") %>%
+  rename(estimate = Estimate.Intercept,
+         est_error = Est.Error.Intercept,
+         q2.5 = Q2.5.Intercept,
+         q97.5 = Q97.5.Intercept) %>%
+  arrange(desc(estimate))
+
+# Get random effects for offensive players
+offender_effects <- ranef(shot_defense_model_small_04)$offender_name %>%
+  data.frame() %>%
+  rownames_to_column("offender_name") %>%
+  rename(estimate = Estimate.Intercept,
+         est_error = Est.Error.Intercept,
+         q2.5 = Q2.5.Intercept,
+         q97.5 = Q97.5.Intercept) %>%
+  arrange(desc(estimate))
+
+# View top defenders and offensive players
+head(defender_effects)
+head(offender_effects)
+
+# Optional: visualize the distributions
+library(ggplot2)
+
+ggplot(defender_effects, aes(y = reorder(defender_name, estimate), x = estimate)) +
+  geom_point() +
+  geom_errorbarh(aes(xmin = q2.5, xmax = q97.5)) +
+  labs(y = "Defender", x = "Effect on Shot Success (log-odds)") +
+  theme_minimal()
+
+
+defense_team_effects <- ranef(shot_defense_model_small_04)$slug_team_def %>%
+  data.frame() %>%
+  rownames_to_column("slug_team_def") %>%
+  rename(estimate = Estimate.Intercept,
+         est_error = Est.Error.Intercept,
+         q2.5 = Q2.5.Intercept,
+         q97.5 = Q97.5.Intercept) %>%
+  arrange(desc(estimate))
+
+# Get random effects for offensive players
+offense_team_effects <- ranef(shot_defense_model_small_04)$slug_team_off %>%
+  data.frame() %>%
+  rownames_to_column("slug_team_off") %>%
+  rename(estimate = Estimate.Intercept,
+         est_error = Est.Error.Intercept,
+         q2.5 = Q2.5.Intercept,
+         q97.5 = Q97.5.Intercept) %>%
+  arrange(desc(estimate))
+
+random_effects <- ranef(shot_defense_model_small_04)
+
+fixed_effects <- fixef(shot_defense_model_small_04)
+
+
+```
           
 gp2_pbp <- (shot_df 
             |> filter(game_id == 22400251) 
