@@ -33,10 +33,16 @@ pbp_month <- map_df(games, function_pbp)
 nba_pbp_raw <- pbp_month %>%
   mutate(across(c(player1_id, player2_id, player3_id), as.numeric))
 
+# three games during the season were played at neutral sites
+
+# this code manually assigns home team advantage to the team with larger fan base
+
 player_logs <- player_logs %>%
   mutate(across(c(player_id, team_id), as.numeric)) |> 
   mutate(team_location = case_when(
-    game_id == "0022400147" & team_id == 1610612748 ~ "home",
+    game_id == "0022400147" & team_id == 1610612748 ~ "home", # heat vs. hornets. heat awarded home advantage
+    game_id == "0022401229" & team_id == 1610612749 ~ "home", # bucks vs. hawks. bucks awarded home advantage
+    game_id == "0022401230" & team_id == 1610612745 ~ "home", # rockets vs. oklahoma city. rockets awarded home advantage
     .default = team_location
   ))
 
