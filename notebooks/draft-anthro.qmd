@@ -1,0 +1,36 @@
+---
+title: "2024_hustle-dashboard"
+format: html
+editor: visual
+---
+
+```{r}
+library(lubridate)
+library(hoopR)
+library(tidyverse)
+library(janitor)
+library(nanoparquet)
+library(zoo)
+
+```
+
+Apparently no anthromorphic data for any non-college players
+
+
+
+```{r}
+draft_24 <- nba_draftcombineplayeranthro(
+  league_id = "00",
+  season_year = most_recent_nba_season() - 2
+) |> pluck("Results")
+
+draft_24 |> clean_names() |> filter(first_name == "Wembanyama")
+
+nba_draftcombineplayeranthro(
+  league_id = "00",
+  season_year = most_recent_nba_season() - 2
+)
+
+```
+
+The `echo: false` option disables the printing of code (only output is displayed).
