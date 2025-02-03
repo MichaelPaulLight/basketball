@@ -37,12 +37,17 @@ nba_pbp_raw <- pbp_month %>%
 
 # this code manually assigns home team advantage to the team with larger fan base
 
+# any games with n < 2 are neutral site games:
+# player_logs |> select(game_id, team_location) |> distinct() |> count(game_id) |> arrange(n) 
+
 player_logs <- player_logs %>%
   mutate(across(c(player_id, team_id), as.numeric)) |> 
   mutate(team_location = case_when(
     game_id == "0022400147" & team_id == 1610612748 ~ "home", # heat vs. hornets. heat awarded home advantage
     game_id == "0022401229" & team_id == 1610612749 ~ "home", # bucks vs. hawks. bucks awarded home advantage
     game_id == "0022401230" & team_id == 1610612745 ~ "home", # rockets vs. oklahoma city. rockets awarded home advantage
+    game_id == "0022400621" & team_id == 1610612759 ~ "home", # spurs vs. pacers. spurs awarded home advantage b/c game played in paris
+    game_id == "0022400633" & team_id == 1610612759 ~ "home", # spurs vs. pacers. spurs awarded home advantage b/c game played in paris
     .default = team_location
   ))
 
