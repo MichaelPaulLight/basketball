@@ -1,0 +1,215 @@
+---
+title: "template_bayesian workflow"
+format: html
+editor: visual
+---
+
+# Purpose of This Document
+
+This template guides you through a Bayesian analysis following McElreath's workflow from Statistical Rethinking. Each section includes explanatory notes that you should replace with your own content.
+
+# \[Insert Model Name\]
+
+## Load Packages
+
+```{r}
+#| label: setup
+#| include: false
+
+# Load required packages
+library(tidyverse)
+library(brms)
+library(tidybayes)
+library(bayesplot)
+library(dagitty)
+library(ggdag)
+```
+
+## Domain Knowledge
+
+Previous Research Summarize key findings from previous research. What do we already know about this system?
+
+Mechanisms Describe the potential mechanisms at work. How might your variables be causally related?
+
+Expected Patterns Based on theory and previous research, what patterns do you expect to see in your data?
+
+### Research Questions
+
+State your research questions clearly and precisely. Good research questions should be:
+
+Specific and well-defined Answerable with your available data
+
+Connected to your theoretical framework :::
+
+## Causal Model
+
+```{r}
+
+#| label: dag
+#| fig-cap: "Directed Acyclic Graph representing hypothesized causal relationships"
+#| code-fold: show
+
+# Create your DAG
+# Example:
+dag <- dagitty('dag{
+  X -> Y
+  Z -> X
+  Z -> Y
+}')
+
+# Plot the DAG
+ggdag(dag) +
+  theme_dag()
+```
+
+### DAG Interpretation
+
+Explain what each node represents and why you've drawn the arrows as you have. What assumptions are embedded in this diagram?
+
+## Data Simulation
+
+### Simulate Data Implied by Causal Model
+
+```{r}
+
+```
+
+## Data Loading and Processing
+
+Data Loading and Processing
+
+```{r}
+
+# Load your data
+# Example:
+# data <- read_csv("your_data.csv")
+
+# Document each cleaning step
+
+```
+
+## Model Building
+
+### 
+
+### Statistical Model Specification
+
+$$
+1 + 1
+$$
+
+### Computational Model Specification
+
+BRMS or Stan model
+
+```{r}
+
+```
+
+### Prior Predictive Checks
+
+```{r}
+#| label: prior-checks
+#| fig-cap: "Prior predictive simulations"
+
+# Simulate from priors
+# Example:
+n_sims <- 100
+alpha_prior <- rnorm(n_sims, 0, 10)
+beta_prior <- rnorm(n_sims, 0, 2)
+
+# Plot simulations
+
+```
+
+### Model Fitting
+
+```{r}
+
+#| label: model-fit
+#| cache: true
+
+# Fit your model
+# Example using brms:
+# model <- brm(
+#   y ~ x,
+#   data = data,
+#   family = gaussian(),
+#   prior = c(
+#     prior(normal(0, 10), class = Intercept),
+#     prior(normal(0, 2), class = b),
+#     prior(exponential(1), class = sigma)
+#   ),
+#   chains = 4,
+#   cores = 4
+# )
+
+# Example using cmdstanr:
+# model <- cmdstan_model("model.stan")
+# fit <- model$sample(data = data, chains = 4, parallel_chains = 4)
+
+
+```
+
+## Model Checking
+
+### Computational Diagnostics
+
+```{r}
+
+```
+
+### Posterior Predictive Checks
+
+```{r}
+
+
+```
+
+## Model Interpretation
+
+### Parameter Estimates
+
+```{r}
+
+```
+
+### Posterior Predictions
+
+```{r}
+
+
+```
+
+### Predictor Residual Analysis
+
+```{r}
+
+```
+
+### Sensitivity Analysis
+
+```{r}
+
+```
+
+### Counterfactual Analysis
+
+```{r}
+
+```
+
+## Conclusion
+
+### Summary of Findings
+
+### Key Results
+Summarize your main findings here, connecting them back to your research questions.
+
+### Limitations and Next Steps
+
+Important Considerations
+Discuss key limitations and potential future directions.
+
+# References
+
