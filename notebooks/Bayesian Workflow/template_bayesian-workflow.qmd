@@ -37,11 +37,23 @@ Expected Patterns Based on theory and previous research, what patterns do you ex
 
 State your research questions clearly and precisely. Good research questions should be:
 
-Specific and well-defined Answerable with your available data
+1. Specific and well-defined Answerable with your available data
 
-Connected to your theoretical framework :::
+2. Connected to your theoretical framework.
 
 ## Causal Model
+
+### Directed Acyclic Graph (DAG)
+
+Determine which variables to include in your model with the following workflow:
+
+1. List all of the paths connecting X (the potential cause of interest) and Y (the out- come).
+
+2. Classify each path by whether it is open or closed. A path is open unless it contains a collider.
+
+3. Classify each path by whether it is a backdoor path. A backdoor path has an arrow entering X.
+
+4. If there are any open backdoor paths, decide which variable(s) to condition on to close it (if possible).
 
 ```{r}
 
@@ -64,7 +76,17 @@ ggdag(dag) +
 
 ### DAG Interpretation
 
-Explain what each node represents and why you've drawn the arrows as you have. What assumptions are embedded in this diagram?
+Justify the inclusion and exclusion of variables in your model based on the DAG.
+
+Define the relationships in your DAG in terms of:
+
+1. The Fork
+
+2. The Pipe
+
+3. The Collider
+
+4. The Descendant
 
 ## Data Simulation
 
@@ -80,17 +102,11 @@ Data Loading and Processing
 
 ```{r}
 
-# Load your data
-# Example:
-# data <- read_csv("your_data.csv")
-
 # Document each cleaning step
 
 ```
 
 ## Model Building
-
-### 
 
 ### Statistical Model Specification
 
@@ -100,7 +116,9 @@ $$
 
 ### Computational Model Specification
 
-BRMS or Stan model
+Define BRMS, PyMC, etc. code.
+
+Or use Stan code directly with CmdStanR or PyStan.
 
 ```{r}
 
