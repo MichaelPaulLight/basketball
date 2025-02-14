@@ -8,7 +8,7 @@ editor: visual
 
 This template guides you through a Bayesian analysis following McElreath's workflow from Statistical Rethinking. Each section includes explanatory notes that you should replace with your own content.
 
-# \[Insert Model Name\]
+# Fouls and Defense
 
 ## Load Packages
 
@@ -37,9 +37,7 @@ Expected Patterns Based on theory and previous research, what patterns do you ex
 
 State your research questions clearly and precisely. Good research questions should be:
 
-1.  Specific and well-defined Answerable with your available data
-
-2.  Connected to your theoretical framework.
+1. Do the number of team and personal fouls carried by a given team and group of players at a given point in time affect the number of non-free throw points scored by an opposing offense?
 
 ## Causal Model
 
@@ -58,7 +56,7 @@ Determine which variables to include in your model with the following workflow:
 ```{r}
 
 #| label: dag
-#| fig-cap: "Directed Acyclic Graph representing hypothesized causal relationships"
+#| fig-cap: "Directed Acyclic Graph representing causal relationships "
 #| code-fold: show
 
 # Create your DAG
@@ -107,7 +105,61 @@ Data Loading and Processing
 
 ```{r}
 
-# Document each cleaning step
+pbp_data <- read_parquet("../data/250203_pbp_gt.parquet")
+
+```
+
+```{r}
+lineup_stats <- (
+  pbp_data 
+  |> group_by(game_id, slug_team)
+  |> mutate(stint_home = ifelse(slug_team == team_home, cumsum(msg_type == 8) + 1, NA),
+         stint_away = ifelse(slug_team == team_away, cumsum(msg_type == 8) + 1, NA)) 
+  |> group_by(game_id) 
+  |> mutate(across(starts_with("stint"), ~ na.locf0(., fromLast = TRUE)),
+         across(starts_with("stint"), ~ na.locf(.))) 
+  |> ungroup() 
+  |> pivot_longer(cols = starts_with("lineup"),
+               names_to = "lineup_location",
+               values_to = "lineup",
+               names_prefix = "lineup_")
+  |> mutate(pts_team = ifelse(lineup_location == "home", shot_pts_home, shot_pts_away),
+         pts_opp = ifelse(lineup_location == "away", shot_pts_home, shot_pts_away),
+         poss_team = ifelse(lineup_location == "home", poss_home, poss_away),
+         poss_opp = ifelse(lineup_location == "away", poss_home, poss_away),
+         slug_team = ifelse(lineup_location == "home", team_home, team_away),
+         slug_opp = ifelse(lineup_location == "away", team_home, team_away),
+         stint = ifelse(lineup_location == "home", stint_home, stint_away))
+  # |> select(game_id, game_date, period, stint, number_event, msg_type, description, lineup, pts_team, pts_opp,
+  #         poss_team, poss_opp, secs_played, slug_team, slug_opp, garbage_time)
+  # |> group_by(game_id, game_date, period, stint, slug_team, slug_opp, lineup, garbage_time)
+  # |> summarise(across(c(pts_team, pts_opp, poss_team, poss_opp, secs_played), sum))
+  # |> ungroup()
+  # |> filter(secs_played + poss_opp + poss_team + pts_opp + pts_team > 0)
+  # |> group_by(game_id, slug_team)
+  # |> mutate(stint = row_number(),
+  #          plus_minus = pts_team - pts_opp)
+  # |> ungroup()
+)
+
+pbp_with_fouls_by_player <- (lineup_stats 
+|> separate_longer_delim(cols = lineup, delim = ", ")
+|> rename(player_name = lineup)
+|> mutate(personal_fouls = case_when(str_detect(description, regex("foul:", ignore_case = T)) & player1 == player_name ~ str_extract(description, regex("\\([^()]*\\)(?![^()]*\\))")), TRUE ~ NA))
+|> mutate(personal_foul_occurance = case_when(str_detect(description, regex("foul:", ignore_case = T)) ~ 1, TRUE ~ 0))
+|> mutate(referee = case_when(str_detect(description, regex("foul:", ignore_case = T)) & player1 == player_name ~ str_extract(description, regex("\\([^()]*\\)(?!.*\\([^()]*\\))")), TRUE ~ NA))
+|> mutate(referee = str_remove_all(referee, "[()]"))
+|> mutate(personal_fouls = str_extract(personal_fouls, regex("\\d+")))
+|> mutate(personal_fouls = as.numeric(personal_fouls))
+|> group_by(game_id, slug_team, player_name)
+|> fill(personal_fouls, .direction = "down")
+|> mutate(personal_fouls = replace_na(personal_fouls, 0))
+)
+
+opp_posessions_with_fouls_by_defender <- (pbp_with_fouls_by_player
+                                          |> filter(poss_opp == 1)
+                                          |> select(game_id, slug_team, slug_opp, number_event, pts_opp, player_name, personal_fouls, personal_foul_occurance)
+                                          )
 
 ```
 
@@ -130,6 +182,8 @@ Define BRMS, PyMC, etc. code.
 Or use Stan code directly with CmdStanR or PyStan.
 
 ```{r}
+
+
 
 ```
 
