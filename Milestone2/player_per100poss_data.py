@@ -60,7 +60,7 @@ if __name__ == '__main__':
     import os
     import pyarrow.parquet as pq
     import pyarrow as pa
-    season = "2024-25"
+    season = "2021-22"
     player_data = player_per100poss(season)
     player_data['SEASON'] = season
     print(player_data.head(10))
