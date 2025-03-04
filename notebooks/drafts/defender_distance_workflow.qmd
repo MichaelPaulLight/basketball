@@ -1,0 +1,538 @@
+---
+title: "template_bayesian workflow"
+format: html
+editor: visual
+---
+
+# Purpose of This Document
+
+This template guides you through a Bayesian analysis following McElreath's workflow from Statistical Rethinking. Each section includes explanatory notes that you should replace with your own content.
+
+# \[Insert Model Name\]
+
+## Load Packages
+
+```{r}
+#| label: setup
+#| include: false
+
+# Load required packages
+library(nanoparquet)
+library(janitor)
+library(tidyverse)
+library(zoo)
+library(brms)
+library(tidybayes)
+library(bayesplot)
+library(dagitty)
+library(ggdag)
+```
+
+## Domain Knowledge
+
+Previous Research Summarize key findings from previous research. What do we already know about this system?
+
+Mechanisms Describe the potential mechanisms at work. How might your variables be causally related?
+
+Expected Patterns Based on theory and previous research, what patterns do you expect to see in your data?
+
+### Research Questions
+
+State your research questions clearly and precisely. Good research questions should be:
+
+1.  Specific and well-defined Answerable with your available data
+
+2.  Connected to your theoretical framework.
+
+## Causal Model
+
+### Directed Acyclic Graph (DAG)
+
+Determine which variables to include in your model with the following workflow:
+
+1.  List all of the paths connecting X (the potential cause of interest) and Y (the out- come).
+
+2.  Classify each path by whether it is open or closed. A path is open unless it contains a collider.
+
+3.  Classify each path by whether it is a backdoor path. A backdoor path has an arrow entering X.
+
+4.  If there are any open backdoor paths, decide which variable(s) to condition on to close it (if possible). \[dagitty::impliedConditionalIndependencies(), dagitty::adjustmentSets()\]
+
+```{r}
+
+#| label: dag
+#| fig-cap: "Directed Acyclic Graph representing hypothesized causal relationships"
+#| code-fold: show
+
+# Create your DAG
+# Example:
+dag <- dagitty('dag{
+  X -> Y
+  Z -> X
+  Z -> Y
+}')
+
+# Plot the DAG
+ggdag(dag) +
+  theme_dag()
+
+# Display Implied Conditional Independencies
+
+# Display Adjustment Sets
+
+```
+
+### DAG Interpretation
+
+Justify the inclusion and exclusion of variables in your model based on the DAG.
+
+Define the relationships in your DAG in terms of:
+
+1.  The Fork
+
+2.  The Pipe
+
+3.  The Collider
+
+4.  The Descendant
+
+## Data Simulation
+
+### Simulate Data Implied by Causal Model
+
+```{r}
+
+```
+
+## Data Loading and Processing
+
+Data Loading and Processing
+
+```{r}
+
+defender_dashboard <- nanoparquet::read_parquet("data/defender_dashboard.parquet")
+
+defender_dashboard <- (
+  defender_dashboard
+  |> rename(defender_id = CLOSE_DEF_playerId)
+  |> filter(G == 1) # G == 1 is a bit of an artifact from the data collection process; filtering for it makes sure given stats correctly correspond to given games
+  |> clean_names()
+  |> distinct()
+)
+
+# Initial data preparation:
+# - Select relevant columns for analysis
+# - Convert field goal attempts and makes to numeric
+# - Reshape data to have separate columns for each defense category
+# - Clean column names to ensure consistency
+defender_dashboard <- (defender_dashboard 
+  |> select(date, period, defender_id, defense_category, d_fga, d_fgm) 
+  |> mutate(d_fga = as.numeric(d_fga), d_fgm = as.numeric(d_fgm)) 
+  |> pivot_wider(names_from = defense_category, 
+                values_from = c(d_fgm, d_fga), 
+                values_fill = 0)
+  |> clean_names()
+)
+
+# Calculate detailed shot distance breakdowns:
+# - Break down overlapping categories into specific distance ranges
+# - Add verification columns to ensure data consistency
+# This is necessary because the original data has overlapping categories
+# (e.g., "less_than_10_ft" includes "less_than_6_ft")
+defender_dashboard <- (defender_dashboard
+  # Calculate 15-24 ft shots (greater than 15 ft minus 3-pointers)
+  |> mutate(d_fga_16_through_23_ft = d_fga_greater_than_15_ft - d_fga_3_pointers,
+            d_fgm_16_through_23_ft = d_fgm_greater_than_15_ft - d_fgm_3_pointers,
+            # Calculate 6-10 ft shots
+            d_fga_6_through_9_ft = d_fga_less_than_10_ft - d_fga_less_than_6_ft,
+            d_fgm_6_through_9_ft = d_fgm_less_than_10_ft - d_fgm_less_than_6_ft,
+            # Calculate 10-15 ft shots as remainder of 2-pointers
+            d_fga_10_through_15_ft = d_fga_2_pointers - (d_fga_less_than_6_ft + d_fga_6_through_9_ft + d_fga_16_through_23_ft),
+            d_fgm_10_through_15_ft = d_fgm_2_pointers - (d_fgm_less_than_6_ft + d_fgm_6_through_9_ft + d_fgm_16_through_23_ft),
+            # Calculate 24+ ft shots (3-pointers)
+            d_fga_24_plus = d_fga_greater_than_15_ft - d_fga_16_through_23_ft,
+            d_fgm_24_plus = d_fgm_greater_than_15_ft - d_fgm_16_through_23_ft,
+            # Add verification columns to ensure calculations are correct
+            fga_2_pt_check = d_fga_2_pointers - (d_fga_less_than_6_ft + d_fga_6_through_9_ft + d_fga_10_through_15_ft + d_fga_16_through_23_ft),
+            fgm_2_pt_check = d_fgm_2_pointers - (d_fgm_less_than_6_ft + d_fgm_6_through_9_ft + d_fgm_10_through_15_ft + d_fgm_16_through_23_ft),
+            fga_3_pt_check = d_fga_3_pointers - d_fga_24_plus,
+            fgm_3_pt_check = d_fgm_3_pointers - d_fgm_24_plus,
+            fga_overall_check = d_fga_overall - (d_fga_less_than_6_ft + d_fga_6_through_9_ft + d_fga_10_through_15_ft + d_fga_16_through_23_ft + d_fga_24_plus),
+            fgm_overall_check = d_fgm_overall - (d_fgm_less_than_6_ft + d_fgm_6_through_9_ft + d_fgm_10_through_15_ft + d_fgm_16_through_23_ft + d_fgm_24_plus)))
+
+# Verify calculations by checking if all sums equal zero
+# If they do, our breakdowns are mathematically consistent
+defender_dashboard |> summarise(
+  sum(fga_2_pt_check),
+  sum(fgm_2_pt_check),
+  sum(fga_3_pt_check),
+  sum(fgm_3_pt_check),
+  sum(fga_overall_check),
+  sum(fgm_overall_check)
+)
+
+# Final data reshaping:
+# - Remove verification columns
+# - Reshape data for analysis by:
+#   1. Converting to long format to separate shot distances
+#   2. Converting back to wide format to separate attempts/makes
+# - Filter to keep only the five main distance ranges we calculated
+defender_dashboard <- (defender_dashboard |> select(-starts_with("fga_"), -starts_with("fgm_"))
+  |> pivot_longer(
+    cols = starts_with("d_"),
+    names_to = c("stat_type", "defender_shot_dist_range"),
+    names_pattern = "d_(fg[am])_(.+)",
+    values_to = "value"
+  ) 
+  |> pivot_wider(
+    names_from = stat_type,
+    values_from = value
+  )
+  |> filter(defender_shot_dist_range == "less_than_6_ft" | 
+            defender_shot_dist_range == "6_through_9_ft" | 
+            defender_shot_dist_range == "10_through_15_ft" | 
+            defender_shot_dist_range == "16_through_23_ft" | 
+            defender_shot_dist_range == "24_plus")
+  |> rename(defender_fga = fga, defender_fgm = fgm)
+  |> mutate(game_date = as_date(date),
+            defender_id = as.numeric(defender_id))
+  |> select(-date)
+)
+
+pbp_data <- read_parquet("data/250203_pbp_gt.parquet") |> filter(game_date >= "2025-02-01")
+
+lineup_df <- (
+  pbp_data 
+  |> group_by(game_id, slug_team)
+  |> mutate(stint_home = ifelse(slug_team == team_home, cumsum(msg_type == 8) + 1, NA),
+         stint_away = ifelse(slug_team == team_away, cumsum(msg_type == 8) + 1, NA)) 
+  |> group_by(game_id) 
+  |> mutate(across(starts_with("stint"), ~ na.locf0(., fromLast = TRUE)),
+         across(starts_with("stint"), ~ na.locf(.))) 
+  |> ungroup() 
+  |> pivot_longer(cols = starts_with("lineup"),
+               names_to = "lineup_location",
+               values_to = "lineup",
+               names_prefix = "lineup_")
+  |> mutate(pts_team = ifelse(lineup_location == "home", shot_pts_home, shot_pts_away),
+         pts_opp = ifelse(lineup_location == "away", shot_pts_home, shot_pts_away),
+         poss_team = ifelse(lineup_location == "home", poss_home, poss_away),
+         poss_opp = ifelse(lineup_location == "away", poss_home, poss_away),
+         slug_team = ifelse(lineup_location == "home", team_home, team_away),
+         slug_opp = ifelse(lineup_location == "away", team_home, team_away),
+         stint = ifelse(lineup_location == "home", stint_home, stint_away))
+)
+
+pbp_with_fouls_by_player <- (lineup_df 
+|> filter(str_detect(description, regex("technical", ignore_case = TRUE)) == FALSE) # excluding technical fouls
+|> mutate(foul_occured_on_make = lead(total_fta) == 1)
+|> mutate(foul_occured_on_make = case_when(lead(foul_occured_on_make) == TRUE ~ 1, .default = foul_occured_on_make))
+|> mutate(foul_occured_on_make = case_when(foul_occured_on_make == 1 & str_detect(description, regex("foul:", ignore_case = T)) ~ 0, .default = foul_occured_on_make))
+|> mutate(fta_awarded_on_make = case_when(foul_occured_on_make == 1 ~ 1, .default = 0))
+|> mutate(fouled_player_on_make = case_when(lead(total_fta, n = 2) == 1 ~ lead(player3, n = 2), .default = NA))
+|> mutate(fouling_player_on_make = case_when(lead(total_fta, n = 2) == 1 ~ lead(player1, n = 2), .default = NA))
+|> mutate(checkr = case_when(fta_awarded_on_make == lead(total_fta, n = 2)~ 1, .default = 0)) # when checkr == fta_awarded_on_make, then this script is working correctly
+|> mutate(fta_awarded_on_miss = case_when(total_fta > 1 ~ total_fta, .default = 0))
+|> mutate(ft_pts_opp = case_when(fta_awarded_on_make == 1 ~ lead(pts_opp, n = 2),
+                                 fta_awarded_on_miss > 0 ~ pts_opp,
+                                 .default = 0))
+|> mutate(ft_pts_team = case_when(fta_awarded_on_make == 1 ~ lead(pts_team, n = 2),
+                                  fta_awarded_on_miss > 0 ~ pts_team,
+                                  .default = 0))
+|> separate_longer_delim(cols = lineup, delim = ", ")
+|> rename(player_name = lineup)
+|> mutate(personal_fouls_after_event = case_when(str_detect(description, regex("foul:", ignore_case = T)) & player1 == player_name ~ str_extract(description, regex("\\([^()]*\\)(?![^()]*\\))")), TRUE ~ NA))
+|> mutate(personal_fouls_after_event = case_when(fouling_player_on_make == player_name ~ lead(personal_fouls_after_event, n = 10), .default = personal_fouls_after_event))
+|> mutate(personal_foul_occurance_on_play = case_when(str_detect(description, regex("foul:", ignore_case = T)) | foul_occured_on_make == 1 ~ 1, TRUE ~ 0))
+|> mutate(personal_foul_occurance_on_player = case_when(
+  str_detect(description, regex("foul:", ignore_case = T)) & player1 == player_name ~ 1,
+  foul_occured_on_make == 1 & fouling_player_on_make == player_name ~ 1,
+  .default = 0))
+|> mutate(personal_foul_occurance_on_teammate = case_when(personal_foul_occurance_on_play == 1 & personal_foul_occurance_on_player == 0 ~ 1, .default = 0))
+|> mutate(referee = case_when(str_detect(description, regex("foul:", ignore_case = T)) & player1 == player_name ~ str_extract(description, regex("\\([^()]*\\)(?!.*\\([^()]*\\))")), TRUE ~ NA))
+|> mutate(referee = case_when(fouling_player_on_make == player_name ~ lead(referee, n = 10), .default = referee))
+|> mutate(referee = str_remove_all(referee, "[()]"))
+|> mutate(personal_fouls_after_event = str_extract(personal_fouls_after_event, regex("\\d+")))
+|> mutate(personal_fouls_after_event = as.numeric(personal_fouls_after_event))
+|> group_by(game_id, slug_team, player_name)
+|> fill(personal_fouls_after_event, .direction = "down")
+|> mutate(personal_fouls_after_event = replace_na(personal_fouls_after_event, 0))
+|> mutate(personal_fouls_during_event = case_when(
+  personal_foul_occurance_on_player == 1 ~ personal_fouls_after_event - 1,
+  .default = personal_fouls_after_event))
+|> mutate(fta_awarded_on_miss = replace_na(fta_awarded_on_miss, 0))
+|> mutate(fta_awarded_on_miss = as.numeric(fta_awarded_on_miss))
+|> mutate(game_id = as.character(game_id))
+|> mutate(total_pts_team = case_when(fta_awarded_on_miss > 0 ~ pts_team,
+                                     fta_awarded_on_make > 0 ~ pts_team + ft_pts_team,
+                                     .default = pts_team),
+          total_pts_opp = case_when(fta_awarded_on_miss > 0 ~ pts_opp,
+                                    fta_awarded_on_make > 0 ~ pts_opp + ft_pts_opp,
+                                    .default = pts_opp))
+)
+
+pbp_with_fouls_by_player <- (pbp_with_fouls_by_player 
+  |> mutate(
+    # Convert clock to numeric first
+    clock = as.numeric(clock),
+    # Track foul state duration using clock column
+    foul_state_duration = case_when(
+      lead(period) != period | lead(game_id) != game_id | lead(player_name) != player_name ~ clock - lead(clock),
+      TRUE ~ clock - lead(clock)
+    ),
+    # Replace NA durations with 0
+    foul_state_duration = replace_na(foul_state_duration, 0),
+    # Ensure duration is not negative
+    foul_state_duration = pmax(foul_state_duration, 0)
+  )
+  |> rename(personal_fouls = personal_fouls_during_event)
+  |> group_by(game_id, game_date, slug_team, player_name, period, personal_fouls)
+  |> summarise(
+    minutes_at_foul_count = sum(foul_state_duration),
+    .groups = 'drop'
+  )
+)
+
+head(pbp_with_fouls_by_player)
+
+library(hoopR)
+
+player_logs <- nba_leaguegamelog(season = "2024-25", player_or_team = "P") %>%
+  pluck("LeagueGameLog") %>%
+  clean_names() %>%
+  mutate(team_location = ifelse(str_detect(matchup, "\\@"), "away", "home"),
+         across(c(player_id, team_id), as.numeric))
+
+player_logs_for_join <- (
+  player_logs
+  |> select(player_name, player_id, team_id, team_abbreviation, game_id, game_date)
+  |> rename(slug_team = team_abbreviation)
+  |> mutate(game_id = as.numeric(game_id))
+  |> mutate(game_date = as_date(game_date))
+)
+
+quarter_fouls_by_defender <- (pbp_with_fouls_by_player
+  |> mutate(game_id = as.numeric(game_id))
+  |> left_join(player_logs_for_join, by = join_by("player_name", "slug_team", "game_id", "game_date"))
+  |> rename(defender_name = player_name,
+            defender_id = player_id)
+)    
+
+defender_dashboard <- defender_dashboard |> 
+  filter(game_date >= "2025-02-01", game_date <= "2025-02-02")
+
+defender_analysis <- defender_dashboard |>
+  left_join(quarter_fouls_by_defender,
+            by = c("defender_id", "game_date", "period"))
+
+glimpse(defender_analysis)
+
+closest_defender_dashboard <- nanoparquet::read_parquet("data/closest_defender_shooting_dashboard.parquet")
+
+closest_defender_dashboard <- (
+  closest_defender_dashboard
+  |> clean_names()
+  |> rename(offender_id = player_id)
+  |> filter(g == 1) # g == 1 is a bit of an artifact from the data collection process; filtering for it makes sure given stats correctly correspond to given games
+  |> distinct()
+)
+
+closest_defender_dashboard_10_plus <- nanoparquet::read_parquet("data/closest_defender_shooting_dash_10_plus.parquet")
+
+closest_defender_dashboard_10_plus <- (
+  closest_defender_dashboard_10_plus
+  |> clean_names()
+  |> rename(offender_id = player_id)
+  |> filter(g == 1) # g == 1 is a bit of an artifact from the data collection process; filtering for it makes sure given stats correctly correspond to given games
+  |> distinct()
+)
+
+closest_defender_dashboard_10_plus <- (closest_defender_dashboard_10_plus 
+  |> select(date, period, offender_id, close_def_dist_range, fgm, fga, fg2m, fg2a, fg3m, fg3a)
+  |> rename_with(
+    ~ paste0(.x, "_10_plus"),
+    starts_with("f")
+  )
+) 
+
+# Join the full closest_defender_dashboard with the exclusive 10+ feet data
+# Convert all field goal columns to numeric
+closest_defender_dashboard <- (closest_defender_dashboard
+  |> select(date, period, offender_id, close_def_dist_range, fgm, fga, fg2m, fg2a, fg3m, fg3a) 
+  |> left_join(closest_defender_dashboard_10_plus, 
+               by = join_by("date", "period", "offender_id", "close_def_dist_range"))
+  |> mutate(across(fgm:fg3a_10_plus, ~ as.numeric(.)))
+)
+
+# Replace all NA values with 0
+closest_defender_dashboard <- (closest_defender_dashboard
+  |> mutate(across(everything(), ~replace_na(., 0)))
+)
+
+# I'm thinking about shot type as a function of distance-from-basket, so I use 2pt and 3pt categorization to infer shot distance in the closest_defender_dashboard and defender dashboard up ahead
+# Calculate shots from different distances:
+# - 0 to 10 feet (difference between total and 10+ feet)
+# - 10 to 24 feet (2-point shots 10+ feet)
+# - 24+ feet (3-point shots 10+ feet)
+closest_defender_dashboard <- (closest_defender_dashboard
+  |> mutate(o_fga_0_through_9_ft = fg2a - fg2a_10_plus,
+            o_fgm_0_through_9_ft = fg2m - fg2m_10_plus)
+  |> rename(o_fga_10_through_23_ft = fg2a_10_plus,
+            o_fgm_10_through_23_ft = fg2m_10_plus,
+            o_fga_24_plus = fg3a_10_plus,
+            o_fgm_24_plus = fg3m_10_plus)
+  |> select(-starts_with("fg"), -starts_with("fg"))
+)
+
+# Reshape data:
+# 1. First pivot longer to separate shot distance ranges
+# 2. Then pivot wider to separate field goals attempted (fga) and made (fgm)
+closest_defender_dashboard <- (closest_defender_dashboard
+  |> pivot_longer(
+    cols = starts_with("o_"),
+    names_to = c("stat_type", "offender_shot_dist_range"),
+    names_pattern = "o_(fg[am])_(.+)",
+    values_to = "value"
+  ) 
+  |> pivot_wider(
+    names_from = stat_type,
+    values_from = value
+  )
+  |> rename(offender_fga = fga, offender_fgm = fgm)
+  |> mutate(game_date = as_date(date),
+            offender_id = as.numeric(offender_id))
+  |> select(-date)
+)
+
+glimpse(closest_defender_dashboard)
+
+```
+
+## Model Building
+
+### Statistical Model Specification
+
+$$
+x ~ N(mu,sigma)
+mu = alpha + beta *x
+alpha ~ N(0,10)
+beta ~ N(0,2)
+sigma ~ Exponential(1)
+$$
+
+### Computational Model Specification
+
+Define BRMS, PyMC, etc. code.
+
+Or use Stan code directly with CmdStanR or PyStan.
+
+```{r}
+
+```
+
+### Prior Predictive Checks
+
+```{r}
+#| label: prior-checks
+#| fig-cap: "Prior predictive simulations"
+
+# Simulate from priors
+# Example:
+n_sims <- 100
+alpha_prior <- rnorm(n_sims, 0, 10)
+beta_prior <- rnorm(n_sims, 0, 2)
+
+# Plot simulations
+
+```
+
+### Model Fitting
+
+```{r}
+
+#| label: model-fit
+#| cache: true
+
+# Fit your model
+# Example using brms:
+# model <- brm(
+#   y ~ x,
+#   data = data,
+#   family = gaussian(),
+#   prior = c(
+#     prior(normal(0, 10), class = Intercept),
+#     prior(normal(0, 2), class = b),
+#     prior(exponential(1), class = sigma)
+#   ),
+#   chains = 4,
+#   cores = 4
+# )
+
+# Example using cmdstanr:
+# model <- cmdstan_model("model.stan")
+# fit <- model$sample(data = data, chains = 4, parallel_chains = 4)
+
+
+```
+
+## Model Checking
+
+### Computational Diagnostics
+
+```{r}
+
+```
+
+### Posterior Predictive Checks
+
+```{r}
+
+
+```
+
+## Model Interpretation
+
+### Parameter Estimates
+
+```{r}
+
+```
+
+### Posterior Predictions
+
+```{r}
+
+
+```
+
+### Predictor Residual Analysis
+
+```{r}
+
+```
+
+### Sensitivity Analysis
+
+```{r}
+
+```
+
+### Counterfactual Analysis
+
+```{r}
+
+```
+
+## Conclusion
+
+### Summary of Findings
+
+### Key Results
+
+Summarize your main findings here, connecting them back to your research questions.
+
+### Limitations and Next Steps
+
+Important Considerations Discuss key limitations and potential future directions.
+
+# References

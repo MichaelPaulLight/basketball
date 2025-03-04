@@ -1,0 +1,842 @@
+---
+title: "binomial modeling scratch sheet"
+format: html
+editor: visual
+---
+
+# Purpose of This Document
+
+This template guides you through a Bayesian analysis following McElreath's workflow from Statistical Rethinking. Each section includes explanatory notes that you should replace with your own content.
+
+# Fouls and Defense
+
+## Load Packages
+
+```{r}
+#| label: setup
+#| include: false
+
+# Load required packages
+library(tidyverse)
+library(brms)
+library(tidybayes)
+library(bayesplot)
+library(dagitty)
+library(ggdag)
+library(nanoparquet)
+library(zoo)
+```
+
+## Domain Knowledge
+
+Previous Research Summarize key findings from previous research. What do we already know about this system?
+
+Mechanisms Describe the potential mechanisms at work. How might your variables be causally related?
+
+Expected Patterns Based on theory and previous research, what patterns do you expect to see in your data?
+
+### Research Questions
+
+State your research questions clearly and precisely. Good research questions should be:
+
+1.  Do the number of team and personal fouls carried by a given team and group of players at a given point in time affect the number of non-free throw points scored by an opposing offense?
+
+## Causal Model
+
+### Directed Acyclic Graph (DAG)
+
+Determine which variables to include in your model with the following workflow:
+
+1.  List all of the paths connecting X (the potential cause of interest) and Y (the out- come).
+
+2.  Classify each path by whether it is open or closed. A path is open unless it contains a collider.
+
+3.  Classify each path by whether it is a backdoor path. A backdoor path has an arrow entering X.
+
+4.  If there are any open backdoor paths, decide which variable(s) to condition on to close it (if possible). \[dagitty::impliedConditionalIndependencies(), dagitty::adjustmentSets()\]
+
+```{r}
+
+#| label: dag
+#| fig-cap: "Directed Acyclic Graph representing causal relationships "
+#| code-fold: show
+
+### Main variables
+    defSkill_tm [pos="1,1"]    # Teammate defensive skill
+    fouls_tm [pos="2,1"]       # Teammate accumulated fouls
+    defInt_tm [pos="3,1"]      # Teammate defensive intensity
+    defSkill_p [pos="1,2"]     # Player defensive skill
+    fouls_p [pos="2,2"]        # Player accumulated fouls 
+    defInt_p [pos="3,2"]       # Player defensive intensity
+    foul_prob [pos="4,2"]      # Probability of player committing foul
+    
+    
+    defSkill_tm -> defInt_tm   # Teammate skill affects their intensity
+    fouls_tm -> defInt_tm      # Teammate fouls affect their intensity
+    defInt_tm -> defInt_p      # Teammate intensity affects player intensity
+    defSkill_p -> defInt_p     # Player skill affects their intensity
+    defInt_p -> foul_prob      # Player intensity affects foul probability
+    fouls_p -> foul_prob       # Player accumulated fouls affect their foul probability
+###
+    
+basketball_dag <- dagitty('dag {
+    defSkill_tm [pos="0,0" label="Team Defense Skill"]
+    fouls_tm [pos="2,0" label="Team Foul Tendency"]
+    defInt_tm [pos="1,1" label="Team Defense Intensity"]
+    
+    defSkill_p [pos="0,2" label="Player Defense Skill"]
+    fouls_p [pos="2,2" label="Player Foul Tendency"]
+    defInt_p [pos="1,3" label="Player Defense Intensity"]
+    foul_prob [pos="1,4" label="Foul Probability"]
+    
+    defSkill_tm -> defInt_tm
+    fouls_tm -> defInt_tm
+    defInt_tm -> defInt_p
+    defSkill_p -> defInt_p
+    defInt_p -> foul_prob
+    fouls_p -> foul_prob
+}')
+
+# Plot the DAG
+ggdag(basketball_dag) + 
+  theme_dag() +
+  geom_dag_point(color = "lightblue", size = 20, alpha = 0.5) +
+  geom_dag_text(color = "black", size = 4) +
+  geom_dag_edges(edge_colour = "gray30", 
+                 edge_width = 0.8) +
+  theme_void() +
+  theme(plot.background = element_rect(fill = "white", color = NA)) +
+  scale_x_continuous(expand = expansion(mult = 0.2)) +
+  scale_y_continuous(expand = expansion(mult = 0.2)) 
+
+# Display Implied Conditional Independencies
+
+# Display Adjustment Sets
+
+```
+
+### DAG Interpretation
+
+Justify the inclusion and exclusion of variables in your model based on the DAG.
+
+Define the relationships in your DAG in terms of:
+
+1.  The Fork
+
+2.  The Pipe
+
+3.  The Collider
+
+4.  The Descendant
+
+## Data Simulation
+
+### Simulate Data Implied by Causal Model
+
+```{r}
+# Parameters for simulation
+n_games <- 5       # Start small for testing
+n_players <- 25     # Subset of players
+n_events_per_game <- 250  # Approximate from your data
+
+# True parameter values
+true_gamma <- 0.5   # Acceleration parameter
+player_sd <- 0.3    # SD for player random effects
+teammate_sd <- 0.2  # SD for teammate effects
+base_rate <- -3.7   # Based on observed ~2.5% foul rate
+
+# Generate player and teammate effects
+set.seed(123)
+player_effects <- rnorm(n_players, 0, player_sd)
+teammate_effects <- rnorm(n_players, 0, teammate_sd)
+
+# Function to simulate one game's worth of data
+simulate_game <-  function(game_id) {
+  # Create lineups that persist for multiple events
+  n_lineups <- 10  # Approximate number of lineup changes per game
+  lineup_changes <- sort(sample(1:n_events_per_game, n_lineups))
+  
+  # Initialize data frame
+  events <- data.frame(
+    game_id = integer(),
+    number_event = integer(),
+    lineup_id = integer(),
+    player_name = integer(),
+    personal_fouls_during_event = integer()
+  )
+  
+  # Track accumulated fouls for each player
+  player_fouls <- rep(0, n_players)
+  
+  # Generate events with persistent lineups
+  current_lineup <- sample(1:n_players, 5)
+  current_lineup_id <- 1
+  
+  for (event in 1:n_events_per_game) {
+    # Check if lineup change is needed
+    if (event %in% lineup_changes) {
+      # Change 1-3 players in the lineup
+      n_changes <- sample(1:3, 1)
+      positions_to_change <- sample(1:5, n_changes)
+      new_players <- sample(setdiff(1:n_players, current_lineup), n_changes)
+      current_lineup[positions_to_change] <- new_players
+      current_lineup_id <- current_lineup_id + 1
+    }
+    
+    # Add event data for each player in lineup
+    event_data <- data.frame(
+      game_id = rep(game_id, 5),
+      number_event = rep(event, 5),
+      lineup_id = rep(current_lineup_id, 5),
+      player_name = current_lineup,
+      personal_fouls_during_event = player_fouls[current_lineup]
+    )
+    
+    events <- rbind(events, event_data)
+    
+    # Simulate a foul for this event (at most one foul per event)
+    foul_occurs <- rbinom(1, 1, 0.15)  # ~15% of events have fouls
+    
+    if (foul_occurs) {
+      # Choose which player gets the foul based on their current foul count
+      # Players with more fouls are less likely to get called
+      foul_probs <- exp(-0.3 * player_fouls[current_lineup])
+      foul_probs <- foul_probs / sum(foul_probs)
+      fouling_player_idx <- sample(1:5, 1, prob = foul_probs)
+      fouling_player <- current_lineup[fouling_player_idx]
+      
+      # Update foul count for this player
+      player_fouls[fouling_player] <- player_fouls[fouling_player] + 1
+    }
+  }
+  
+  # Add teammate information
+  events <- events %>%
+    group_by(game_id, number_event) %>%
+    mutate(
+      teammate_name = map(1:n(), ~player_name[-.x]),
+      teammate_fouls = map(1:n(), ~personal_fouls_during_event[-.x])
+    ) %>%
+    unnest(cols = c(teammate_name, teammate_fouls))
+  
+  # Calculate foul probability and simulate occurrences
+  events <- events %>%
+    mutate(
+      logit_p = base_rate + 
+                player_effects[player_name] +
+                teammate_effects[teammate_name] * teammate_fouls,
+      p = plogis(logit_p),
+      personal_foul_occurance_on_player = rbinom(n(), 1, p)
+    )
+  
+  return(events)
+}
+
+# Simulate all games
+sim_data <- map_dfr(1:n_games, simulate_game)
+
+```
+
+## Data Loading and Processing
+
+Data Loading and Processing
+
+```{r}
+
+pbp_data <- read_parquet("../../data/250203_pbp_gt.parquet")
+
+```
+
+```{r}
+lineup_stats <- (
+  pbp_data 
+  |> group_by(game_id, slug_team)
+  |> mutate(stint_home = ifelse(slug_team == team_home, cumsum(msg_type == 8) + 1, NA),
+         stint_away = ifelse(slug_team == team_away, cumsum(msg_type == 8) + 1, NA)) 
+  |> group_by(game_id) 
+  |> mutate(across(starts_with("stint"), ~ na.locf0(., fromLast = TRUE)),
+         across(starts_with("stint"), ~ na.locf(.))) 
+  |> ungroup() 
+  |> pivot_longer(cols = starts_with("lineup"),
+               names_to = "lineup_location",
+               values_to = "lineup",
+               names_prefix = "lineup_")
+  |> mutate(pts_team = ifelse(lineup_location == "home", shot_pts_home, shot_pts_away),
+         pts_opp = ifelse(lineup_location == "away", shot_pts_home, shot_pts_away),
+         poss_team = ifelse(lineup_location == "home", poss_home, poss_away),
+         poss_opp = ifelse(lineup_location == "away", poss_home, poss_away),
+         slug_team = ifelse(lineup_location == "home", team_home, team_away),
+         slug_opp = ifelse(lineup_location == "away", team_home, team_away),
+         stint = ifelse(lineup_location == "home", stint_home, stint_away))
+  # |> select(game_id, game_date, period, stint, number_event, msg_type, description, lineup, pts_team, pts_opp,
+  #         poss_team, poss_opp, secs_played, slug_team, slug_opp, garbage_time)
+  # |> group_by(game_id, game_date, period, stint, slug_team, slug_opp, lineup, garbage_time)
+  # |> summarise(across(c(pts_team, pts_opp, poss_team, poss_opp, secs_played), sum))
+  # |> ungroup()
+  # |> filter(secs_played + poss_opp + poss_team + pts_opp + pts_team > 0)
+  # |> group_by(game_id, slug_team)
+  # |> mutate(stint = row_number(),
+  #          plus_minus = pts_team - pts_opp)
+  # |> ungroup()
+)
+
+pbp_with_fouls_by_player <- (lineup_stats 
+|> filter(str_detect(description, regex("technical", ignore_case = TRUE)) == FALSE) # excluding technical fouls
+|> mutate(foul_occured_on_make = lead(total_fta) == 1)
+|> mutate(foul_occured_on_make = case_when(lead(foul_occured_on_make) == TRUE ~ 1, .default = foul_occured_on_make))
+|> mutate(foul_occured_on_make = case_when(foul_occured_on_make == 1 & str_detect(description, regex("foul:", ignore_case = T)) ~ 0, .default = foul_occured_on_make))
+|> mutate(fta_awarded_on_make = case_when(foul_occured_on_make == 1 ~ 1, .default = 0))
+|> mutate(fouled_player_on_make = case_when(lead(total_fta, n = 2) == 1 ~ lead(player3, n = 2), .default = NA))
+|> mutate(fouling_player_on_make = case_when(lead(total_fta, n = 2) == 1 ~ lead(player1, n = 2), .default = NA))
+|> mutate(checkr = case_when(fta_awarded_on_make == lead(total_fta, n = 2)~ 1, .default = 0)) # when checkr == fta_awarded_on_make, then this script is working correctly
+|> mutate(fta_awarded_on_miss = case_when(total_fta > 1 ~ total_fta, .default = 0))
+|> mutate(ft_pts_opp = case_when(fta_awarded_on_make == 1 ~ lead(pts_opp, n = 2),
+                                 fta_awarded_on_miss > 0 ~ pts_opp,
+                                 .default = 0))
+|> mutate(ft_pts_team = case_when(fta_awarded_on_make == 1 ~ lead(pts_team, n = 2),
+                                  fta_awarded_on_miss > 0 ~ pts_team,
+                                  .default = 0))
+|> separate_longer_delim(cols = lineup, delim = ", ")
+|> rename(player_name = lineup)
+|> mutate(personal_fouls_after_event = case_when(str_detect(description, regex("foul:", ignore_case = T)) & player1 == player_name ~ str_extract(description, regex("\\([^()]*\\)(?![^()]*\\))")), TRUE ~ NA))
+|> mutate(personal_fouls_after_event = case_when(fouling_player_on_make == player_name ~ lead(personal_fouls_after_event, n = 10), .default = personal_fouls_after_event))
+|> mutate(personal_foul_occurance_on_play = case_when(str_detect(description, regex("foul:", ignore_case = T)) | foul_occured_on_make == 1 ~ 1, TRUE ~ 0))
+|> mutate(personal_foul_occurance_on_player = case_when(
+  str_detect(description, regex("foul:", ignore_case = T)) & player1 == player_name ~ 1,
+  foul_occured_on_make == 1 & fouling_player_on_make == player_name ~ 1,
+  .default = 0))
+|> mutate(personal_foul_occurance_on_teammate = case_when(personal_foul_occurance_on_play == 1 & personal_foul_occurance_on_player == 0 ~ 1, .default = 0))
+|> mutate(referee = case_when(str_detect(description, regex("foul:", ignore_case = T)) & player1 == player_name ~ str_extract(description, regex("\\([^()]*\\)(?!.*\\([^()]*\\))")), TRUE ~ NA))
+|> mutate(referee = case_when(fouling_player_on_make == player_name ~ lead(referee, n = 10), .default = referee))
+|> mutate(referee = str_remove_all(referee, "[()]"))
+|> mutate(personal_fouls_after_event = str_extract(personal_fouls_after_event, regex("\\d+")))
+|> mutate(personal_fouls_after_event = as.numeric(personal_fouls_after_event))
+|> group_by(game_id, slug_team, player_name)
+|> fill(personal_fouls_after_event, .direction = "down")
+|> mutate(personal_fouls_after_event = replace_na(personal_fouls_after_event, 0))
+|> mutate(personal_fouls_during_event = case_when(
+  personal_foul_occurance_on_player == 1 ~ personal_fouls_after_event - 1,
+  .default = personal_fouls_after_event))
+|> mutate(fta_awarded_on_miss = replace_na(fta_awarded_on_miss, 0))
+|> mutate(fta_awarded_on_miss = as.numeric(fta_awarded_on_miss))
+|> mutate(game_id = as.character(game_id))
+|> mutate(total_pts_team = case_when(fta_awarded_on_miss > 0 ~ pts_team,
+                                     fta_awarded_on_make > 0 ~ pts_team + ft_pts_team,
+                                     .default = pts_team),
+          total_pts_opp = case_when(fta_awarded_on_miss > 0 ~ pts_opp,
+                                    fta_awarded_on_make > 0 ~ pts_opp + ft_pts_opp,
+                                    .default = pts_opp))
+)
+
+model_data_1 <- (pbp_with_fouls_by_player
+                 |> filter(garbage_time == 0)
+                 |> filter(game_date >= "2024-12-01")
+                 |> filter(poss_opp == 1)
+                 |> group_by(game_id, number_event) 
+                 |> mutate(event_id = cur_group_id())
+                 |> select(event_id, game_id, period, slug_team, slug_opp,act_type, player_name, personal_fouls_during_event, personal_foul_occurance_on_play, personal_foul_occurance_on_player, personal_foul_occurance_on_teammate)
+)
+
+
+model_data <- (pbp_with_fouls_by_player
+               |> filter(game_date >= "2025-01-01")
+               |> filter(poss_opp == 1)
+               |> filter(garbage_time == 0)
+               
+               |> filter(off_slug_team != slug_team)
+               |> group_by(game_id, number_event) 
+               |> mutate(event_id = cur_group_id())
+               |> mutate(
+                   teammate_name = map(1:n(), ~player_name[-.x]),
+                   teammate_fouls = map(1:n(), ~personal_fouls_during_event[-.x])
+               )
+               |> unnest(cols = c(teammate_name, teammate_fouls))
+               |> select(event_id, game_id, period, description, slug_team, slug_opp, number_event, act_type, player_name, personal_fouls_during_event, teammate_name, teammate_fouls, personal_foul_occurance_on_player)
+)
+
+
+model_data_december <- (pbp_with_fouls_by_player
+               |> filter(game_date >= "2024-12-01" & game_date < "2025-01-01")
+               |> filter(poss_opp == 1)
+               |> filter(garbage_time == 0)
+               |> filter(str_detect(description, regex("foul: shooting", ignore_case = TRUE)) | str_detect(description, regex("shot", ignore_case = TRUE)))
+               |> filter(off_slug_team != slug_team)
+
+               |> group_by(game_id, number_event) 
+               |> mutate(
+     teammate_name = map(1:n(), ~player_name[-.x]),
+     teammate_fouls = map(1:n(), ~personal_fouls_during_event[-.x])
+   )
+   |> unnest(cols = c(teammate_name, teammate_fouls))
+   |> select(game_id, period, slug_team, slug_opp, number_event, act_type, player_name, personal_fouls_during_event, teammate_name, teammate_fouls, personal_foul_occurance_on_player)
+)
+
+```
+
+```{r}
+kd <- pbp_with_fouls_by_player |> group_by(number_event) |> filter(player_name == "Kevin Durant")
+
+nurk <- pbp_with_fouls_by_player |> group_by(number_event) |> filter(str_detect(player_name, regex("Nurk", ignore_case = TRUE)))
+
+kd_nurk <- lineup_stats |> filter(str_detect(lineup, regex("durant", ignore_case = TRUE)) & str_detect(lineup, regex("nurk", ignore_case = TRUE)))
+```
+
+```{r}
+test <- pbp_with_fouls_by_player |>
+  filter(game_id == 22400061) |>
+  ungroup() |> 
+  mutate(scaled_x = as.numeric(locX/10), scaled_y = as.numeric(locY/10-41.75)) |> 
+  filter(off_slug_team != slug_team) 
+
+library(sportyR)
+library(ggplot2)
+library(hoopR)
+
+# Create a basketball court
+court <- geom_basketball(league = "nba", court_units = "ft", rotation = 270, display_range = "offense")
+
+# Create the visualization
+court + 
+  geom_point(data = shot_test, aes(x = scaled_x, y = scaled_y)) +
+  geom_text(data = shot_test, aes(x = scaled_x, y = scaled_y, label = zone), nudge_y = 0.5)
+
+get_shot_zone <- function(x, y) {
+  # Constants for court dimensions (in feet)
+  THREE_POINT_RADIUS <- 23.75  # Distance from basket to three-point line
+  CORNER_THREE_Y <- 14  # Y coordinate where three-point line becomes straight
+  RESTRICTED_AREA_RADIUS <- 4  # Restricted area radius
+  FREE_THROW_RADIUS <- 6  # Free throw circle radius
+  PAINT_WIDTH <- 16  # Width of the paint
+  PAINT_HEIGHT <- 19  # Height of the paint
+  
+  # Calculate distance from basket (assumed to be at origin 0,0)
+  distance <- sqrt(x^2 + y^2)
+  
+  # Helper function to determine if point is in paint
+  in_paint <- function(x, y) {
+    return(abs(x) <= PAINT_WIDTH/2 && y <= PAINT_HEIGHT)
+  }
+  
+  # Check zones in order of specificity
+  
+  # Restricted Area
+  if (distance <= RESTRICTED_AREA_RADIUS) {
+    return("Restricted Area")
+  }
+  
+  # Paint (excluding Restricted Area)
+  if (in_paint(x, y)) {
+    if (y <= FREE_THROW_RADIUS) {
+      return("Paint (Non-RA)")
+    } else {
+      return("Paint (Free Throw)")
+    }
+  }
+  
+  # Three Point Shot Zones
+  if (distance > THREE_POINT_RADIUS || (abs(y) <= CORNER_THREE_Y && abs(x) >= 22)) {
+    if (abs(y) <= CORNER_THREE_Y) {
+      return("Corner 3")
+    } else {
+      return("Above Break 3")
+    }
+  }
+  
+  # Mid-Range (everything else)
+  return("Mid-Range")
+}
+
+shot_test <- pbp_with_fouls_by_player |> 
+  filter(game_id == 22400061 & fta_awarded_on_miss > 0) |> 
+  filter(off_slug_team != slug_team) |>
+  mutate(scaled_x = as.numeric(locX/10), scaled_y = as.numeric(locY/10-41.75))  
+
+# Apply the function to get zones
+shot_test$zone <- mapply(get_shot_zone, shot_test$scaled_x, shot_test$scaled_y)
+
+
+```
+
+## Model Building
+
+### Statistical Model Specification
+
+$$
+x ~ N(mu,sigma)
+mu = alpha + beta *x
+alpha ~ N(0,10)
+beta ~ N(0,2)
+sigma ~ Exponential(1)
+$$
+
+### Computational Model Specification
+
+Define BRMS, PyMC, etc. code.
+
+Or use Stan code directly with CmdStanR or PyStan.
+
+```{r}
+
+sim_model <- brm(
+  bf(personal_foul_occurance_on_player ~ teammate_fouls +
+       (1 | player_name) +
+       (1 | teammate_name) +,
+  family = bernoulli(),
+  data = sim_data
+)
+
+model_formula <- bf(
+  personal_foul_occurance_on_player ~ personal_fouls_during_event + 
+          (1 | game_id:number_event) + 
+          (1 | period) +
+          (1 | slug_team) + 
+          (1 | slug_opp) + 
+          (1 | player_name)
+)
+
+model_formula_teammates <- bf(
+  personal_foul_occurance_on_player ~ 
+    teammate_fouls +
+    (1 | game_id:number_event) + 
+    (1 | slug_team) +
+    (1 | slug_opp) +
+    (1 | player_name) +
+    (1 | teammate_name)
+)
+
+model_formula_teammates_2 <- bf(
+  personal_foul_occurance_on_player ~ 
+    teammate_fouls +
+    (1 | game_id:number_event) + 
+    (1 | period) +
+    (1 | slug_team) +
+    (1 | slug_opp) +
+    (1 | player_name) +
+    (1 | teammate_name)
+)
+
+model_formula_teammates_3 <- bf(
+  personal_foul_occurance_on_player ~ 
+    teammate_fouls + personal_fouls_during_event +
+    (1 | game_id:number_event) + 
+    (1 | period) +
+    (1 | slug_team) +
+    (1 | slug_opp) +
+    (1 | player_name) +
+    (1 | teammate_name)
+)
+
+model_formula_teammates_4 <- bf(
+  personal_foul_occurance_on_player ~ 
+    teammate_fouls + personal_fouls_during_event +
+    (1 + teammate_fouls | player_name) +  
+    (1 + teammate_fouls | teammate_name) +
+    (1 | game_id) + 
+    (1 | period) +
+    (1 | slug_team) +
+    (1 | slug_opp)
+)
+
+fit_teammates_3 <- brm(
+  formula = model_formula_teammates_3,
+  data = test_3.5,
+  family = bernoulli(),
+  chains = 4,
+  cores = 4,
+  iter = 2000,
+  warmup = 1000,
+  file = "teammate_foul_model_3.rds"
+)
+
+model_formula_teammates_3_mo <- bf(
+  personal_foul_occurance_on_player ~ 
+    mo(teammate_fouls) + mo(personal_fouls_during_event) +
+    (1 | game_id:number_event) + 
+    (1 | period) +
+    (1 | slug_team) +
+    (1 | slug_opp) +
+    (1 | player_name) +
+    (1 | teammate_name)
+)
+
+model_formula_5 <- bf(
+  personal_foul_occurance_on_play | trials(event_id) ~
+    personal_fouls_during_event +
+    (1 | player_name) +  
+    (1 + personal_fouls_during_event | personal_foul_occurance_on_player) +
+    (1 | game_id) + 
+    (1 | period) +
+    (1 | slug_team) +
+    (1 | slug_opp) +
+    (1 | act_type)
+)
+
+
+fit_teammates_4_updated <- update(
+  fit_teammates_4,    
+  newdata = model_data_december, 
+  chains = 4,
+  cores = 4,
+  iter = 2000,
+  warmup = 1000
+)
+
+```
+
+### Prior Predictive Checks
+
+```{r}
+#| label: prior-checks
+#| fig-cap: "Prior predictive simulations"
+
+# Simulate from priors
+# Example:
+
+# Plot simulations
+
+```
+
+### Model Fitting
+
+```{r}
+
+#| label: model-fit
+#| cache: true
+
+
+model <- brm(
+  formula = model_formula,
+  data = model_data,
+  family = bernoulli(),
+  chains = 4,
+  cores = 4)
+
+shot_defense_model_small_02 <- brm(
+  formula = offender_fgm | trials(offender_fga) ~
+    defender_fga +
+    defender_fgm +
+    (1 | game_id) +     
+    (1 | slug_team_off) +
+    (1 | slug_team_def) +
+    (1 | offender_name) + 
+    (1 | defender_name),
+  family = binomial(),
+  data = period_agg_small,
+  chains = 4,
+  iter = 2000,
+  file = "../models/shot-defense-model_small-02.rds"
+)
+
+fit_teammates <- brm(
+  formula = model_formula_teammates,
+  data = test_3,
+  family = bernoulli(),
+  chains = 4,
+  cores = 4,
+  iter = 2000,
+  warmup = 1000,
+)
+
+
+fit_teammates_2 <- brm(
+  formula = model_formula_teammates_2,
+  data = test_3.5,
+  family = bernoulli(),
+  chains = 4,
+  cores = 4,
+  iter = 2000,
+  warmup = 1000,
+  file = "teammate_foul_model_2.rds"
+)
+
+fit_teammates_3_mo <- brm(
+  formula = model_formula_teammates_3_mo,
+  data = test_3.5,
+  family = bernoulli(),
+  chains = 4,
+  cores = 4,
+  iter = 2000,
+  warmup = 1000,
+  file = "teammate_foul_model_3_mo.rds"
+)
+
+fit_teammates_4 <- brm(
+  formula = model_formula_teammates_4,
+  data = model_data,
+  family = bernoulli(),
+  chains = 4,
+  cores = 4,
+  iter = 2000,
+  warmup = 1000,
+  file = "teammate_foul_model_4.rds"
+)
+
+
+fit_teammates_5 <- brm(
+  formula = model_formula_5,
+  family = binomial(),
+  data = model_data_1,
+  chains = 4,
+  cores = 4,
+  iter = 2000,
+  warmup = 1000,
+  file = "foul_model_5.rds"
+)
+
+# Example using cmdstanr:
+# model <- cmdstan_model("model.stan")
+# fit <- model$sample(data = data, chains = 4, parallel_chains = 4)
+
+
+```
+
+## Model Checking
+
+### Computational Diagnostics
+
+```{r}
+summary(fit_teammates_2)
+
+```
+
+### Posterior Predictive Checks
+
+```{r}
+pp_check(fit_teammates_2)
+
+
+```
+
+## Model Interpretation
+
+### Parameter Estimates
+
+```{r}
+#| label: estimates
+#| fig-cap: "Posterior estimates of model parameters"
+
+# Extract parameter estimates
+# Example:
+
+marginal_effects(fit_teammates_5)
+
+```
+
+### Posterior Predictions
+
+```{r}
+library(distributional)
+
+teammate_effects <- ranef(fit_teammates_5)$teammate_name[, , "Intercept"] |>
+  as.data.frame() |>
+  rownames_to_column("teammate_name") |>
+  arrange(desc(Estimate))
+
+team_effects <- ranef(fit_teammates_5)$slug_team[, , "Intercept"] |>
+  as.data.frame() |>
+  rownames_to_column("team") |>
+  arrange(desc(Estimate))
+
+player_effects <- ranef(fit_teammates_5)$player_name[, , "Intercept"] |>
+  as.data.frame() |>
+  rownames_to_column("player") |>
+  arrange(desc(Estimate))
+
+period_effects <- ranef(fit_teammates_5)$period[, , "Intercept"] |>
+  as.data.frame() |>
+  rownames_to_column("period") |>
+  arrange(desc(Estimate))
+
+opponent_effects <- ranef(fit_teammates_5)$slug_opp[, , "Intercept"] |>
+  as.data.frame() |>
+  rownames_to_column("opponent") |>
+  arrange(desc(Estimate))
+
+action_effects <- ranef(fit_teammates_5)$act_type[, , "Intercept"] |>
+  as.data.frame() |>
+  rownames_to_column("action") |>
+  arrange(desc(Estimate))
+
+personal_foul_occurance_on_player_effects <- ranef(fit_teammates_5)$personal_foul_occurance_on_player[, , "Intercept"] |>
+  as.data.frame() |>
+  rownames_to_column("personal_foul_occurance_on_player") |>
+  arrange(desc(Estimate))
+
+ggplot(personal_foul_occurance_on_player_effects, aes(y = reorder(personal_foul_occurance_on_player, Estimate), x = Estimate)) +
+  stat_halfeye() +
+  labs(title = "Personal Foul Occurance on Player Effects",
+       x = "Estimated Effect on Personal Foul Occurance",
+       y = "Personal Foul Occurance on Player")
+
+
+ggplot(tail(teammate_effects, 30), aes(y = reorder(teammate_name, -Estimate),  x = Estimate)) +
+  stat_halfeye() +
+  labs(title = "Top 30 Players by Foul Effect",
+       x = "Estimated Effect on Teammate Fouling",
+       y = "teammate_name")
+
+ggplot(head(team_effects, 30), aes(y = reorder(team, Estimate), x = Estimate)) +
+  stat_halfeye() +
+  labs(title = "Top 30 Teams by Foul Effect",
+       x = "Estimated Effect on Team Fouling",
+       y = "team")
+
+ggplot(tail(player_effects, 30), aes(y = reorder(player, Estimate), xdist = dist_normal(Estimate, Est.Error))) +
+  stat_halfeye() +
+  labs(title = "Top 30 Players by Foul Effect",
+       x = "Estimated Effect on Personal Fouling",
+       y = "player")
+
+ggplot(period_effects, aes(y = reorder(period, Estimate), xdist = dist_normal(Estimate, Est.Error))) +
+  stat_halfeye() +
+  labs(title = "Period Effects on Foul Occurance",
+       x = "Estimated Effect on Personal Fouling",
+       y = "Period")
+
+ggplot(head(action_effects, 20), aes(y = reorder(action, Estimate), x = Estimate)) +
+  stat_halfeye() +
+  labs(title = "Action Effects on Foul Occurance",
+       x = "Estimated Effect on Personal Fouling",
+       y = "Action")
+
+ggplot(opponent_effects, aes(y = reorder(opponent, Estimate), x = Estimate)) + 
+  stat_halfeye() +
+  labs(title = "Opponent Effects on Foul Occurance",
+       x = "Estimated Effect on Personal Fouling",
+       y = "Opponent")
+
+loo(fit_teammates_3)
+
+```
+
+### Predictor Residual Analysis
+
+```{r}
+
+```
+
+### Sensitivity Analysis
+
+```{r}
+
+```
+
+### Counterfactual Analysis
+
+```{r}
+
+```
+
+## Conclusion
+
+### Summary of Findings
+
+### Key Results
+
+Summarize your main findings here, connecting them back to your research questions.
+
+### Limitations and Next Steps
+
+Important Considerations Discuss key limitations and potential future directions.
+
+# References

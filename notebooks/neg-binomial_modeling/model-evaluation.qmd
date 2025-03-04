@@ -1,0 +1,530 @@
+---
+title: "Negative Binomial Model Evaluation"
+format: html
+editor: visual
+---
+
+```{r}
+# Load necessary libraries
+library(brms)
+library(tidyverse)
+library(bayesplot)
+library(loo)
+library(tidybayes)
+library(patchwork)
+library(ggrepel)  # For non-overlapping text labels
+
+```
+
+```{r}
+# Load the fitted model
+varying_slopes_model_constrained_real_2 <- readRDS("models/varying-slopes-model_negbinom_constrained_real_2.rds")
+
+stratified_sample <- nanoparquet::read_parquet("stratified-sample_neg-binomial.parquet")
+
+# Brief description of the model
+cat("This notebook evaluates our negative binomial model that examines how foul accumulation affects defensive behavior in NBA games. The model uses a negative binomial distribution to model shot attempts faced by defenders as a function of their accumulated fouls, with varying effects by position and defender proximity.")
+
+# Display model formula and structure
+print(varying_slopes_model_constrained_real_2)
+
+# Check convergence with trace plots
+mcmc_trace(varying_slopes_model_constrained_real_2)
+
+# R-hat values
+mcmc_rhat(rhat(varying_slopes_model_constrained_real_2)) +
+  ggtitle("R-hat values (should be close to 1)")
+
+# Effective sample sizes
+neff_ratio(varying_slopes_model_constrained_real_2) |>  
+  mcmc_neff()
+
+```
+
+```{r}
+# Model diagnostics
+
+# Basic posterior predictive check
+pp_check(varying_slopes_model_constrained_real_2, ndraws = 100) +
+  ggtitle("Posterior predictive check")
+
+# Distribution of shot attempts
+pp_check(varying_slopes_model_constrained_real_2, type = "ecdf_overlay") +
+  ggtitle("Empirical CDF of observed vs. predicted values")
+
+```
+
+Comparing differently-specified models fit to simulated data
+
+```{r}
+interaction_model <- readRDS("models/interaction-model_negbinom_sim_1.rds")
+constrained_interaction_model <- readRDS("models/interaction-model_negbinom_sim_2.rds")
+no_interaction_model <- readRDS("models/no-interaction-model_negbinom_sim_1.rds")
+varying_slopes_model <- readRDS("models/varying-slopes-model_negbinom_sim_1.rds")
+constrained_varying_slopes_model_sim <- readRDS("models/varying-slopes-model_negbinom_constrained_sim_1.rds")
+
+# Compare models with LOO
+interaction_loo <- loo(interaction_model)
+constrained_interaction_loo <- loo(constrained_interaction_model)
+no_interaction_loo <- loo(no_interaction_model)
+varying_slopes_loo <- loo(varying_slopes_model)
+constrained_varying_slopes_loo <- loo(constrained_varying_slopes_model_sim)
+
+
+# Compare models
+loo_comparison <- loo_compare(interaction_loo, constrained_interaction_loo, no_interaction_loo, varying_slopes_loo, constrained_varying_slopes_loo)
+
+str(loo_comparison)
+
+# Create a table with the correct number of columns
+# Convert to data frame first to ensure proper handling
+loo_comparison_df <- as.data.frame(loo_comparison)
+
+# Now create the table with the actual column names from the object
+loo_comparison_neg_binom_table <- knitr::kable(loo_comparison_df, 
+             caption = "Model Comparison using LOO-CV",
+             digits = 2) %>%
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
+                           full_width = FALSE)
+
+save_kable(loo_comparison_neg_binom_table, file = "figures/loo_comparison_neg_binom_table.html")
+
+
+
+```
+
+```{r}
+varying_slopes_model_constrained_real_2 |> get_variables()
+
+varying_slopes_model_constrained_real_2 |> 
+  spread_draws(r_slug_team_def[team,term]) |> 
+  head(10)
+
+varying_slopes_model_constrained_real_2 |> 
+  spread_draws(r_position[position,term]) |> 
+  head(10)
+
+varying_slopes_model_constrained_real_2 |> 
+  spread_draws(r_close_def_dist_range[distance,term]) |> 
+  head(10)
+
+varying_slopes_model_constrained_real_2 |>
+  spread_draws(b_Intercept, r_position[position,]) |> 
+  mutate(position_mean = b_Intercept + r_position) |>
+  median_qi(position_mean)
+
+varying_slopes_model_constrained_real_2 |>
+  spread_draws(b_Intercept, b_fouls_scaled, r_position[position,]) |> 
+  mutate(position_mean = b_Intercept + b_fouls_scaled + r_position) |>
+  median_qi(position_mean)
+
+varying_slopes_model_constrained_real_2 |> 
+  spread_draws(b_Intercept, r_close_def_dist_range[distance,]) |> 
+  mutate(distance_mean = b_Intercept + r_close_def_dist_range) %>%
+  median_qi(distance_mean)
+
+varying_slopes_model_constrained_real_2 |> 
+  spread_draws(b_Intercept, r_slug_team_def[team,]) |> 
+  mutate(team_mean = b_Intercept + r_slug_team_def) |> 
+  median_qi(team_mean)
+  
+  
+varying_slopes_model_constrained_real_2 |> 
+  spread_draws(r_position[position,term]) |> 
+  summarise_draws() |> 
+  filter(term == "fouls_scaled") |> 
+  arrange(mean)
+
+varying_slopes_model_constrained_real_2 |> 
+  spread_draws(r_close_def_dist_range[distance,term]) |> 
+  summarise_draws()
+
+
+varying_slopes_model_constrained_real_2 %>%
+  spread_draws(b_Intercept, r_slug_team_def[team,]) %>%
+  mutate(team_mean = b_Intercept + r_slug_team_def) %>%
+  ggplot(aes(y = team, x = team_mean)) +
+  stat_halfeye()
+
+varying_slopes_model_constrained_real_2 |>
+  spread_draws(b_Intercept, b_fouls_scaled, r_position[position,]) |> 
+  mutate(position_mean = b_Intercept + b_fouls_scaled + r_position) |>
+  ggplot(aes(y = position, x = position_mean)) +
+  stat_halfeye()
+
+varying_slopes_model_constrained_real_2 |>
+  spread_draws(b_Intercept, b_fouls_scaled, r_position[position,], r_slug_team_def[team,]) |> 
+  mutate(position_mean = b_Intercept + b_fouls_scaled + r_position + r_slug_team_def) |>
+  median_qi(position_mean)
+
+varying_slopes_model_constrained_real_2 |>
+  spread_draws(b_Intercept, b_fouls_scaled, r_position[position,], r_slug_team_def[team,]) |> 
+  mutate(position_mean = b_Intercept + b_fouls_scaled + r_position + r_slug_team_def) |>
+  ggplot(aes(y = reorder(team, position_mean), x = position_mean)) +
+  stat_halfeye() +
+    facet_wrap(~ position, scales = "free_y")
+
+```
+
+```{r}
+# Model diagnostics
+
+# Extract key parameter estimates with uncertainty
+parameters <- c("b_Intercept", "b_fouls_scaled")
+
+param_summary <- posterior_summary(varying_slopes_model_constrained_real_2, 
+                                  parameters) %>%
+  as.data.frame() %>%
+  rownames_to_column("Parameter")
+
+# Create a formatted table
+knitr::kable(param_summary, 
+             caption = "Key Parameter Estimates with 95% Credible Intervals",
+             digits = 3)
+
+# Calculate LOO for model comparison
+model_loo <- loo_subsample(varying_slopes_model_constrained_real_2, save_psis = TRUE)
+print(model_loo)
+plot(model_loo)
+
+```
+
+```{r}
+# Model diagnostics - Using tidybayes for more elegant handling of posterior predictions
+
+# Use add_fitted_draws from tidybayes with a small number of draws to save memory
+set.seed(123) # For reproducibility
+
+# Create a data frame with the original data
+model_data <- varying_slopes_model_constrained_real_2$data |>
+  as.data.frame()
+
+# Use tidybayes to get fitted values for the sampled data
+fitted_draws <- model_data |>
+  add_fitted_draws(varying_slopes_model_constrained_real_2, n = 50, re_formula = NULL) |>
+  group_by(.row) |>
+  summarize(
+    pred_value = mean(.value),
+    pred_lower = quantile(.value, 0.025),
+    pred_upper = quantile(.value, 0.975),
+    .groups = "drop"
+  )
+
+# Join with the original data and calculate errors
+pred_data <- model_data |>
+  mutate(.row = row_number()) |>
+  left_join(fitted_draws, by = ".row") |>
+  mutate(
+    pred_error = offender_fga - pred_value,
+    abs_error = abs(pred_error),
+    error_direction = ifelse(pred_error > 0, "Underprediction", "Overprediction")
+  )
+
+# Find worst predictions
+worst_predictions <- pred_data |>
+  arrange(desc(abs_error)) |>
+  head(20)
+
+# Examine specific failure cases
+knitr::kable(
+  worst_predictions |>
+    select(position, fouls_scaled, close_def_dist_range, 
+           offender_fga, pred_value, pred_error) |>
+    head(10),
+  caption = "Top 10 Prediction Failures"
+)
+
+# 1. Find a center with high fouls where prediction failed
+center_high_foul_failure <- pred_data |>
+  filter(position == "C", fouls_scaled > 0.5) |>
+  arrange(desc(abs_error)) |>
+  head(1)
+
+# 2. Find a case with very tight defense where prediction failed
+tight_defense_failure <- pred_data |>
+  filter(close_def_dist_range == "0-2 Feet - Very Tight") |>
+  arrange(desc(abs_error)) |>
+  head(1)
+
+# 3. Find a team with systematic prediction errors
+# First identify team with highest average error
+team_with_errors <- pred_data |>
+  group_by(slug_team_def) |>
+  summarize(
+    mean_abs_error = mean(abs_error),
+    n_obs = n()
+  ) |>
+  filter(n_obs >= 3) |> # Ensure we have enough observations
+  arrange(desc(mean_abs_error)) |>
+  head(1) |>
+  pull(slug_team_def)
+
+# Then get a specific example from that team
+team_strategy_failure <- pred_data |>
+  filter(slug_team_def == team_with_errors) |>
+  arrange(desc(abs_error)) |>
+  head(1)
+
+# Combine the three examples
+specific_failures <- bind_rows(
+  center_high_foul_failure |> mutate(category = "High-Volume Centers with Foul Trouble"),
+  tight_defense_failure |> mutate(category = "Extreme Defender Distance Cases"),
+  team_strategy_failure |> mutate(category = "Team-Specific Defensive Strategies")
+)
+
+# Display the specific examples
+knitr::kable(
+  specific_failures |>
+    select(category, position, fouls_scaled, close_def_dist_range, slug_team_def,
+           offender_fga, pred_value, pred_error),
+  caption = "Three Specific Examples of Different Failure Categories",
+  digits = 2
+)
+
+# Create a simple visualization of the three failure categories
+ggplot(specific_failures, 
+       aes(x = category, y = abs_error, fill = category)) +
+  geom_col() +
+  geom_text(aes(label = round(abs_error, 1)), vjust = -0.5) +
+  labs(title = "Magnitude of Prediction Error by Failure Category",
+       x = "", y = "Absolute Prediction Error") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.position = "none")
+
+```
+
+```{r}
+pred_draws <- stratified_sample %>%
+  add_predicted_draws(varying_slopes_model_constrained_real_2, ndraws = 75)
+
+pred_draws |> 
+  summarise(
+    p_residual = mean(.prediction < offender_fga),
+    z_residual = qnorm(p_residual),
+    .groups = "drop_last"
+  ) %>%
+  ggplot(aes(sample = z_residual)) +
+  geom_qq() +
+  geom_abline()
+
+
+
+```
+
+## Shrinkage Analysis
+
+In hierarchical models, one of the key benefits is partial pooling, which leads to shrinkage of group-level estimates toward the population mean. This is particularly valuable when some groups have limited data. Let's examine how our negative binomial model shrinks both team-level and position-level estimates.
+
+```{r}
+# Calculate raw rates for teams
+raw_team_rates <- stratified_sample %>%
+  group_by(slug_team_def) %>%
+  summarize(
+    n_observations = n(),
+    total_shots = sum(offender_fga),
+    raw_shot_rate = total_shots / n_observations
+  )
+
+# Extract team random effects from the model
+team_effects <- ranef(varying_slopes_model_constrained_real_2, summary = TRUE)$slug_team_def
+
+# Prepare team intercepts for analysis
+team_intercepts <- team_effects[, , "Intercept"] %>%
+  as.data.frame() %>%
+  rownames_to_column("slug_team_def") %>%
+  mutate(
+    # Convert log-scale effect to shot rate (assuming average values for other predictors)
+    # Using population intercept of approximately 1.6 (from model summary)
+    model_shot_rate = exp(1.6 + Estimate)
+  )
+
+# Join the datasets
+team_shrinkage <- raw_team_rates %>%
+  inner_join(team_intercepts, by = "slug_team_def") %>%
+  # Sort by raw shot rate for visualization
+  arrange(raw_shot_rate)
+
+# Plot to visualize team-level shrinkage
+ggplot(team_shrinkage, aes(x = raw_shot_rate, y = model_shot_rate)) +
+  geom_point(aes(size = n_observations), alpha = 0.7) +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "red") +
+  geom_smooth(method = "lm", color = "blue", se = FALSE) +
+  # Add labels for teams with interesting values
+  geom_label_repel(
+    data = team_shrinkage %>% 
+      filter(
+        # Teams with extreme raw rates (highest and lowest)
+        rank(raw_shot_rate) <= 2 | 
+        rank(-raw_shot_rate) <= 2 |
+        # Teams with largest sample sizes
+        rank(-n_observations) <= 2 |
+        # Teams with most extreme shrinkage
+        rank(abs(raw_shot_rate - model_shot_rate)) <= 3
+      ),
+    aes(label = slug_team_def),
+    size = 3,
+    fontface = "bold",
+    box.padding = 0.5,
+    point.padding = 0.3,
+    force = 3,
+    segment.color = "grey50",
+    min.segment.length = 0
+  ) +
+  labs(
+    title = "Shrinkage of Team Shot Rates",
+    subtitle = "Model estimates vs. raw rates (point size indicates sample size)",
+    x = "Raw Shot Rate per Observation",
+    y = "Model-Estimated Shot Rate",
+    size = "Number of\nObservations"
+  ) +
+  theme_minimal()
+```
+
+The plot above demonstrates how hierarchical modeling shrinks extreme team-level estimates toward the population mean. Teams with limited data or extreme raw rates experience more shrinkage, while teams with abundant data retain estimates closer to their raw rates. This partial pooling helps prevent overfitting to noise in small samples.
+
+Now, let's examine the shrinkage effect for positions:
+
+```{r}
+# Calculate raw rates for positions
+raw_position_rates <- stratified_sample %>%
+  group_by(position) %>%
+  summarize(
+    n_observations = n(),
+    total_shots = sum(offender_fga),
+    raw_shot_rate = total_shots / n_observations
+  )
+
+# Extract position random effects from the model
+position_effects <- ranef(varying_slopes_model_constrained_real_2, summary = TRUE)$position
+
+# Prepare position intercepts for analysis
+position_intercepts <- position_effects[, , "Intercept"] %>%
+  as.data.frame() %>%
+  rownames_to_column("position") %>%
+  mutate(
+    # Convert log-scale effect to shot rate (assuming average values for other predictors)
+    model_shot_rate = exp(1.6 + Estimate)
+  )
+
+# Join the datasets
+position_shrinkage <- raw_position_rates %>%
+  inner_join(position_intercepts, by = "position") %>%
+  # Sort by raw shot rate for visualization
+  arrange(raw_shot_rate)
+
+# Plot to visualize position-level shrinkage
+position_shrinkage_plot <- ggplot(position_shrinkage, aes(x = raw_shot_rate, y = model_shot_rate)) +
+  geom_point(aes(size = n_observations), alpha = 0.7) +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "red") +
+  geom_smooth(method = "lm", color = "blue", se = FALSE) +
+  # Add labels for all positions (since there are only a few)
+  geom_label_repel(
+    aes(label = position),
+    size = 3,
+    fontface = "bold",
+    box.padding = 0.5,
+    point.padding = 0.3,
+    force = 3,
+    segment.color = "grey50",
+    min.segment.length = 0
+  ) +
+  labs(
+    title = "Shrinkage of Position Shot Rates",
+    subtitle = "Model estimates vs. raw rates (point size indicates sample size)",
+    x = "Raw Shot Rate per Observation",
+    y = "Model-Estimated Shot Rate",
+    size = "Number of\nObservations"
+  ) +
+  theme_minimal()
+
+# Display the plot
+position_shrinkage_plot
+
+# Save the plot to the images directory
+ggsave("../reporting/images/position_shrinkage.png", position_shrinkage_plot, width = 8, height = 6, dpi = 300)
+```
+
+For positions, we see a similar pattern of shrinkage, though with fewer groups. The shrinkage is particularly important for positions that might have more extreme raw rates or fewer observations.
+
+We can also examine how the model shrinks the effect of fouls on shot rates across teams:
+
+```{r}
+# Calculate raw foul effect for teams
+raw_foul_effects <- stratified_sample %>%
+  group_by(slug_team_def) %>%
+  # Create high/low foul groups
+  mutate(foul_group = ifelse(fouls_scaled > 0, "high_fouls", "low_fouls")) %>%
+  group_by(slug_team_def, foul_group) %>%
+  summarize(
+    n_observations = n(),
+    total_shots = sum(offender_fga),
+    shot_rate = total_shots / n_observations,
+    .groups = "drop"
+  ) %>%
+  pivot_wider(
+    id_cols = slug_team_def,
+    names_from = foul_group,
+    values_from = c(n_observations, shot_rate)
+  ) %>%
+  mutate(
+    # Calculate raw effect as ratio of high to low foul shot rates
+    raw_foul_effect = shot_rate_high_fouls / shot_rate_low_fouls,
+    total_observations = n_observations_high_fouls + n_observations_low_fouls
+  ) %>%
+  filter(!is.na(raw_foul_effect)) # Remove teams with missing data in either group
+
+# Extract team-specific foul effects from the model
+team_foul_effects <- team_effects[, , "fouls_scaled"] %>%
+  as.data.frame() %>%
+  rownames_to_column("slug_team_def") %>%
+  mutate(
+    # Convert log-scale effect to rate ratio
+    # Using population effect of approximately 0.15 (from model summary)
+    model_foul_effect = exp(0.15 + Estimate)
+  )
+
+# Join the datasets
+foul_effect_shrinkage <- raw_foul_effects %>%
+  inner_join(team_foul_effects, by = "slug_team_def") %>%
+  # Sort by raw effect for visualization
+  arrange(raw_foul_effect)
+
+# Plot to visualize foul effect shrinkage
+ggplot(foul_effect_shrinkage, aes(x = raw_foul_effect, y = model_foul_effect)) +
+  geom_point(aes(size = total_observations), alpha = 0.7) +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "red") +
+  geom_smooth(method = "lm", color = "blue", se = FALSE) +
+  # Add labels for teams with interesting values
+  geom_label_repel(
+    data = foul_effect_shrinkage %>% 
+      filter(
+        # Teams with extreme raw effects (highest and lowest)
+        rank(raw_foul_effect) <= 2 | 
+        rank(-raw_foul_effect) <= 2 |
+        # Teams with largest sample sizes
+        rank(-total_observations) <= 2 |
+        # Teams with most extreme shrinkage
+        rank(abs(raw_foul_effect - model_foul_effect)) <= 3
+      ),
+    aes(label = slug_team_def),
+    size = 3,
+    fontface = "bold",
+    box.padding = 0.5,
+    point.padding = 0.3,
+    force = 3,
+    segment.color = "grey50",
+    min.segment.length = 0
+  ) +
+  labs(
+    title = "Shrinkage of Team-Specific Foul Effects",
+    subtitle = "Model estimates vs. raw effects (point size indicates sample size)",
+    x = "Raw Foul Effect (High/Low Foul Shot Rate Ratio)",
+    y = "Model-Estimated Foul Effect",
+    size = "Number of\nObservations"
+  ) +
+  theme_minimal() +
+  # Add reference line at 1.0 (no effect)
+  geom_hline(yintercept = 1, linetype = "dotted") +
+  geom_vline(xintercept = 1, linetype = "dotted")
+```

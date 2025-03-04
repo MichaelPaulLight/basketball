@@ -1,0 +1,1433 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.547">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Understanding NBA Defense through Bayesian Inference and Hierarchical Clustering</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="report_files/libs/clipboard/clipboard.min.js"></script>
+<script src="report_files/libs/quarto-html/quarto.js"></script>
+<script src="report_files/libs/quarto-html/popper.min.js"></script>
+<script src="report_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="report_files/libs/quarto-html/anchor.min.js"></script>
+<link href="report_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="report_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="report_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="report_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="report_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+<div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="../report.pdf"><i class="bi bi-file-pdf"></i>PDF</a></li></ul></div></div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Understanding NBA Defense through Bayesian Inference and Hierarchical Clustering</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="introduction" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Introduction</h1>
+<p>Basketball is a simple game: Put a ball through a hoop. It’s also a numbers game: put a ball through a hoop more times than someone else. As a result, analysis has historically focused on offense - who scored, how they scored, and who assisted.</p>
+<p>While the introduction of player tracking technology in the early 2010s briefly enabled more sophisticated defensive analysis, this data has been private since 2016. Researchers outside the NBA now face a fundamental challenge: how do you evaluate defensive ability when publicly available statistics are either offense-focused or only loosely related to defense (e.g., blocks and steals)?</p>
+<p>Solving this problem would democratize defensive evaluation by creating metrics derived from publicly available data, allowing analysts outside NBA organizations to contribute meaningful insights and properly communicate the value of defensive players who may not shine in traditional box scores.</p>
+<p>At a broader level, developing robust defensive metrics from public data could help bridge the gap between analysts who rely on advanced metrics and fans who primarily use counting stats. Creating intuitive ways to understand defensive impact represents both a technical challenge and an opportunity to enhance basketball analysis for everyone.</p>
+</section>
+<section id="methods-summary" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Methods Summary</h1>
+<section id="supervised-learning" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="supervised-learning"><span class="header-section-number">2.1</span> Supervised Learning</h2>
+<p>Our project leverages personal fouls as a proxy for defensive ability in the NBA. Since players who accumulate 6 fouls are ejected from games, they must strategically adjust their defensive intensity based on foul count. This creates a natural experiment where we can observe how defensive behavior changes under varying foul pressure, potentially revealing defensive skill without requiring proprietary tracking data.</p>
+<p>We developed two hierarchical Bayesian models: 1. A binomial model predicting the probability of a defensive player committing a foul during a shot event, conditioned on their accumulated fouls, teammates’ fouls, team, and opponent 2. A negative binomial model examining how foul accumulation affects the number of shots opponents attempt, conditioned on defenders, their positions, teams, and accumulated fouls</p>
+<p>Our approach is novel in using Bayesian methods to connect foul patterns to defensive impact, explicitly modeling how players’ fouling tendencies affect both teammates and opponents as a defensive proxy.</p>
+</section>
+<section id="unsupervised-learning" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="unsupervised-learning"><span class="header-section-number">2.2</span> Unsupervised Learning</h2>
+<p>The main goal of the unsupervised learning portion was to identify the true defensive roles of NBA players. Basketball has shifted towards a positionless style and being able to compare players’ defensive styles by their impact on the court would allow for better scouting and gameplaning. Other researchers have explored clustering methods to try to identify a player’s true role on the court, but like much other basketball research it is primarily focused on the offensive side of the ball and largely ignores what a player is doing for the other half of the time they are on the court. To accomplish a more defensive approach, play-by-play data, season long metrics, and anthropometric data was synthesized for each player per season with a minimum of 1,000 possessions played. While some of the resulting clusters aligned with classical notions of defensive roles, such as a rim protector or an elite 3 point defender, others had more niche roles.</p>
+</section>
+</section>
+<section id="main-findings" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Main Findings</h1>
+<section id="supervised-learning-1" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="supervised-learning-1"><span class="header-section-number">3.1</span> Supervised Learning</h2>
+<p>Our hierarchical Bayesian models revealed evidence that foul accumulation may affect defensive behavior in the NBA, with both personal and teammate fouls influencing how defenders foul and how offensive shooters respond to foul accumulation. Key insights include:</p>
+<section id="personal-foul-effects" class="level3" data-number="3.1.1">
+<h3 data-number="3.1.1" class="anchored" data-anchor-id="personal-foul-effects"><span class="header-section-number">3.1.1</span> Personal Foul Effects</h3>
+<p>As players and their teammates accumulate personal fouls, their probability of committing a foul on a given shot attempt increases. Our binomial model shows that for each additional standard deviation increase in personal fouls, players experience an increase in the log-odds of committing a foul on a shot attempt.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/player_foul_levels_effects.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></p>
+<figcaption>Figure 1: Personal foul effects</figcaption>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/teammate_foul_levels_effects.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></p>
+<figcaption>Figure 2: Teammate foul effects</figcaption>
+</figure>
+</div>
+</section>
+<section id="teammate-foul-effects" class="level3" data-number="3.1.2">
+<h3 data-number="3.1.2" class="anchored" data-anchor-id="teammate-foul-effects"><span class="header-section-number">3.1.2</span> Teammate Foul Effects</h3>
+<p>We found a significant “contagion effect” where a player’s defensive behavior is influenced by teammates’ foul accumulation. Different positions respond differently to teammate fouls, likely due to changes in defensive intensity. For example, a mediocre Center playing alongside an excellent defensive Forward might commit more fouls when that Forward must play conservatively due to foul trouble.</p>
+<p>Our analysis reveals that premier defenders (Wembanyama, Hartenstein, Gafford) tend to negatively affect teammates’ fouling probability as they accumulate fouls, while defensive liabilities (Gilgeous-Alexander, Conley, Sharp) tend to increase teammates’ fouling probability. This suggests foul accumulation signals different defensive abilities: for weaker defenders, fouls indicate poor defense, while for elite defenders, fouls may actually indicate effective defense.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/teammate_random_effects.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></p>
+<figcaption>Figure 3: Teammate random effects</figcaption>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/player_random_effects.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></p>
+<figcaption>Figure 4: Player random effects</figcaption>
+</figure>
+</div>
+<p>This effect can be seen at the player-level as well, where we can see the example of Daniel Gafford again, but this time at the top of the chart, where his probability of committing a foul seems to increase as his teammates (who include P.J. Washington, seen in the above figure, along with other known offensive-minded players like Kyrie Irving) accumulate fouls. Interestingly, Lebron James, who many have speculated receives a ‘favorable whistle’ from referees (i.e.&nbsp;they tend to call him for fewer fouls as a product of his celebrity) was estimated to be the least affected by his teammates’ accumulation of fouls.</p>
+<p>Finally, we can look at the effects by position and team, where Phoenix’s forwards (who play alongside an extremely shallow and foul-prone rotation of Centers like Jusuf Nurkić and combo-Centers like Kevin Durant) seem to be the most affected by their teammates’ foul accumulation, while forwards on the Portland Trailblazers (who have a comically deep roation of defensive-minded centers and guards) seem to be the least affected.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/teammate_foul_effects_binom.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:55.0%"></p>
+<figcaption>Figure 5: Team and position foul effects</figcaption>
+</figure>
+</div>
+</section>
+<section id="shot-selection-impact" class="level3" data-number="3.1.3">
+<h3 data-number="3.1.3" class="anchored" data-anchor-id="shot-selection-impact"><span class="header-section-number">3.1.3</span> Shot Selection Impact</h3>
+<p>Our negative binomial varying effects model demonstrated that foul accumulation affects not just the probability of committing fouls but also the types and frequency of shots opponents attempt. The model revealed substantial heterogeneity in how foul accumulation affects shot attempts across different positions and teams.</p>
+<p>The negative binomial distribution was specifically chosen to model count data (number of shot attempts) while accounting for overdispersion, which is common in basketball shot attempt data. Our model included varying intercepts and slopes for teams and positions, allowing us to capture the hierarchical structure of the data and the heterogeneity in responses to foul accumulation.</p>
+<p>Because we believe different players at different positions affect their team’s defensive characteristics, we can investigate, for example, how shot counts at various distances from the basket and at various levels of defensive pressure change as different positions on different teams increase or decrease their number of fouls. We accomplish this through counterfactual analysis, where we fix certain variables and manipulate others to understand their causal impact.</p>
+<div>
+
+</div>
+<div class="quarto-layout-panel" data-layout="[[1,1]]">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/center_effects.png" class="img-fluid figure-img" style="width:95.0%"></p>
+<figcaption>Figure 6: Center foul effects</figcaption>
+</figure>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/guard_effects.png" class="img-fluid figure-img" style="width:95.0%"></p>
+<figcaption>Figure 7: Guard foul effects</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<p>Here, we can see that the Denver Nuggets (DEN) are predicted to face a significant increase in the number of closely-contested shot attempts near the basket when their Centers play with a high number of fouls versus a low number of fouls. This matches our intuition about Denver, whose star center, Nicola Jokić, is known for his offensive brilliance and defensive liabilities. In contrast, shots close to the basket increase significantly when Guards on the Dallas Mavericks play with high fouls versus low fouls, suggesting different defensive dynamics across positions and teams.</p>
+</section>
+<section id="implications" class="level3" data-number="3.1.4">
+<h3 data-number="3.1.4" class="anchored" data-anchor-id="implications"><span class="header-section-number">3.1.4</span> Implications</h3>
+<p>These findings have important implications for basketball strategy and player evaluation:</p>
+<ol type="1">
+<li>Defensive impact seems to be partially understandable through the lens of foul accumulation patterns, providing a novel approach to defensive evaluation using publicly available data</li>
+<li>Position-specific and team-specific effects highlight the importance of context when evaluating defensive performance</li>
+<li>One-size-fits-all defensive metrics may miss important nuances in how players contribute defensively</li>
+<li>A foul is not a foul is not a foul is not a foul. For some players, fouls may be an indicator of defensive intensity, skill, and contribution to team defense. For others, they may be a sign of poor defense and a warning sign that their teammates need to play more mindfully and adjust their defensive strategy.</li>
+</ol>
+</section>
+</section>
+<section id="unsupervised-learning-1" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="unsupervised-learning-1"><span class="header-section-number">3.2</span> Unsupervised Learning</h2>
+<p>Our hierarchical clustering analysis identified nine distinct defensive player roles in the NBA, revealing patterns that go beyond traditional position classifications. Key findings include:</p>
+<section id="perimeter-vs.-interior-defenders" class="level3" data-number="3.2.1">
+<h3 data-number="3.2.1" class="anchored" data-anchor-id="perimeter-vs.-interior-defenders"><span class="header-section-number">3.2.1</span> Perimeter vs.&nbsp;Interior Defenders</h3>
+<p>The clustering revealed a fundamental division between perimeter and interior defenders. Clusters 1-3 represent perimeter defenders with lower defensive rebounding and block rates but higher 3-point contest rates, while clusters 5-8 represent interior defenders with the opposite characteristics. This confirms the traditional defensive dichotomy in basketball while providing more nuanced sub-classifications within each group.</p>
+</section>
+<section id="specialized-defensive-roles" class="level3" data-number="3.2.2">
+<h3 data-number="3.2.2" class="anchored" data-anchor-id="specialized-defensive-roles"><span class="header-section-number">3.2.2</span> Specialized Defensive Roles</h3>
+<p>We identified several specialized defensive roles that wouldn’t be apparent from traditional box score statistics:</p>
+<ol type="1">
+<li><strong>Elite Rim Protectors (Cluster 5)</strong>: Players like Rudy Gobert and Evan Mobley who excel at interior defense with high block rates and low opponent field goal percentages near the basket</li>
+<li><strong>Versatile Shot Blockers (Cluster 6)</strong>: Players like Victor Wembanyama who combine shot-blocking ability with greater defensive range</li>
+<li><strong>Perimeter Stoppers (Cluster 1)</strong>: Players like Marcus Smart who specialize in disrupting opponent 3-point attempts</li>
+<li><strong>Unique Defensive Specialists (Clusters 4 and 9)</strong>: Players with distinctive defensive characteristics that don’t fit neatly into either perimeter or interior categories</li>
+</ol>
+</section>
+<section id="counter-intuitive-contest-distance-finding" class="level3" data-number="3.2.3">
+<h3 data-number="3.2.3" class="anchored" data-anchor-id="counter-intuitive-contest-distance-finding"><span class="header-section-number">3.2.3</span> Counter-Intuitive Contest Distance Finding</h3>
+<p>One of the most surprising findings was the inverse relationship between contest distance and opponent field goal percentage across all clusters. Contrary to conventional basketball wisdom, which suggests closer contests lead to worse shots, our analysis found that defenders in clusters 2 and 8 who contest shots from greater distances actually allow lower shooting percentages. This suggests these defenders may be closing out late on shots they recognize as low-percentage attempts, or that their defensive positioning forces opponents into less favorable shots despite the greater contest distance.</p>
+</section>
+<section id="implications-for-player-evaluation" class="level3" data-number="3.2.4">
+<h3 data-number="3.2.4" class="anchored" data-anchor-id="implications-for-player-evaluation"><span class="header-section-number">3.2.4</span> Implications for Player Evaluation</h3>
+<p>These findings have significant implications for how teams evaluate defensive talent:</p>
+<ol type="1">
+<li>The nine-cluster model provides a more nuanced framework for comparing defenders than traditional position classifications</li>
+<li>Teams can identify players who fill specific defensive roles that complement their existing roster</li>
+<li>The clustering reveals players with similar defensive profiles across different traditional positions, potentially identifying undervalued talent</li>
+<li>Understanding a player’s true defensive cluster could help teams develop more effective defensive schemes tailored to their personnel</li>
+</ol>
+<p>The cluster assignments of notable defenders (see Appendix C) demonstrate how this approach can identify players with similar defensive impacts despite different physical profiles or traditional positions.</p>
+</section>
+</section>
+</section>
+<section id="related-work" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Related work</h1>
+<section id="supervised-learning-2" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="supervised-learning-2"><span class="header-section-number">4.1</span> Supervised Learning</h2>
+<p>Bayesian models have been used in a number of previous studies to model the relationship between offensive and defensive performance. Williams et al.&nbsp;(2024) used a Bayesian hierarchical modeling framework to model offensive performance of teams and players based on their shooting propensities and abilities. They used discretized shot loactions for the top 100 shot-takers from the 2008/2009–2020/2021 seasons to create an expected points above average (EPAA) metric. Our project differs in our use of hierarchical modeling to infer defensive impact, rahter than contributing to the existing research on offense.</p>
+<p>Franks et al.&nbsp;(2015) was one of the pioneering papers in using Bayesian hierarchical models to study player tracking data by modeling the relationship between a defensive assignment and the spacial-temporal shotmaking tendencies of various offensive players, which is to say how well they shoot the ball given the location, time, and defender of a shot attempt. Our project differs in that we use a Bayesian hierarchical model to infer defensive impact without using raw player tracking data, rather than modeling the relationship between a known defensive assignment and shotmaking tendencies.</p>
+<p>Finally, Chu and Swartz (2020) use Bayesian methods to model the time-to-event of a foul as a gamma distributed function of a player, their accumulated number of fouls, and their position. Their goal was to develop a decision-making framework for coaches to use in determining when to sit players at risk of fouling out (usually when a player reaches 6 fouls) of a game. Although similar in spirit, our project doesn’t model the time-to-event of a foul nor attempt to help coaches make decisions about sitting their players, but instead focuses on the effect of fouls while players are on the court.</p>
+</section>
+<section id="unsupervised-learning-2" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="unsupervised-learning-2"><span class="header-section-number">4.2</span> Unsupervised Learning</h2>
+<p>Multiple papers have performed similar clustering techniques to help identify an NBA player’s true role, but like much other NBA research it is primarily focused on their offensive tendencies and only including box score defensive stats such as blocks and steals.</p>
+<p>Hedquist (2022) uses k-means and hierarchical clustering to identify different roles, but uses primarily shot data such as shooting percentages for 2 points, 3 points, and free throws. It does also include blocks, steals, personal fouls, and defensive rebounds. It then goes on to group the clusters from twenty different seasons to try to identify consistent key roles.</p>
+<p>Bosch and Kalman (2020) used probabilistic modeling cluster approach to understand what role was a player filling in a lineup and then try to predict the performance of the line-up after knowing the line-up roles. Once again these used similar features as the previous paper, but also included physical information with their height as well as their shot selection percentages.</p>
+</section>
+</section>
+<section id="data-source" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> Data Source</h1>
+<section id="supervised-learning-3" class="level2" data-number="5.1">
+<h2 data-number="5.1" class="anchored" data-anchor-id="supervised-learning-3"><span class="header-section-number">5.1</span> Supervised Learning</h2>
+<p>Our analysis uses a primary dataset collected from <a href="https://data.nba.com/data/v2015/json/mobile_teams/%7Bleague%7D/%7Bseason%7D/scores/pbp/%7Bgame_id%7D_full_pbp.json%22">the NBA Stats API</a>, accessed through via R using the hoopR package, which returns a json file that’s converted to an easy-to-manipulate tibble. Our analysis covers the first two-thirds of the 2024-25 NBA regular season (October 22, 2024 to February 24, 2025), comprising 856 games and 412,269 individual play-by-play records. We retrieved this data incrementally throughout the season, storing processed results in parquet files.</p>
+<p>Significant pre-processing was required to handle data quality issues, parse events and lineups using play descriptions and event types, and identify specific game situations (like garbage time) to filter out of our sample. The codebase was built on top of the work of <a href="https://github.com/ramirobentes">Ramiro Bentes</a>, and updated to process the NBA’s current season. Key pre-processing steps included data acquisition, cleaning, time processing, score tracking, lineup tracking, possession identification, foul processing, garbage time detection, and data integration. For a detailed list of variables and processing steps, see Appendix E.</p>
+<p>Our analysis also used secondary datasets from the NBA Stats API:</p>
+<ol type="1">
+<li><p><strong>Closest Defender Shooting Dashboard</strong>: Provides player-level information about shooting performance based on the proximity of the closest defender at the time of shots.</p></li>
+<li><p><strong>Team Rosters</strong>: Provides information about the players on each team, including their positions and starting lineups.</p></li>
+</ol>
+<p>These datasets were collected for the same time period as our primary dataset and processed daily to capture new games.</p>
+</section>
+<section id="unsupervised-learning-3" class="level2" data-number="5.2">
+<h2 data-number="5.2" class="anchored" data-anchor-id="unsupervised-learning-3"><span class="header-section-number">5.2</span> Unsupervised Learning</h2>
+<p>Four main datasets were used to gather information about a defensive player’s role: Play-by-play data, player defender dashboards, player season log stats on a per 100 possession basis, and player physical traits. The main challenge for the unsupervised learning was to get quality features that illustrated a player’s defensive role. Two packages were used to pull raw data from the NBA’s free API: hoopR and <a href="https://github.com/swar/nba_api/tree/master">nba_api</a></p>
+</section>
+</section>
+<section id="feature-engineering" class="level1" data-number="6">
+<h1 data-number="6"><span class="header-section-number">6</span> Feature engineering</h1>
+<section id="supervised-learning-feature-engineering" class="level2" data-number="6.1">
+<h2 data-number="6.1" class="anchored" data-anchor-id="supervised-learning-feature-engineering"><span class="header-section-number">6.1</span> Supervised Learning Feature Engineering</h2>
+<p>Our feature engineering process transformed raw NBA play-by-play and shooting dashboard data into specialized datasets for analyzing defensive impact through foul accumulation. Because our project included two distinct classes of models (binomial and negative binomial), it required two distinct feature engineering workflows to produce compatible datasets.</p>
+<p>For our binomial models (modeling shot outcomes), we engineered features in several categories: primary event features (e.g., foul occurrence indicators, foul counts), game context variables, team and player identifiers, and shot-specific features. For our negative binomial models, we focused on shot attempt counts, foul variables, defensive context features, and player/team attributes.</p>
+<p>The data processing involved multiple steps including data extraction, foul identification and tracking, teammate foul extraction, standardization, filtering, position data integration, data validation, and stratified sampling. For a comprehensive list of features and detailed processing steps, see Appendix F.</p>
+</section>
+<section id="unsupervised-learning-feature-engineering" class="level2" data-number="6.2">
+<h2 data-number="6.2" class="anchored" data-anchor-id="unsupervised-learning-feature-engineering"><span class="header-section-number">6.2</span> Unsupervised Learning Feature Engineering</h2>
+<p>The defender dashboard from the NBA contains information about shots when a player is the defender. From this, the average distance for a defender’s shot attempt can be estimated for two-point and three-point attempts. To get a more accurate idea of a defender’s true contest, a portion of the defender’s wingspan was subtracted from this average distance. Wingspan measurements were either pulled directly from NBA combine measurements or estimated based on a player’s listed height.</p>
+<p>Additionally, how often a player was targeted for an attempt was considered as an indication of whether opposing teams were looking for a matchup against a bad defender or avoiding a great defender. This was calculated using play-by-play data to compare all attempts that occurred when a player was in the defending lineup against the defensive dashboard stats when a player was the closest defender.</p>
+<p>Players needed a minimum of 1,000 total possessions in a season to be included, resulting in 907 total players from the 2021-22 season to the current 2024-25 season. For a complete list of features considered and engineering details, see Appendix F.</p>
+</section>
+</section>
+<section id="supervised-learning-methods" class="level1" data-number="7">
+<h1 data-number="7"><span class="header-section-number">7</span> Supervised Learning Methods</h1>
+<p>Our supervised learning workflow followed a Bayesian modeling approach, which emphasizes domain knowledge, causal reasoning, model building, and iterative refinement. We developed two classes of hierarchical models to analyze the relationship between foul accumulation and defensive impact in NBA games.</p>
+<section id="binomial-models-for-foul-occurrence" class="level3" data-number="7.0.1">
+<h3 data-number="7.0.1" class="anchored" data-anchor-id="binomial-models-for-foul-occurrence"><span class="header-section-number">7.0.1</span> Binomial Models for Foul Occurrence</h3>
+<p>Our first class of models used a Bernoulli (single-trial binomial) distribution to model the probability of a defensive player committing a foul during a shot event. We chose this approach because:</p>
+<ul>
+<li><p><strong>Theoretical alignment</strong>: Fouls are discrete binary events that either occur or don’t occur on a given defensive possession</p></li>
+<li><p><strong>Interpretability</strong>: The logistic model provides coefficients that can be directly interpreted as changes in log-odds of committing a foul</p></li>
+<li><p><strong>Hierarchical structure</strong>: The nested nature of basketball data (players within teams, events within games) is naturally accommodated by a hierarchical model</p></li>
+</ul>
+<p>The core model specification was:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>personal_foul_occurance_on_player <span class="sc">~</span> <span class="fu">Bernoulli</span>(p)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">logit</span>(p) <span class="ot">=</span> α <span class="sc">+</span> β₁ × personal_fouls_scaled <span class="sc">+</span> β₂ × teammate_fouls_scaled <span class="sc">+</span> </span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>           (<span class="dv">1</span> <span class="sc">|</span> game_id<span class="sc">:</span>number_event) <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> slug_team) <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> player_name) <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> teammate_name)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Where:</p>
+<ul>
+<li><code>personal_foul_occurance_on_player</code> is a binary indicator of whether a foul occurred</li>
+<li><code>personal_fouls_scaled</code> represents the standardized count of fouls a player had accumulated</li>
+<li><code>teammate_fouls_scaled</code> represents the standardized count of fouls accumulated by teammates</li>
+<li>The terms in parentheses represent varying intercepts for game events, teams, players, and teammates</li>
+</ul>
+<p>We also developed a more complex model that incorporated position-specific effects:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>personal_foul_occurance_on_player <span class="sc">~</span> <span class="fu">Bernoulli</span>(p)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">logit</span>(p) <span class="ot">=</span> α <span class="sc">+</span> β₁ × personal_fouls_scaled <span class="sc">+</span> β₂ × teammate_fouls_scaled <span class="sc">+</span> </span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>           (<span class="dv">1</span> <span class="sc">+</span> personal_fouls_scaled <span class="sc">|</span> position) <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> game_id<span class="sc">:</span>number_event) <span class="sc">+</span> </span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>           (<span class="dv">1</span> <span class="sc">|</span> slug_team) <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> player_name) <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> teammate_name)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>This model allowed the effect of accumulated fouls to vary by player position, capturing the different defensive responsibilities and foul tendencies across positions.</p>
+</section>
+<section id="negative-binomial-models-for-shot-attempts" class="level3" data-number="7.0.2">
+<h3 data-number="7.0.2" class="anchored" data-anchor-id="negative-binomial-models-for-shot-attempts"><span class="header-section-number">7.0.2</span> Negative Binomial Models for Shot Attempts</h3>
+<p>Our second class of models used a negative binomial distribution to model the count of shot attempts faced by defenders as a function of their foul accumulation. We chose this approach because:</p>
+<ul>
+<li><p><strong>Count data modeling</strong>: Shot attempts are non-negative integer counts</p></li>
+<li><p><strong>Overdispersion</strong>: The negative binomial accommodates greater variance than a Poisson model</p></li>
+<li><p><strong>Hierarchical structure</strong>: Allows modeling of nested factors affecting shot attempts</p></li>
+</ul>
+<p>The core model specification was:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>shot_attempts <span class="sc">~</span> <span class="fu">NegativeBinomial</span>(μ, φ)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">log</span>(μ) <span class="ot">=</span> α <span class="sc">+</span> β × fouls_scaled <span class="sc">+</span> </span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>         (<span class="dv">1</span> <span class="sc">|</span> slug_team_def) <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> position) <span class="sc">+</span> </span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>         (<span class="dv">1</span> <span class="sc">|</span> offender_shot_dist_range) <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> close_def_dist_range)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Where:</p>
+<ul>
+<li><code>shot_attempts</code> is the count of shots faced by a defender</li>
+<li><code>fouls_scaled</code> represents the standardized count of fouls accumulated</li>
+<li>The terms in parentheses represent varying intercepts for defensive teams, positions, shot distance ranges, and defender proximity</li>
+</ul>
+<p>We also developed a more sophisticated varying slopes model to capture how the effect of fouls varies across contexts:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>shot_attempts <span class="sc">~</span> <span class="fu">NegativeBinomial</span>(μ, φ)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">log</span>(μ) <span class="ot">=</span> α <span class="sc">+</span> β × fouls_scaled <span class="sc">+</span> </span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>         (<span class="dv">1</span> <span class="sc">+</span> fouls_scaled <span class="sc">|</span> slug_team_def) <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">+</span> fouls_scaled <span class="sc">|</span> position) <span class="sc">+</span> </span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>         (<span class="dv">1</span> <span class="sc">|</span> offender_shot_dist_range) <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> close_def_dist_range)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>This varying slopes model allows the effect of fouls on shot attempts to differ by team and position, capturing the heterogeneity in how foul accumulation affects defensive behavior across different contexts. For example, teams with strong defensive systems might show different patterns in how their players’ foul accumulation affects shot attempts compared to teams with weaker defensive schemes. Similarly, the effect of fouls might differ substantially between guards who defend the perimeter and centers who protect the rim.</p>
+<p>A key aspect of our Bayesian workflow was the use of generative modeling and simulation throughout the analysis process. This approach allowed us to iteratevly develop a robust varying slopes model using simulated data that captures the heterogeneity in how foul accumulation affects defensive behavior across different teams and positions.</p>
+</section>
+<section id="prior-selection-and-simulation" class="level3" data-number="7.0.3">
+<h3 data-number="7.0.3" class="anchored" data-anchor-id="prior-selection-and-simulation"><span class="header-section-number">7.0.3</span> Prior Selection and Simulation</h3>
+<p>For our negative binomial varying slopes model, we carefully specified informative priors based on domain knowledge about basketball and defensive behavior. The complete prior specification can be found in Appendix D.</p>
+<p>These priors reflect our belief that: 1. Teams and positions would show moderate variation in their baseline shot rates (intercepts) 2. The effect of fouls would vary by team and position, but within reasonable bounds 3. The correlation between intercepts and slopes would be modest (regularized by the LKJ prior) 4. The negative binomial dispersion parameter would be around 4, indicating moderate overdispersion</p>
+<p>Before fitting our model to real data, we conducted prior predictive simulations to ensure our priors generated plausible outcomes.</p>
+</section>
+<section id="model-fitting-and-evaluation" class="level3" data-number="7.0.4">
+<h3 data-number="7.0.4" class="anchored" data-anchor-id="model-fitting-and-evaluation"><span class="header-section-number">7.0.4</span> Model Fitting and Evaluation</h3>
+<p>We fit our varying slopes model using Markov Chain Monte Carlo (MCMC) sampling with the brms package.</p>
+<p>After fitting, we conducted extensive model diagnostics: 1. <strong>Convergence checks</strong>: Trace plots, R-hat statistics, and effective sample sizes 2. <strong>Posterior predictive checks</strong>: Comparing model-generated data to observed data 3. <strong>Parameter interpretation</strong>: Examining posterior distributions of key parameters 4. <strong>Model comparison</strong>: Using leave-one-out cross-validation (LOO) to compare models</p>
+</section>
+<section id="heterogeneity-across-teams-and-positions" class="level3" data-number="7.0.5">
+<h3 data-number="7.0.5" class="anchored" data-anchor-id="heterogeneity-across-teams-and-positions"><span class="header-section-number">7.0.5</span> Heterogeneity Across Teams and Positions</h3>
+<p>One of the key advantages of our varying slopes model is its ability to capture how the effect of fouls varies across different teams and positions. The visualizations below illustrate this heterogeneity:</p>
+<div>
+
+</div>
+<div class="quarto-layout-panel" data-layout="[[1,1]]">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/neg-binom_team-effects.png" class="img-fluid figure-img" style="width:65.0%"></p>
+<figcaption>Figure 8: Team effects</figcaption>
+</figure>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/neg-binom_position-effects.png" class="img-fluid figure-img" style="width:65.0%"></p>
+<figcaption>Figure 9: Position effects</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<p>These plots reveal substantial variation in how foul accumulation affects shot attempts across different teams and positions. Some teams show a positive relationship between fouls and shot attempts, suggesting that as defenders accumulate fouls, they face more shot attempts. Other teams show a negative or negligible relationship, indicating different defensive strategies or player characteristics.</p>
+</section>
+<section id="partial-pooling-and-shrinkage" class="level3" data-number="7.0.6">
+<h3 data-number="7.0.6" class="anchored" data-anchor-id="partial-pooling-and-shrinkage"><span class="header-section-number">7.0.6</span> Partial Pooling and Shrinkage</h3>
+<p>Another important feature of our hierarchical model is partial pooling, which leads to shrinkage of group-level estimates toward the population mean. This is particularly valuable for understanding position effects, where we have a small number of distinct categories but substantial variation in sample sizes.</p>
+<p>Figure 10. reveals several important patterns. First, we see that forwards (F) experience substantial shrinkage, with their raw shot rate being the lowest but their model-estimated rate pulled significantly toward the population mean. In contrast, guard-forward hybrids (G-F) and pure guards (G) show less shrinkage, with their model estimates remaining closer to their raw rates.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/position_shrinkage.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:60.0%"></p>
+<figcaption>Figure 10: Position shrinkage effects</figcaption>
+</figure>
+</div>
+</section>
+<section id="counterfactual-analysis" class="level3" data-number="7.0.7">
+<h3 data-number="7.0.7" class="anchored" data-anchor-id="counterfactual-analysis"><span class="header-section-number">7.0.7</span> Counterfactual Analysis</h3>
+<p>To understand the practical implications of our model, we conducted counterfactual analyses to examine how shot patterns change under different foul scenarios. For example, we can visualize how shot counts at various distances from the basket change as different positions increase their number of fouls:</p>
+<div>
+
+</div>
+<div class="quarto-layout-panel" data-layout="[[1,1]]">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/center_effects.png" class="img-fluid figure-img" style="width:95.0%"></p>
+<figcaption>Figure 11: Center foul effects</figcaption>
+</figure>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/guard_effects.png" class="img-fluid figure-img" style="width:95.0%"></p>
+<figcaption>Figure 12: Guard foul effects</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<p>These visualizations show that the Denver Nuggets (DEN) are predicted to face a significant increase in closely-contested shot attempts near the basket when their Centers play with a high number of fouls, while the Dallas Mavericks show a similar pattern when their Guards accumulate fouls. These team and position-specific patterns highlight the value of our varying slopes approach in capturing the complex relationship between foul accumulation and defensive behavior.</p>
+<p>This simulation-based approach allowed us to: - Validate our modeling assumptions before and after fitting - Understand the practical implications of our parameter estimates - Test the robustness of our conclusions under different scenarios - Communicate results in terms of concrete basketball outcomes rather than abstract statistical parameters</p>
+</section>
+</section>
+<section id="unsupervised-learning-methods" class="level1" data-number="8">
+<h1 data-number="8"><span class="header-section-number">8</span> Unsupervised Learning Methods</h1>
+<p>Agglomerative hierarchical clustering was chosen as the primary method as the overall structure of the players was key additional information. This clustering method takes a “bottom-up” approach where all values are initially viewed as individual clusters and recursively combined until they form one complete cluster. In this approach, we can get some more information too about overarching clusters of smaller sub-clusters. The ward method was chosen for the linkage method because it minimizes the variance within a cluster after merging. Single and complete would not be appropriate because it would lead to less useful merging of clusters and the dataset is small enough that the calculations for the ward method were not a concern. Average linkage was also considered but resulted in an overall higher amount of distance within cluster.</p>
+<p>For hierarchical clustering, one of the key parameters is either the number of clusters or the distance threshold between clusters. To accomplish this, the number of clusters was iterated from 2 to 20 to see when the average distance within a cluster tapered off. This point was at nine clusters. One disadvantage of the elbow method is that it is sensitive to the selection of the maximum number of clusters. If you have a larger number for the maximum number of clusters, this causes the overall plot to zoom out and potentially lead to a larger value for the cluster count where the plot begins to taper off. Ultimately, 20 was decided as the maximum number of clusters because at this point clusters were containing less than half a percent of the sample.</p>
+<div>
+
+</div>
+<div class="quarto-layout-panel" data-layout="[[1,1]]">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/unsupervised_1.png" class="img-fluid figure-img" style="width:95.0%"></p>
+<figcaption>Figure 13: Elbow method for determining optimal number of clusters</figcaption>
+</figure>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/unsupervised_2.png" class="img-fluid figure-img" style="width:95.0%"></p>
+<figcaption>Figure 14: Cluster distribution showing percentage of players in each cluster</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/unsupervised_3.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="600"></p>
+<figcaption>Figure 15: Hierarchical clustering dendrogram showing cluster relationships</figcaption>
+</figure>
+</div>
+<p>For context, if the max number of clusters was set to 30, where some clusters were individual data points, the suggested number of clusters would be at ten clusters. Other methods such as the Calinski-Harabasz and silhouette scores were looked at, but since these methods consider the number of clusters in their calculations and the data showed clear patterns of inside and outside defenders both methods optimized at only two clusters. Bosch and Kalman(2020) ran into a similar issue when attempting to decide the cluster for K-means clustering. Only two clusters would not show any valuable insights for a player’s defensive role, therefore the nine clusters shown by the elbow method were decided to pursue.</p>
+<p>One of the main challenges for clustering is providing context to the results to make them understandable. To understand the main attributes of the clusters, the hierarchical clustering dendrogram and a heatmap of the scaled features are used. The dendrogram outlines the general structure and how clusters split off from one another, while the heatmap shows the defensive strengths and weaknesses for each cluster.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/unsupervised_4.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="600"></p>
+<figcaption>Figure 16: Heatmap of scaled features by cluster</figcaption>
+</figure>
+</div>
+<p>From the dendrogram, there is a clear divide immediately between players tasked with primarily defending near the basket or the perimeter. Clusters 1 through 3 all have substantially lower defensive rebounding rates and block rates, and higher 3 point attempt rates compared to clusters 5 through 8. The two clusters that do not immediately stand out as perimeter or inside defenders are clusters 4 and 9 as they have one feature that drastically separates them.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/unsupervised_5.png" class="img-fluid figure-img" style="width:95.0%"></p>
+<figcaption>Figure 17: PCA Clusters</figcaption>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/unsupervised_6.png" class="img-fluid figure-img" style="width:95.0%"></p>
+<figcaption>Figure 18: UMAP visualization</figcaption>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/unsupervised_6.png" class="img-fluid figure-img" style="width:95.0%"></p>
+<figcaption>Figure 19: Tree structure of clustering</figcaption>
+</figure>
+</div>
+<p>One of the most interesting relationships noticed was between the average contest distance of a shot and the allowed field goal percentage. Across all clusters the two features seem to be inverses of one another, completely going against the line of thinking that a close contest by a defender would lead to a worse shot. The defenders in cluster 2 and 8, these defenders might be closing on the shooter late and therefore further on average because they know it is not a great shot for the offense to take resulting in lower shot percentages.</p>
+</section>
+<section id="supervised-evaluation" class="level1" data-number="9">
+<h1 data-number="9"><span class="header-section-number">9</span> Supervised Evaluation</h1>
+<section id="evaluation-metrics-justification" class="level2" data-number="9.1">
+<h2 data-number="9.1" class="anchored" data-anchor-id="evaluation-metrics-justification"><span class="header-section-number">9.1</span> Evaluation Metrics Justification</h2>
+<p>Our evaluation focuses on metrics aligned with Bayesian inference principles:</p>
+<ol type="1">
+<li><p><strong>LOO-CV (Leave-One-Out Cross-Validation)</strong>: Provides expected log predictive density (ELPD) and is preferable to alternatives like AIC/BIC for hierarchical models.</p></li>
+<li><p><strong>Posterior Predictive Checks</strong>: Visual assessment of how well our models generate data matching observed patterns.</p></li>
+<li><p><strong>MCMC Diagnostics</strong>: R-hat statistics, effective sample sizes, and trace plots to ensure computational reliability.</p></li>
+</ol>
+<section id="loo-cv" class="level3" data-number="9.1.1">
+<h3 data-number="9.1.1" class="anchored" data-anchor-id="loo-cv"><span class="header-section-number">9.1.1</span> LOO-CV</h3>
+<p>After using our generative model to simulate count data that approximated our actual sample, we fit three differently-specified negative binomial models on simulated data and used Leave-one-out Cross-validation to compare their out-of-sample predictive performance. We fit each model using both constrained and unconstrained priors to improve regularization. The varying intercepts model with constrained priors outperformed the other models, and was selected for this reason as well as for its representation of the causal structure of our data.</p>
+<div>
+
+</div>
+<div class="quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/loo_comparison_neg_binom_table.png" class="img-fluid figure-img" style="width:95.0%"></p>
+<figcaption>Figure 20: Negative binomial model comparison</figcaption>
+</figure>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/loo_comparison_binom_table.png" class="img-fluid figure-img" style="width:95.0%"></p>
+<figcaption>Figure 21: Binomial model comparison</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<p>We followed a similar procedure for selecting a binomial model, comparing a simple model that omitted player positions against the more complex model with varying slopes that included player positions detailed in the Methods Description. The latter model outperformed the simple version convincingly, with an ELPD difference of greater than 5.</p>
+<p>For the model evaluation section, we’ll focus on our negative binomial model of the effect of fouls on shot-taking.</p>
+</section>
+</section>
+<section id="model-evaluation" class="level2" data-number="9.2">
+<h2 data-number="9.2" class="anchored" data-anchor-id="model-evaluation"><span class="header-section-number">9.2</span> Model Evaluation</h2>
+<section id="mcmc-diagnostics" class="level3" data-number="9.2.1">
+<h3 data-number="9.2.1" class="anchored" data-anchor-id="mcmc-diagnostics"><span class="header-section-number">9.2.1</span> MCMC Diagnostics</h3>
+<p>To ensure the reliability of our Bayesian inference, we conducted thorough MCMC diagnostics. These diagnostics help verify that our sampling algorithm effectively explored the posterior distribution and produced reliable parameter estimates.</p>
+<p>Our diagnostics showed excellent convergence across all parameters, with R-hat values consistently below 1.01, suggesting that our chains mixed well and reached the target posterior distribution. Similarly, the effective sample sizes (N_eff) were sufficiently large for all key parameters, ensuring that our posterior summaries are based on adequate independent samples. Detailed MCMC diagnostic plots can be found in Appendix G.</p>
+</section>
+<section id="posterior-predictive-checks" class="level3" data-number="9.2.2">
+<h3 data-number="9.2.2" class="anchored" data-anchor-id="posterior-predictive-checks"><span class="header-section-number">9.2.2</span> Posterior Predictive Checks</h3>
+<p>We conducted posterior predictive checks to assess how well our model captures the observed data patterns:</p>
+<div>
+
+</div>
+<div class="quarto-layout-panel" data-layout="[[1,1]]">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/neg-binom_pp_check.png" class="img-fluid figure-img" style="width:95.0%"></p>
+<figcaption>Figure 22: Posterior predictive check comparing observed vs.&nbsp;replicated data</figcaption>
+</figure>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/neg-binom_ecdf.png" class="img-fluid figure-img" style="width:95.0%"></p>
+<figcaption>Figure 23: ECDF comparison of observed vs.&nbsp;predicted values</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<p>The posterior predictive check shows good alignment between the observed data (dark line) and replicated datasets from our model (light lines), indicating that our model captures the overall distribution of shot attempts well. The ECDF comparison further confirms this, showing close correspondence between the empirical cumulative distribution functions of observed and predicted values.</p>
+</section>
+<section id="feature-importance-and-ablation" class="level3" data-number="9.2.3">
+<h3 data-number="9.2.3" class="anchored" data-anchor-id="feature-importance-and-ablation"><span class="header-section-number">9.2.3</span> Feature Importance and Ablation</h3>
+<p>There are a variety of different ways to understand the importance of features within the nested structure of a hierarchical model. In our case, where we have observations of players nested within positions within teams within periods within games, our research interests and assumptions guide our analysis. In addition to visualizing the marginal effects of defensive teams and positions on offensive shot counts we can use counterfactual analysis to understand the causal impact of different features on shot counts.</p>
+<div>
+
+</div>
+<div class="quarto-layout-panel" data-layout="[[1,1]]">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/neg-binom_team-effects.png" class="img-fluid figure-img" style="width:95.0%"></p>
+<figcaption>Figure 24: Team effects on shot counts</figcaption>
+</figure>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/neg-binom_position-effects.png" class="img-fluid figure-img" style="width:95.0%"></p>
+<figcaption>Figure 25: Position effects on shot counts</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="sensitivity-analysis" class="level3" data-number="9.2.4">
+<h3 data-number="9.2.4" class="anchored" data-anchor-id="sensitivity-analysis"><span class="header-section-number">9.2.4</span> Sensitivity Analysis</h3>
+<p>The model comparison table above gives indication that our model is fairly sensitive to our choice of priors, gaining significant out-of-sample predictive performance when fit with constrained versus unconstrained priors. Our model is less sensitive to whether it’s parametrized with interaction terms versus group-level varying slopes, where the difference in ELPD is less than 5; if judging our models purely on predictive performance, a model with varying slopes doesn’t seem to necessarily be preferable to one with interaction terms.</p>
+</section>
+<section id="failure-analysis" class="level3" data-number="9.2.5">
+<h3 data-number="9.2.5" class="anchored" data-anchor-id="failure-analysis"><span class="header-section-number">9.2.5</span> Failure Analysis</h3>
+<p>Our shrinkage analysis above showed that our model struggled to predict shot rates for some positions versus others (forwards, in particular).</p>
+<p>Our negative binomial model generally performs well at predicting shot attempts faced by defenders based on their foul status, but examining specific prediction failures reveals important insights about basketball defensive dynamics that our model doesn’t fully capture. We identified three distinct categories of prediction failures, each highlighting different aspects of defensive behavior that warrant further investigation.</p>
+<p>Three Categories of Prediction Failures</p>
+<p>Table 1 presents three specific examples where our model’s predictions significantly deviated from observed values:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/failure_analysis_table.png" class="img-fluid figure-img"></p>
+<figcaption>Figure 26: Failure analysis examples</figcaption>
+</figure>
+</div>
+<section id="high-volume-centers-with-foul-trouble" class="level4" data-number="9.2.5.1">
+<h4 data-number="9.2.5.1" class="anchored" data-anchor-id="high-volume-centers-with-foul-trouble"><span class="header-section-number">9.2.5.1</span> 1. High-Volume Centers with Foul Trouble</h4>
+<p>The first example shows a center from the Chicago Bulls with a high foul count (nearly 2 standard deviations above average) who faced 45 shot attempts while the model predicted only about 4. This dramatic underprediction reveals an important selection effect: centers who remain in games despite foul trouble are likely there specifically because of their defensive importance.</p>
+</section>
+<section id="extreme-defender-distance-cases" class="level4" data-number="9.2.5.2">
+<h4 data-number="9.2.5.2" class="anchored" data-anchor-id="extreme-defender-distance-cases"><span class="header-section-number">9.2.5.2</span> 2. Extreme Defender Distance Cases</h4>
+<p>The second example features a guard-forward from the New York Knicks playing very tight defense (0-2 feet) despite having below-average fouls. The player faced 29 shot attempts while our model predicted fewer than 2. This suggests that in very tight defensive coverage situations, the relationship between fouls and defensive activity follows different patterns than our model captures.</p>
+</section>
+<section id="team-specific-defensive-strategies" class="level4" data-number="9.2.5.3">
+<h4 data-number="9.2.5.3" class="anchored" data-anchor-id="team-specific-defensive-strategies"><span class="header-section-number">9.2.5.3</span> 3. Team-Specific Defensive Strategies</h4>
+<p>The third example shows another Knicks player, a forward-guard with only slightly elevated fouls, who faced 51 shot attempts compared to a prediction of just 5. This extreme underprediction, along with the previous Knicks example, suggests strong team-specific defensive strategies that aren’t fully captured by our model’s random effects structure.</p>
+</section>
+<section id="overall-insights" class="level4" data-number="9.2.5.4">
+<h4 data-number="9.2.5.4" class="anchored" data-anchor-id="overall-insights"><span class="header-section-number">9.2.5.4</span> Overall Insights</h4>
+<p>All three examples show massive underprediction, suggesting our model may be missing important factors that lead to high-volume shot attempts in certain situations. The magnitude of these errors (27-46 shots) indicates that in certain edge cases, the model’s predictions are far off, pointing to the need for additional variables or interaction effects to capture these extreme scenarios. That said, what we mean by “prediction failure” needs to be contextualized for heirarchical models. Our constrained priors and adaptive regulariztion of partial pooling, while improving overall predictive performance, may be contributing to the severe underprediction of high shot attempt counts.</p>
+<p>The magnitude of our prediction errors in these extreme cases suggests that our priors may be too informative for certain regions of the parameter space, pulling predictions too strongly toward the population mean when faced with unusual combinations of predictor values.</p>
+<ol type="1">
+<li><p><strong>Incorporating Selection Effects</strong>: We need to model the coach’s decision process about which players remain in games despite foul trouble, perhaps through a hierarchical structure that allows player-specific foul effects.</p></li>
+<li><p><strong>Non-linear Relationships</strong>: The extreme defender distance case suggests non-linear relationships between fouls, defender proximity, and shot attempts that could be captured through interaction terms or non-linear functional forms.</p></li>
+<li><p><strong>Team-Specific Tactical Responses</strong>: The Knicks examples point to the need for more complex team-level random effects that can capture team-specific defensive schemes and responses to foul situations.</p></li>
+<li><p><strong>Game Context Variables</strong>: Incorporate score differential, time remaining, and playoff vs.&nbsp;regular season indicators to capture situational defensive adjustments that might explain when coaches keep certain players in despite foul trouble.</p></li>
+<li><p><strong>Offensive Style Predictors</strong>: Include measures of the offensive team’s style and tendencies to account for how different offensive approaches might exploit or target defenders in foul trouble.</p></li>
+<li><p><strong>Multilevel Measurement Error Models</strong>: We could model the uncertainty in our foul counts and defender proximity measures, particularly for players with small sample sizes.</p></li>
+</ol>
+</section>
+</section>
+</section>
+</section>
+<section id="discussion" class="level1" data-number="10">
+<h1 data-number="10"><span class="header-section-number">10</span> Discussion</h1>
+<section id="supervised-learning-4" class="level2" data-number="10.1">
+<h2 data-number="10.1" class="anchored" data-anchor-id="supervised-learning-4"><span class="header-section-number">10.1</span> Supervised Learning</h2>
+<p>This was the largest and most complex project we’ve attempted to complete using a Bayesian workflow. We learned that organizing and keeping track of the various stages of model specification (generative, statistical, computational), prior specification, testing, model fitting, etc. is a major challenge. The benefits to organizing a Bayesian workflow well are myriad, however, and made the process of model evaluation straightforward.</p>
+<p>This was also far and away the largest amount of data we’ve worked with, and unsurprisingly the computational demands of full Bayesian inference provided many excellent learning opportunities. We learned that without variational inference, downsampling is a requirement in order to fit Bayesian models on a deadline.</p>
+<p>We were surprised by how well our negative binomial model seems to have learned important characteristics of specific teams, and the defensive liabilities of individual positions thereon.</p>
+</section>
+<section id="unsupervised-learning-4" class="level2" data-number="10.2">
+<h2 data-number="10.2" class="anchored" data-anchor-id="unsupervised-learning-4"><span class="header-section-number">10.2</span> Unsupervised Learning</h2>
+<p>Including player tracking data would assist in defining a player’s true defensive role. A current limitation in this project is that there is no information on a player’s defensive role if they were not the closest defender on a shot. As demonstrated in the supervised learning portion, defense in basketball closer represents a network of the five players where all of their actions have an effect on the other members. For example, if one player did a poor job defending a driving defender and allowed them to get to the paint for a layup, this shot may be attributed to the center who went to contest late and show nothing for the initial defender. Player tracking data would be able to show what a player is doing throughout a play in ways that the defensive dashboard information does not provide.</p>
+<p>Another avenue for future work is using these defensive clusters to expand on existing work with a player’s offensive role. This would allow for a player to have two-identities specific to each side of the court. Then using the combination of all roles on the court, attempt to predict one lineup’s success when matched to another.</p>
+</section>
+</section>
+<section id="ethical-considerations" class="level1" data-number="11">
+<h1 data-number="11"><span class="header-section-number">11</span> Ethical Considerations</h1>
+<p>The main ethical consideration of this project is providing a fair representation of players. With the limitations of the defensive data available, a player’s defensive impact when not the primary defender is unable to be accurately measured. It is important to ensure labels, whether from clustering or as the product of supervised learning, refrain from subjective language so that a player is not labeled either a “liability” or an “elite defender”. Adding subjective language to clusters could affect the perception of a player’s ability unfairly.</p>
+</section>
+<section id="statement-of-work" class="level1" data-number="12">
+<h1 data-number="12"><span class="header-section-number">12</span> Statement of Work</h1>
+<p>Michael Light: Supervised Learning, Initial play-by-play, and defender dashboard data pulls in R, Report Writing</p>
+<p>Quinten Adabie: Unsupervised Learning, Machine Learning Pipeline, Player Info, and Physical data pulls, Report Writing</p>
+</section>
+<section id="appendices" class="level1" data-number="13">
+<h1 data-number="13"><span class="header-section-number">13</span> Appendices</h1>
+<section id="appendix-a." class="level2" data-number="13.1">
+<h2 data-number="13.1" class="anchored" data-anchor-id="appendix-a."><span class="header-section-number">13.1</span> Appendix A.</h2>
+<section id="references" class="level3" data-number="13.1.1">
+<h3 data-number="13.1.1" class="anchored" data-anchor-id="references"><span class="header-section-number">13.1.1</span> References</h3>
+<p>Hedquist, Alexander L., “Redefining NBA Basketball Positions Through Visualization and Mega-Cluster Analysis” (2022). All Graduate Theses and Dissertations. 8602. https://digitalcommons.usu.edu/etd/8602</p>
+<p>Kalman, S. and J. Bosch (2020). NBA Lineup Analysis on Clustered Player Tendencies: A New Approach to the Positions of Basketball &amp; Modeling Lineup Efficiency. MIT Sloan Sports Conference. https://www.sloansportsconference.com/research-papers/nba-lineup-analysis-on-clustered-player-tendencies-a-new-approach-to-thepositions-of-basketball-modeling-lineup-efficiency.</p>
+<p>Levin, J. (2014, May 16). The absurd, amazing wingspans of professional basketball players. Slate Magazine. https://slate.com/culture/2014/05/nba-wingspans-forget-height-basketball-players-wingspans-are-absurd-and-amazing.html</p>
+<p>NBA. (n.d.). Draft combine: Stats. Draft Combine | Stats | NBA.com. https://www.nba.com/stats/draft/combine</p>
+</section>
+</section>
+<section id="appendix-b." class="level2" data-number="13.2">
+<h2 data-number="13.2" class="anchored" data-anchor-id="appendix-b."><span class="header-section-number">13.2</span> Appendix B.</h2>
+<p>Unsupervised Learning Features</p>
+<table class="table">
+<colgroup>
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: center;">#</th>
+<th style="text-align: left;">Cluster Title</th>
+<th style="text-align: left;">Primary Strengths</th>
+<th style="text-align: left;">Primary Weaknesses</th>
+<th style="text-align: left;">% of Sample</th>
+<th style="text-align: left;">Example Player in Cluster</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">1</td>
+<td style="text-align: left;">Perimeter Help</td>
+<td style="text-align: left;">2pt. FG%, 2pt. Target Rate</td>
+<td style="text-align: left;">Rebounds, Blocks</td>
+<td style="text-align: left;">36.3</td>
+<td style="text-align: left;">Luguentz Dort</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">2</td>
+<td style="text-align: left;">Perimeter Only</td>
+<td style="text-align: left;">2pt. FG%, 2pt. Target Rate, Fouls</td>
+<td style="text-align: left;">2pt. Contest, 3pt. FG%, Rebounds</td>
+<td style="text-align: left;">9.4</td>
+<td style="text-align: left;">Josh Green</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">3</td>
+<td style="text-align: left;">Perimeter On-Ball</td>
+<td style="text-align: left;">Fouls</td>
+<td style="text-align: left;">3pt. Target Rate, Blocks, Steals</td>
+<td style="text-align: left;">19.2</td>
+<td style="text-align: left;">Jaylen Brown</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">4</td>
+<td style="text-align: left;">Interior Risk Averse</td>
+<td style="text-align: left;">Fouls</td>
+<td style="text-align: left;">2pt. Target Rate</td>
+<td style="text-align: left;">4.7</td>
+<td style="text-align: left;">Jalen Williams</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">5</td>
+<td style="text-align: left;">Interior Float</td>
+<td style="text-align: left;">Rebounds, Blocks, 3pt. Target Rate, 2pt. Contest</td>
+<td style="text-align: left;">Fouls, 2pt. FG%</td>
+<td style="text-align: left;">10.4</td>
+<td style="text-align: left;">Zach Edey</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">6</td>
+<td style="text-align: left;">Interior Paint</td>
+<td style="text-align: left;">Rebounds, Blocks, 3pt. Target Rate, 2pt. Contest</td>
+<td style="text-align: left;">Fouls, 2pt. FG%</td>
+<td style="text-align: left;">1.8</td>
+<td style="text-align: left;">Kevon Looney</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">7</td>
+<td style="text-align: left;">Interior Help</td>
+<td style="text-align: left;">Rebounds</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">12.7</td>
+<td style="text-align: left;">Myles Turner</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">8</td>
+<td style="text-align: left;">Interior Close-Out</td>
+<td style="text-align: left;">3pt. FG%</td>
+<td style="text-align: left;">Fouls, 3pt. Contest</td>
+<td style="text-align: left;">3.0</td>
+<td style="text-align: left;">Nic Claxton</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">9</td>
+<td style="text-align: left;">Pickpockets</td>
+<td style="text-align: left;">Steals, 2pt. FG%</td>
+<td style="text-align: left;">3pt. Contest, Rebounds</td>
+<td style="text-align: left;">3.0</td>
+<td style="text-align: left;">Kris Dunn</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="appendix-c." class="level2" data-number="13.3">
+<h2 data-number="13.3" class="anchored" data-anchor-id="appendix-c."><span class="header-section-number">13.3</span> Appendix C.</h2>
+<section id="cluster-assignments-for-selected-nba-players" class="level3" data-number="13.3.1">
+<h3 data-number="13.3.1" class="anchored" data-anchor-id="cluster-assignments-for-selected-nba-players"><span class="header-section-number">13.3.1</span> Cluster Assignments for Selected NBA Players</h3>
+<table class="table">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Player</th>
+<th style="text-align: left;">Season</th>
+<th style="text-align: left;">Cluster</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Gobert</td>
+<td style="text-align: left;">2023-24</td>
+<td style="text-align: left;">5</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Jaren Jackson Jr.</td>
+<td style="text-align: left;">2022-23</td>
+<td style="text-align: left;">7</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Marcus Smart</td>
+<td style="text-align: left;">2021-22</td>
+<td style="text-align: left;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Evan Mobley</td>
+<td style="text-align: left;">2024-25</td>
+<td style="text-align: left;">5</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Jaren Jackson Jr.</td>
+<td style="text-align: left;">2024-24</td>
+<td style="text-align: left;">5</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Victor Wembanyama</td>
+<td style="text-align: left;">2024-25</td>
+<td style="text-align: left;">6</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="appendix-d." class="level2" data-number="13.4">
+<h2 data-number="13.4" class="anchored" data-anchor-id="appendix-d."><span class="header-section-number">13.4</span> Appendix D.</h2>
+<section id="negative-binomial-model-prior-specification" class="level3" data-number="13.4.1">
+<h3 data-number="13.4.1" class="anchored" data-anchor-id="negative-binomial-model-prior-specification"><span class="header-section-number">13.4.1</span> Negative Binomial Model Prior Specification</h3>
+<p>The following code shows the complete prior specification for our negative binomial varying slopes model:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>constrained_varying_slopes_priors <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Population-level effects</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="fl">1.6</span>, <span class="fl">0.5</span>), <span class="at">class =</span> <span class="st">"Intercept"</span>),</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="fl">0.2</span>), <span class="at">class =</span> <span class="st">"b"</span>, <span class="at">coef =</span> <span class="st">"fouls_scaled"</span>),</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Team-level varying effects</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">prior</span>(<span class="fu">exponential</span>(<span class="dv">4</span>), <span class="at">class =</span> <span class="st">"sd"</span>, <span class="at">group =</span> <span class="st">"slug_team_def"</span>),</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">prior</span>(<span class="fu">exponential</span>(<span class="dv">4</span>), <span class="at">class =</span> <span class="st">"sd"</span>, <span class="at">group =</span> <span class="st">"slug_team_def"</span>, <span class="at">coef =</span> <span class="st">"fouls_scaled"</span>),</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">prior</span>(<span class="fu">lkj</span>(<span class="dv">5</span>), <span class="at">class =</span> <span class="st">"cor"</span>, <span class="at">group =</span> <span class="st">"slug_team_def"</span>),</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Position-level varying effects</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">prior</span>(<span class="fu">exponential</span>(<span class="dv">4</span>), <span class="at">class =</span> <span class="st">"sd"</span>, <span class="at">group =</span> <span class="st">"position"</span>),</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">prior</span>(<span class="fu">exponential</span>(<span class="dv">4</span>), <span class="at">class =</span> <span class="st">"sd"</span>, <span class="at">group =</span> <span class="st">"position"</span>, <span class="at">coef =</span> <span class="st">"fouls_scaled"</span>),</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">prior</span>(<span class="fu">lkj</span>(<span class="dv">5</span>), <span class="at">class =</span> <span class="st">"cor"</span>, <span class="at">group =</span> <span class="st">"position"</span>),</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Other random effects</span></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">prior</span>(<span class="fu">exponential</span>(<span class="dv">4</span>), <span class="at">class =</span> <span class="st">"sd"</span>, <span class="at">group =</span> <span class="st">"offender_shot_dist_range"</span>),</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">prior</span>(<span class="fu">exponential</span>(<span class="dv">4</span>), <span class="at">class =</span> <span class="st">"sd"</span>, <span class="at">group =</span> <span class="st">"close_def_dist_range"</span>),</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Negative binomial dispersion parameter</span></span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">prior</span>(<span class="fu">gamma</span>(<span class="dv">3</span>, <span class="fl">0.5</span>), <span class="at">class =</span> <span class="st">"shape"</span>) </span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>These priors were carefully chosen based on domain knowledge. The normal prior on the intercept centers around log(5) ≈ 1.6, reflecting our expectation of about 5 shots per observation. The exponential priors on standard deviations and LKJ prior on correlations provide regularization to prevent overfitting while still allowing the model to learn meaningful patterns from the data.</p>
+</section>
+</section>
+<section id="appendix-e." class="level2" data-number="13.5">
+<h2 data-number="13.5" class="anchored" data-anchor-id="appendix-e."><span class="header-section-number">13.5</span> Appendix E.</h2>
+<section id="detailed-data-source-variables" class="level3" data-number="13.5.1">
+<h3 data-number="13.5.1" class="anchored" data-anchor-id="detailed-data-source-variables"><span class="header-section-number">13.5.1</span> Detailed Data Source Variables</h3>
+<section id="primary-play-by-play-dataset-variables" class="level4" data-number="13.5.1.1">
+<h4 data-number="13.5.1.1" class="anchored" data-anchor-id="primary-play-by-play-dataset-variables"><span class="header-section-number">13.5.1.1</span> Primary Play-by-Play Dataset Variables</h4>
+<ul>
+<li>Game information: game_id, league, period, event_num, clock</li>
+<li>Play details: description, event_type, event_action_type</li>
+<li>Team information: team_id, offense_team_id</li>
+<li>Player information: player1_id, player2_id, player3_id all corresponded to players directly involved in a a given game event</li>
+<li>Spatial data: locX, locY (shot location coordinates)</li>
+<li>Scoring information: home_score, away_score</li>
+<li>Additional metadata: opt1, opt2, order</li>
+</ul>
+</section>
+<section id="pre-processing-steps" class="level4" data-number="13.5.1.2">
+<h4 data-number="13.5.1.2" class="anchored" data-anchor-id="pre-processing-steps"><span class="header-section-number">13.5.1.2</span> Pre-processing Steps</h4>
+<ul>
+<li><strong>Data Acquisition</strong> - Loads player game logs and fetches new play-by-play data</li>
+<li><strong>Data Cleaning</strong> - Converts IDs, handles neutral site games, joins player/team information</li>
+<li><strong>Time Processing</strong> - Calculates game time progression and reorders events chronologically</li>
+<li><strong>Score Tracking</strong> - Identifies scoring events and maintains cumulative scores</li>
+<li><strong>Lineup Tracking</strong> - Monitors player substitutions and on-court lineups</li>
+<li><strong>Possession Identification</strong> - Marks possession changes and handles special cases</li>
+<li><strong>Foul Processing</strong> - Links free throws to fouls and calculates statistics</li>
+<li><strong>Garbage Time Detection</strong> - Identifies low-competitive periods based on score and lineups</li>
+<li><strong>Data Integration</strong> - Combines new data with existing dataset and saves to parquet file</li>
+</ul>
+</section>
+<section id="closest-defender-shooting-dashboard-variables" class="level4" data-number="13.5.1.3">
+<h4 data-number="13.5.1.3" class="anchored" data-anchor-id="closest-defender-shooting-dashboard-variables"><span class="header-section-number">13.5.1.3</span> Closest Defender Shooting Dashboard Variables</h4>
+<ul>
+<li><code>PLAYER_ID</code>, <code>PLAYER_NAME_LAST_FIRST</code>: Identifies the offensive player taking the shot</li>
+<li><code>CLOSE_DEF_DIST_RANGE</code>: Categories of defender proximity (e.g., “0-2 Feet - Very Tight”, “2-4 Feet - Tight”)</li>
+<li><code>FGM</code>, <code>FGA</code>, <code>FG_PCT</code>: Field goals made, attempted, and percentage for all shots</li>
+<li><code>FG2M</code>, <code>FG2A</code>, <code>FG2_PCT</code>: Field goals made, attempted, and percentage for 2-point shots</li>
+<li><code>FG3M</code>, <code>FG3A</code>, <code>FG3_PCT</code>: Field goals made, attempted, and percentage for 3-point shots</li>
+<li><code>EFG_PCT</code>: Effective field goal percentage, which adjusts for the higher value of 3-point shots</li>
+<li><code>FGA_FREQUENCY</code>, <code>FG2A_FREQUENCY</code>, <code>FG3A_FREQUENCY</code>: Frequency of shot attempts by type</li>
+<li><code>date</code>, <code>period</code>: Game date and period (quarter) when shots occurred (engineered in order to facilitate joining with pbp data)</li>
+<li><code>G</code>, <code>GP</code>: Game indicators for filtering single-game data</li>
+</ul>
+</section>
+</section>
+</section>
+<section id="appendix-f." class="level2" data-number="13.6">
+<h2 data-number="13.6" class="anchored" data-anchor-id="appendix-f."><span class="header-section-number">13.6</span> Appendix F.</h2>
+<section id="detailed-feature-engineering" class="level3" data-number="13.6.1">
+<h3 data-number="13.6.1" class="anchored" data-anchor-id="detailed-feature-engineering"><span class="header-section-number">13.6.1</span> Detailed Feature Engineering</h3>
+<section id="binomial-models-features" class="level4" data-number="13.6.1.1">
+<h4 data-number="13.6.1.1" class="anchored" data-anchor-id="binomial-models-features"><span class="header-section-number">13.6.1.1</span> Binomial Models Features</h4>
+<section id="primary-event-features" class="level5" data-number="13.6.1.1.1">
+<h5 data-number="13.6.1.1.1" class="anchored" data-anchor-id="primary-event-features"><span class="header-section-number">13.6.1.1.1</span> Primary event features:</h5>
+<ul>
+<li><code>personal_foul_occurance_on_player</code>: Binary indicator (0/1) of whether a player committed a foul on a given play</li>
+<li><code>personal_fouls_during_event</code>: Count of fouls a player had accumulated prior to a given event</li>
+<li><code>personal_fouls_scaled</code>: Standardized version of personal fouls (mean 0, SD 1)</li>
+<li><code>teammate_fouls</code>: Count of fouls accumulated by each teammate of a given player on the court</li>
+<li><code>teammate_fouls_scaled</code>: Standardized version of teammate fouls (mean 0, SD 1)</li>
+</ul>
+</section>
+<section id="game-context-variables" class="level5" data-number="13.6.1.1.2">
+<h5 data-number="13.6.1.1.2" class="anchored" data-anchor-id="game-context-variables"><span class="header-section-number">13.6.1.1.2</span> Game context variables:</h5>
+<ul>
+<li><code>game_id</code>: Unique identifier for each game</li>
+<li><code>period</code>: Game quarter (1-6, including overtime)</li>
+<li><code>number_event</code>: Sequential event number within a game</li>
+<li><code>event_id</code>: Unique identifier for each event</li>
+<li><code>garbage_time</code>: Binary indicator for non-competitive game situations (filtered out)</li>
+</ul>
+</section>
+<section id="team-and-player-identifiers" class="level5" data-number="13.6.1.1.3">
+<h5 data-number="13.6.1.1.3" class="anchored" data-anchor-id="team-and-player-identifiers"><span class="header-section-number">13.6.1.1.3</span> Team and player identifiers:</h5>
+<ul>
+<li><code>slug_team</code>: Team abbreviation for the defensive team</li>
+<li><code>slug_opp</code>: Team abbreviation for the offensive team</li>
+<li><code>player_name</code>: Name of the defensive player</li>
+<li><code>teammate_name</code>: Name of teammate on court</li>
+<li><code>player_id</code>: NBA player ID (joined from roster data)</li>
+<li><code>position</code>: Player’s position (G, F, C, or combinations)</li>
+</ul>
+</section>
+<section id="shot-specific-features" class="level5" data-number="13.6.1.1.4">
+<h5 data-number="13.6.1.1.4" class="anchored" data-anchor-id="shot-specific-features"><span class="header-section-number">13.6.1.1.4</span> Shot-specific features:</h5>
+<ul>
+<li><code>description</code>: Text description of the play event</li>
+</ul>
+</section>
+<section id="data-processing-steps" class="level5" data-number="13.6.1.1.5">
+<h5 data-number="13.6.1.1.5" class="anchored" data-anchor-id="data-processing-steps"><span class="header-section-number">13.6.1.1.5</span> Data processing steps:</h5>
+<ol type="1">
+<li><strong>Initial data extraction</strong>: We retrieved play-by-play data from the NBA Stats API using the hoopR package, covering 856 games from October 2024 to February 2025.</li>
+<li><strong>Foul identification</strong>: We processed play descriptions to identify personal fouls, excluding technical fouls, and linked them to specific players.</li>
+<li><strong>Foul accumulation tracking</strong>: We calculated running counts of fouls for each player throughout games, creating the <code>personal_fouls_during_event</code> feature.</li>
+<li><strong>Teammate foul extraction</strong>: For each player-event combination, we identified all teammates on court and their accumulated foul counts.</li>
+<li><strong>Standardization</strong>: We scaled numerical predictors (personal and teammate fouls) to have mean 0 and standard deviation 1 to improve model convergence.</li>
+<li><strong>Filtering</strong>: We removed garbage time plays and focused only on defensive possessions where a shot was attempted or a shooting foul occurred.</li>
+<li><strong>Position data integration</strong>: We joined player position information from roster data to enable position-specific analysis.</li>
+<li><strong>Data validation</strong>: We excluded games with incomplete tracking data to ensure consistency in our analysis.</li>
+<li><strong>Stratified sampling</strong>: Due to the large dataset size and rarity of fouls (~3% of defensive possessions), we created a stratified sample preserving the distribution of fouls across games, periods, teams, and player foul situations.</li>
+</ol>
+</section>
+</section>
+<section id="negative-binomial-models-features" class="level4" data-number="13.6.1.2">
+<h4 data-number="13.6.1.2" class="anchored" data-anchor-id="negative-binomial-models-features"><span class="header-section-number">13.6.1.2</span> Negative Binomial Models Features</h4>
+<section id="key-features-created" class="level5" data-number="13.6.1.2.1">
+<h5 data-number="13.6.1.2.1" class="anchored" data-anchor-id="key-features-created"><span class="header-section-number">13.6.1.2.1</span> Key Features Created:</h5>
+<ul>
+<li><strong>Shot Attempt Counts</strong>: Aggregated number of shots taken by offensive players while given defenders were on the court</li>
+<li><strong>Foul Variables</strong>:
+<ul>
+<li><code>defender_foul_count</code>: Number of fouls accumulated by defender</li>
+<li><code>fouls_scaled</code>: Standardized foul count (mean 0, SD 1)</li>
+</ul></li>
+<li><strong>Defensive Context</strong>:
+<ul>
+<li><code>shot_distance_category</code>: Distance ranges (“0_through_9_ft”, “10_through_23_ft”, “24_plus”)</li>
+<li><code>defender_proximity</code>: Distance between shooter and their primary defender (“0-2 Feet”, “2-4 Feet”, etc.)</li>
+</ul></li>
+<li><strong>Player/Team Attributes</strong>:
+<ul>
+<li><code>defender_position</code>: Position of defender (G, F, C, or combinations)</li>
+<li><code>defender_height</code>, <code>defender_weight</code>: Physical attributes</li>
+<li><code>defending_team</code>, <code>shooting_team</code>: Team identifiers</li>
+</ul></li>
+</ul>
+</section>
+<section id="processing-steps" class="level5" data-number="13.6.1.2.2">
+<h5 data-number="13.6.1.2.2" class="anchored" data-anchor-id="processing-steps"><span class="header-section-number">13.6.1.2.2</span> Processing Steps:</h5>
+<ol type="1">
+<li><strong>Data Integration</strong>: Combined play-by-play data with defender dashboard metrics</li>
+<li><strong>Foul Tracking</strong>: Calculated running counts of fouls for each defender throughout games</li>
+<li><strong>Shot Categorization</strong>: Classified shots by distance from basket and defender proximity</li>
+<li><strong>Aggregation</strong>: Created count data at defender-shooter-shot type level</li>
+<li><strong>Standardization</strong>: Scaled numerical predictors to improve model convergence</li>
+<li><strong>Quality Control</strong>: Removed games with either incomplete tracking data or in which players with missing position data played</li>
+</ol>
+</section>
+</section>
+<section id="unsupervised-learning-features" class="level4" data-number="13.6.1.3">
+<h4 data-number="13.6.1.3" class="anchored" data-anchor-id="unsupervised-learning-features"><span class="header-section-number">13.6.1.3</span> Unsupervised Learning Features</h4>
+<section id="features-created-and-considered" class="level5" data-number="13.6.1.3.1">
+<h5 data-number="13.6.1.3.1" class="anchored" data-anchor-id="features-created-and-considered"><span class="header-section-number">13.6.1.3.1</span> Features Created and Considered:</h5>
+<ul>
+<li>Average contest distance for two-point and three-point attempts</li>
+<li>Adjusted contest distance (accounting for wingspan)</li>
+<li>Target rate (how often a player was the primary defender)</li>
+<li>Possessions per game</li>
+<li>Player height and wingspan</li>
+<li>Ratio of two-point to three-point shot attempts</li>
+<li>Difference between allowed field goal percentage and team average</li>
+<li>Defensive rebounding rate</li>
+<li>Block rate</li>
+<li>Steal rate</li>
+<li>Personal foul rate</li>
+<li>Field goal percentage allowed (by shot distance)</li>
+</ul>
+</section>
+<section id="feature-engineering-steps" class="level5" data-number="13.6.1.3.2">
+<h5 data-number="13.6.1.3.2" class="anchored" data-anchor-id="feature-engineering-steps"><span class="header-section-number">13.6.1.3.2</span> Feature Engineering Steps:</h5>
+<ol type="1">
+<li><strong>Wingspan Adjustment</strong>: For contest distance, a portion of the defender’s wingspan was subtracted to get a more accurate representation of defensive coverage</li>
+<li><strong>Target Rate Calculation</strong>: Compared total attempts when a player was in the defending lineup to instances when they were the closest defender</li>
+<li><strong>Normalization</strong>: Features were used on a per-100-possession basis to equally represent players with different playing times</li>
+<li><strong>Outlier Handling</strong>: Players with extremely low or high three-point shooting percentages allowed (due to small sample sizes) were adjusted to the average</li>
+<li><strong>Filtering</strong>: Required a minimum of 1,000 total possessions in a season for inclusion</li>
+</ol>
+</section>
+</section>
+</section>
+</section>
+<section id="appendix-g." class="level2" data-number="13.7">
+<h2 data-number="13.7" class="anchored" data-anchor-id="appendix-g."><span class="header-section-number">13.7</span> Appendix G.</h2>
+<section id="mcmc-diagnostic-plots" class="level3" data-number="13.7.1">
+<h3 data-number="13.7.1" class="anchored" data-anchor-id="mcmc-diagnostic-plots"><span class="header-section-number">13.7.1</span> MCMC Diagnostic Plots</h3>
+<p>The following diagnostic plots were used to assess the convergence and reliability of our Bayesian models:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/neg-binom_rhat.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:95.0%"></p>
+<figcaption>R-hat values showing convergence across parameters</figcaption>
+</figure>
+</div>
+<p>The R-hat values consistently below 1.01 indicate excellent convergence across all parameters, suggesting that our chains mixed well and reached the target posterior distribution.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/neff_values.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:95.0%"></p>
+<figcaption>Effective sample sizes for key parameters</figcaption>
+</figure>
+</div>
+<p>The effective sample sizes (N_eff) are sufficiently large for all key parameters, ensuring that our posterior summaries are based on adequate independent samples.</p>
+<p>Trace plots (not shown here) further confirmed good mixing of the chains, with no signs of pathological behavior such as stickiness or trending.</p>
+</section>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

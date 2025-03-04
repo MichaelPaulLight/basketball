@@ -1,0 +1,1180 @@
+---
+title: "foul-modeling-workflow_interactions_team"
+format: html
+editor: visual
+---
+
+# Purpose of This Document
+
+This template guides you through a Bayesian analysis following McElreath's workflow from Statistical Rethinking. Each section includes explanatory notes that you should replace with your own content.
+
+# Simplest Negative Binomial Model of Foul Effects on Shot Attempts
+
+## Load Packages
+
+```{r}
+#| label: setup
+#| include: false
+
+# Load required packages
+library(tidyverse)
+library(brms)
+library(tidybayes)
+library(bayesplot)
+library(dagitty)
+library(ggdag)
+```
+
+## Domain Knowledge
+
+Previous Research Summarize key findings from previous research. What do we already know about this system?
+
+Mechanisms Describe the potential mechanisms at work. How might your variables be causally related?
+
+Expected Patterns Based on theory and previous research, what patterns do you expect to see in your data?
+
+### Research Questions
+
+State your research questions clearly and precisely. Good research questions should be:
+
+1.  Specific and well-defined Answerable with your available data
+
+2.  Connected to your theoretical framework.
+
+## Causal Model
+
+### Directed Acyclic Graph (DAG)
+
+Determine which variables to include in your model with the following workflow:
+
+1.  List all of the paths connecting X (the potential cause of interest) and Y (the out- come).
+
+2.  Classify each path by whether it is open or closed. A path is open unless it contains a collider.
+
+3.  Classify each path by whether it is a backdoor path. A backdoor path has an arrow entering X.
+
+4.  If there are any open backdoor paths, decide which variable(s) to condition on to close it (if possible). \[dagitty::impliedConditionalIndependencies(), dagitty::adjustmentSets()\]
+
+```{r}
+
+#| label: dag
+#| fig-cap: "Directed Acyclic Graph representing hypothesized causal relationships"
+#| code-fold: show
+
+# Create your DAG
+# Example:
+defender_dag <- dagitty('dag {
+  Fouls -> ShotAttempts
+  
+  DefenderSkill -> Fouls
+  DefenderSkill -> ShotAttempts
+  
+  Fouls -> DefenderProximity -> ShotAttempts
+  
+  DefenderSkill ->Position 
+  Position -> ShotDistance
+  ShotDistance -> ShotAttempts
+  Team -> DefenderSkill
+  OffensiveSkill -> ShotAttempts
+  OffensiveSkill -> ShotDistance
+  
+  DefenderSkill -> DefenderProximity
+  OffensiveSkill -> DefenderProximity
+}')
+
+# Plot the DAG
+coords <- list(
+  x = c(Fouls = 2, ShotAttempts = 4, 
+        DefenderSkill = 1, DefenderProximity = 3,
+        Position = 0, ShotDistance = 3, 
+        Team = 0, OffensiveSkill = 2),
+  y = c(Fouls = 2, ShotAttempts = 2, 
+        DefenderSkill = 1, DefenderProximity = 1,
+        Position = 0, ShotDistance = 0, 
+        Team = 2, OffensiveSkill = 3)
+)
+
+ggdag_status(defender_dag, layout = coords) +
+  theme_dag() +
+  geom_dag_point(color = "lightblue", size = 20, alpha = 0.5) +
+  geom_dag_text(color = "black", size = 4) +
+  geom_dag_edges(edge_colour = "gray30", 
+                 edge_width = 0.8) +
+  theme_void() +
+  theme(plot.background = element_rect(fill = "white", color = NA)) +
+  scale_x_continuous(expand = expansion(mult = 0.2)) +
+  scale_y_continuous(expand = expansion(mult = 0.2))  +
+  ggtitle("Causal Model of Defensive Fouls and Shot Attempts")
+
+ggdag_paths(defender_dag, 
+           from = "Fouls", 
+           to = "ShotAttempts",
+           shadow = TRUE,
+           layout = "nicely") +
+  theme_dag() +
+  geom_dag_point(color = "lightblue", size = 20, alpha = 0.5) +
+  geom_dag_text(color = "black", size = 4) +
+  geom_dag_edges(edge_colour = "gray30", 
+                 edge_width = 0.8) +
+  theme_void() +
+  theme(plot.background = element_rect(fill = "white", color = NA)) +
+  scale_x_continuous(expand = expansion(mult = 0.2)) +
+  scale_y_continuous(expand = expansion(mult = 0.2)) +
+  ggtitle("Causal Pathways from Fouls to Shot Attempts")
+
+# Display Implied Conditional Independencies
+
+implied <- impliedConditionalIndependencies(defender_dag)
+
+implied
+
+# Display Adjustment Sets
+
+adjustment_sets <- adjustmentSets(defender_dag, exposure = "Fouls", outcome = "ShotAttempts")
+
+adjustment_sets
+
+```
+
+### DAG Interpretation
+
+Justify the inclusion and exclusion of variables in your model based on the DAG.
+
+Define the relationships in your DAG in terms of:
+
+1.  The Fork
+
+2.  The Pipe
+
+3.  The Collider
+
+4.  The Descendant
+
+## Data Simulation
+
+### Simulate Data Implied by Causal Model
+
+```{r}
+set.seed(42)
+
+# Sim parameters
+n_observations <- 1000
+n_defenders <- 50
+n_positions <- 5
+position_names <- c("PG", "SG", "SF", "PF", "C")
+shot_distance_ranges <- c("0_through_9_ft", "10_through_23_ft", "24_plus")
+defender_proximity_ranges <- c("0-2 Feet", "2-4 Feet", "4-6 Feet", "6+ Feet")
+teams <- paste0("Team_", LETTERS[1:10])
+
+# Creating a tibble of defenders
+defenders <- tibble(
+  defender_id = 1:n_defenders,
+  defender_name = paste0("Player_", 1:n_defenders),
+  position_id = sample(1:n_positions, n_defenders, replace = TRUE),
+  position = position_names[position_id],
+  team = sample(teams, n_defenders, replace = TRUE),
+  defensive_skill = rnorm(n_defenders, 0, 1)
+)
+
+# Creating a tibble of simulated shots
+simulated_shots <- tibble(
+  shot_id = 1:n_observations,
+  
+  # Randomly assigning them to defenders
+  defender_id = sample(defenders$defender_id, n_observations, replace = TRUE),
+  
+  # Simulate fouls (influenced by defender skill and position)
+  # Centers and PFs tend to foul more
+  defender_foul_count = NA_integer_,
+  
+  # Shot characteristics
+  shot_distance_category = NA_character_,
+  defender_proximity = NA_character_,
+  
+  # Outcome
+  shot_made = NA_integer_
+)
+
+# Joining defender information
+simulated_shots <- simulated_shots %>%
+  left_join(defenders, by = "defender_id")
+
+# Now fill in the simulated values based on defender characteristics
+simulated_shots <- simulated_shots %>%
+  mutate(
+    # Simulate fouls based on position and skill
+    position_foul_effect = case_when(
+      position == "C" ~ 1.0,
+      position == "PF" ~ 0.7,
+      position == "SF" ~ 0.3,
+      position == "SG" ~ 0.2,
+      position == "PG" ~ 0.0
+    ),
+    
+    # Defenders with lower skill tend to foul more
+    defender_foul_count = pmin(5, pmax(0, round(rpois(n(), lambda = max(0, 2 - defensive_skill + position_foul_effect))))),
+    
+    # Shot distance influenced by defender position
+    # Guards defend more perimeter shots
+    shot_distance_category = case_when(
+      position %in% c("PG", "SG") & runif(n()) < 0.6 ~ "24_plus",
+      position %in% c("SF") & runif(n()) < 0.4 ~ "24_plus",
+      position %in% c("PF", "C") & runif(n()) < 0.2 ~ "24_plus",
+      position %in% c("PF", "C") & runif(n()) < 0.6 ~ "0_through_9_ft",
+      TRUE ~ "10_through_23_ft"
+    ),
+    
+    # Defender proximity affected by fouls and skill
+    # More fouls -> more distance
+    proximity_base = 2 + defender_foul_count * 0.5 - defensive_skill,
+    proximity_category_id = pmin(4, pmax(1, round(proximity_base))),
+    defender_proximity = defender_proximity_ranges[proximity_category_id],
+    
+    # Shot success probability
+    base_prob = case_when(
+      shot_distance_category == "0_through_9_ft" ~ 0.6,
+      shot_distance_category == "10_through_23_ft" ~ 0.4,
+      shot_distance_category == "24_plus" ~ 0.35
+    ),
+    
+    proximity_effect = case_when(
+      defender_proximity == "0-2 Feet" ~ -0.15,
+      defender_proximity == "2-4 Feet" ~ -0.08,
+      defender_proximity == "4-6 Feet" ~ -0.02,
+      defender_proximity == "6+ Feet" ~ 0.05
+    ),
+    
+    foul_effect = defender_foul_count * 0.02,
+    
+    shot_prob = plogis(qlogis(base_prob) + proximity_effect + foul_effect - defensive_skill * 0.3),
+    
+    shot_made = rbinom(n(), 1, shot_prob)
+  )
+
+# Clean up intermediate columns
+simulated_shots <- simulated_shots %>%
+  select(
+    shot_id, 
+    defender_id, defender_name, position, team,
+    defender_foul_count, 
+    shot_distance_category, defender_proximity,
+    shot_made,
+    defensive_skill  # Keep for validation
+  ) %>%
+  # Add a few more useful columns
+  mutate(
+    shots_attempted = 1,
+    period = sample(1:4, n(), replace = TRUE),
+    game_id = sample(1:20, n(), replace = TRUE)
+  )
+
+# Aggregate data for analysis
+shots_by_defender_foul <- simulated_shots %>%
+  group_by(
+    defender_name, 
+    position, 
+    defender_foul_count,
+    shot_distance_category
+  ) %>%
+  summarize(
+    total_shots = sum(shots_attempted),
+    shots_made = sum(shot_made),
+    fg_pct = shots_made / total_shots,
+    .groups = "drop"
+  )
+
+# Preview the data
+head(simulated_shots)
+head(shots_by_defender_foul)
+
+period_agg_by_team <- simulated_shots %>%
+  group_by(game_id, period, team, defender_name, position, defender_foul_count) %>%
+  summarize(
+    offender_fga = sum(shots_attempted),
+    offender_fgm = sum(shot_made),
+    offender_shot_dist_range = first(shot_distance_category),
+    close_def_dist_range = first(defender_proximity),
+    .groups = "drop"
+  ) %>%
+  # Scale fouls for modeling
+  mutate(
+    fouls_scaled = scale(defender_foul_count)[,1],
+    slug_team_def = team
+  )
+
+# Preview the aggregated data
+head(period_agg_by_team)
+
+```
+
+## Data Loading and Processing
+
+Data Loading and Processing
+
+```{r}
+
+offense_data <- nanoparquet::read_parquet("../data/shots_offensive_perspective.parquet")
+```
+
+## Model Building
+
+### Statistical Model Specification
+
+$$
+x ~ N(mu,sigma)
+mu = alpha + beta *x
+alpha ~ N(0,10)
+beta ~ N(0,2)
+sigma ~ Exponential(1)
+$$
+
+### Computational Model Specification
+
+#### Interaction Effects Model
+
+```{r}
+
+interaction_effects_formula <- bf(
+  offender_fga ~ fouls_scaled * position + fouls_scaled * close_def_dist_range +
+    (1 + fouls_scaled | slug_team_def) + 
+    (1 | offender_shot_dist_range)
+)
+
+interaction_priors <- c(
+  # Population-level effects
+  prior(normal(2, 0.5), class = "Intercept"),
+  prior(normal(0, 0.25), class = "b", coef = "fouls_scaled"),
+  
+  # Position main effects
+  prior(normal(0, 0.5), class = "b", coef = "positionPF"),
+  prior(normal(0, 0.5), class = "b", coef = "positionPG"),
+  prior(normal(0, 0.5), class = "b", coef = "positionSF"),
+  prior(normal(0, 0.5), class = "b", coef = "positionSG"),
+  
+  # Defender proximity main effects - with correct names from summary
+  prior(normal(0, 0.5), class = "b", coef = "close_def_dist_range2M4Feet"),
+  prior(normal(0, 0.5), class = "b", coef = "close_def_dist_range4M6Feet"),
+  prior(normal(0, 0.5), class = "b", coef = "close_def_dist_range6PFeet"),
+  
+  # Interaction effects for position
+  prior(normal(0, 0.25), class = "b", coef = "fouls_scaled:positionPF"),
+  prior(normal(0, 0.25), class = "b", coef = "fouls_scaled:positionPG"),
+  prior(normal(0, 0.25), class = "b", coef = "fouls_scaled:positionSF"),
+  prior(normal(0, 0.25), class = "b", coef = "fouls_scaled:positionSG"),
+  
+  # Interaction effects for defender proximity - with correct names from summary
+  prior(normal(0, 0.25), class = "b", coef = "fouls_scaled:close_def_dist_range2M4Feet"),
+  prior(normal(0, 0.25), class = "b", coef = "fouls_scaled:close_def_dist_range4M6Feet"),
+  prior(normal(0, 0.25), class = "b", coef = "fouls_scaled:close_def_dist_range6PFeet"),
+  
+  # Group-level effects
+  prior(exponential(1), class = "sd", group = "slug_team_def"),
+  prior(exponential(1), class = "sd", group = "slug_team_def", coef = "fouls_scaled"),
+  prior(lkj(2), class = "cor", group = "slug_team_def"),
+  prior(exponential(1), class = "sd", group = "offender_shot_dist_range"),
+  
+  # Negative binomial dispersion parameter
+  prior(exponential(1), class = "shape")
+)
+
+constrained_interaction_priors <- c(
+  # Population-level effects - much tighter prior on intercept
+  # Intercept on log scale: log(5) ≈ 1.6 is about 5 shots per observation
+  prior(normal(1.6, 0.5), class = "Intercept"),
+  
+  # Fouls should have a modest effect (maybe ±50% change in shots)
+  prior(normal(0, 0.2), class = "b", coef = "fouls_scaled"),
+  
+  # Position effects should be modest
+  prior(normal(0, 0.3), class = "b", coef = "positionPF"),
+  prior(normal(0, 0.3), class = "b", coef = "positionPG"),
+  prior(normal(0, 0.3), class = "b", coef = "positionSF"),
+  prior(normal(0, 0.3), class = "b", coef = "positionSG"),
+  
+  # Defender proximity effects
+  prior(normal(0, 0.3), class = "b", coef = "close_def_dist_range2M4Feet"),
+  prior(normal(0, 0.3), class = "b", coef = "close_def_dist_range4M6Feet"),
+  prior(normal(0, 0.3), class = "b", coef = "close_def_dist_range6PFeet"),
+  
+  # Interaction effects - very small
+  prior(normal(0, 0.1), class = "b", coef = "fouls_scaled:positionPF"),
+  prior(normal(0, 0.1), class = "b", coef = "fouls_scaled:positionPG"),
+  prior(normal(0, 0.1), class = "b", coef = "fouls_scaled:positionSF"),
+  prior(normal(0, 0.1), class = "b", coef = "fouls_scaled:positionSG"),
+  prior(normal(0, 0.1), class = "b", coef = "fouls_scaled:close_def_dist_range2M4Feet"),
+  prior(normal(0, 0.1), class = "b", coef = "fouls_scaled:close_def_dist_range4M6Feet"),
+  prior(normal(0, 0.1), class = "b", coef = "fouls_scaled:close_def_dist_range6PFeet"),
+  
+  # Group-level effects - much tighter
+  prior(exponential(4), class = "sd", group = "slug_team_def"),  # Smaller SD
+  prior(exponential(4), class = "sd", group = "slug_team_def", coef = "fouls_scaled"),
+  prior(lkj(5), class = "cor", group = "slug_team_def"),  # Stronger regularization
+  prior(exponential(4), class = "sd", group = "offender_shot_dist_range"),
+  
+  # Negative binomial dispersion - larger shape = less dispersion
+  prior(gamma(3, 0.5), class = "shape")  # Mode around 4
+)
+
+```
+
+### Prior Predictive Checks
+
+#### Varying Slopes Model
+
+```{r}
+interaction_model_prior <- brm(
+  formula = interaction_effects_formula,
+  data = period_agg_by_team,
+  family = negbinomial(),
+  prior = constrained_interaction_priors,
+  sample_prior = "only",
+  chains = 2,
+  cores = 2,
+  iter = 1000,
+  seed = 42
+)
+
+prior_pred_data <- expand_grid(
+  fouls_scaled = seq(-2, 2, by = 0.5),
+  position = c("C", "PG"),  # Just compare centers and point guards
+  close_def_dist_range = c("0-2 Feet", "6+ Feet"),  # Just compare tight and loose defense
+  slug_team_def = unique(period_agg_by_team$slug_team_def)[1:2],  # Just a couple teams
+  offender_shot_dist_range = "10_through_23_ft"  # Fix shot distance
+)
+
+# Generate prior predictions
+prior_predictions <- posterior_predict(
+  interaction_model_prior, 
+  newdata = prior_pred_data,
+  nsamples = 100
+)
+
+# Reshape predictions for plotting
+prior_pred_df <- data.frame(
+  fouls_scaled = rep(prior_pred_data$fouls_scaled, each = 100),
+  position = rep(prior_pred_data$position, each = 100),
+  defense = rep(prior_pred_data$close_def_dist_range, each = 100),
+  team = rep(prior_pred_data$slug_team_def, each = 100),
+  prediction = as.vector(t(prior_predictions))
+)
+
+# Plot prior predictions by position
+ggplot(prior_pred_df, aes(x = fouls_scaled, y = prediction, 
+                          group = interaction(position, rep(1:100, length(unique(position)))))) +
+  geom_line(alpha = 0.1, aes(color = position)) +
+  facet_wrap(~ position) +
+  labs(
+    title = "Prior Predictive Check: Position-Varying Effects",
+    subtitle = "Each line represents one draw from the prior",
+    x = "Standardized Fouls",
+    y = "Predicted Shot Attempts"
+  ) +
+  theme_minimal() +
+  coord_cartesian(ylim = c(0, 20)) +  # Limit y-axis for better visualization
+  scale_color_brewer(palette = "Set1")
+
+# Plot prior predictions by defender proximity
+ggplot(prior_pred_df, aes(x = fouls_scaled, y = prediction, 
+                          group = interaction(defense, rep(1:100, length(unique(defense)))))) +
+  geom_line(alpha = 0.1, aes(color = defense)) +
+  facet_wrap(~ defense) +
+  labs(
+    title = "Prior Predictive Check: Defender Proximity Effects",
+    subtitle = "Each line represents one draw from the prior",
+    x = "Standardized Fouls",
+    y = "Predicted Shot Attempts"
+  ) +
+  theme_minimal() +
+  coord_cartesian(ylim = c(0, 20)) +  # Limit y-axis for better visualization
+  scale_color_viridis_d()
+
+# Check the distribution of interaction effects in the prior
+prior_samples <- as_draws_df(interaction_model_prior)
+
+# Plot the distribution of position interaction effects
+position_interactions <- prior_samples %>%
+  select(starts_with("b_fouls_scaled:position")) %>%
+  pivot_longer(everything(), names_to = "parameter", values_to = "value") %>%
+  mutate(parameter = gsub("b_fouls_scaled:position", "", parameter))
+
+ggplot(position_interactions, aes(x = value, fill = parameter)) +
+  geom_density(alpha = 0.5) +
+  geom_vline(xintercept = 0, linetype = "dashed") +
+  labs(
+    title = "Prior Distribution of Position Interaction Effects",
+    subtitle = "Effect of fouls by position (relative to baseline)",
+    x = "Effect Size",
+    y = "Density"
+  ) +
+  theme_minimal() +
+  scale_fill_brewer(palette = "Set1")
+
+# Plot the distribution of defender proximity interaction effects
+proximity_interactions <- prior_samples %>%
+  select(starts_with("b_fouls_scaled:close_def_dist_range")) %>%
+  pivot_longer(everything(), names_to = "parameter", values_to = "value") %>%
+  mutate(parameter = gsub("b_fouls_scaled:close_def_dist_range", "", parameter))
+
+ggplot(proximity_interactions, aes(x = value, fill = parameter)) +
+  geom_density(alpha = 0.5) +
+  geom_vline(xintercept = 0, linetype = "dashed") +
+  labs(
+    title = "Prior Distribution of Defender Proximity Interaction Effects",
+    subtitle = "Effect of fouls by defender proximity (relative to baseline)",
+    x = "Effect Size",
+    y = "Density"
+  ) +
+  theme_minimal() +
+  scale_fill_viridis_d()
+
+# Check the range of predicted shot attempts from the prior
+prior_pred_summary <- prior_pred_df %>%
+  group_by(fouls_scaled, position, defense) %>%
+  summarize(
+    mean = mean(prediction),
+    median = median(prediction),
+    q05 = quantile(prediction, 0.05),
+    q95 = quantile(prediction, 0.95),
+    .groups = "drop"
+  )
+
+# Plot the range of predicted shot attempts for different combinations
+ggplot(prior_pred_summary, aes(x = fouls_scaled, y = median, color = position, linetype = defense)) +
+  geom_line() +
+  geom_ribbon(aes(ymin = q05, ymax = q95, fill = position), alpha = 0.2, color = NA) +
+  labs(
+    title = "Prior Predictive Check: Range of Shot Attempts",
+    subtitle = "90% interval of predicted shot attempts by position and defender proximity",
+    x = "Standardized Fouls",
+    y = "Predicted Shot Attempts"
+  ) +
+  theme_minimal() +
+  scale_color_brewer(palette = "Set1") +
+  scale_fill_brewer(palette = "Set1")
+
+# Check if our priors allow for realistic basketball outcomes
+# Calculate the proportion of prior predictions that are within reasonable ranges
+reasonable_range <- prior_pred_df %>%
+  mutate(
+    is_reasonable = prediction >= 0 & prediction <= 20  # Assuming 0-20 shots is reasonable
+  ) %>%
+  summarize(
+    prop_reasonable = mean(is_reasonable),
+    max_value = max(prediction),
+    min_value = min(prediction)
+  )
+
+print(reasonable_range)
+
+# If the proportion of reasonable predictions is too low, you might want to adjust your priors
+if(reasonable_range$prop_reasonable < 0.9) {
+  cat("Warning: Prior allows for many unrealistic predictions. Consider adjusting priors.\n")
+  cat("Maximum predicted shots:", reasonable_range$max_value, "\n")
+  cat("Minimum predicted shots:", reasonable_range$min_value, "\n")
+}
+
+```
+
+### Model Fitting
+
+#### Varying slopes model
+
+```{r}
+
+interaction_model <- brm(
+  formula = interaction_effects_formula,
+  data = period_agg_by_team,
+  family = negbinomial(),
+  prior = constrained_interaction_priors,
+  chains = 4,
+  cores = 4,
+  iter = 2000,
+  warmup = 1000,
+  control = list(adapt_delta = 0.95, max_treedepth = 12),
+  seed = 42,
+  file = "models/interaction-model_negbinom_sim_2.rds"
+)
+
+```
+
+## Model Checking
+
+### Computational Diagnostics
+
+```{r}
+
+# Check model summary
+summary(interaction_model)
+
+# Check convergence
+mcmc_trace(interaction_model)
+mcmc_acf(interaction_model)
+
+```
+
+### Posterior Predictive Checks
+
+```{r}
+# Posterior predictive check
+pp_check(interaction_model, ndraws = 50) +
+  labs(title = "Posterior Predictive Check: Simulated Data")
+
+# Extract posterior samples
+posterior_samples <- as_draws_df(interaction_model)
+
+# Plot the population-level effect of fouls
+ggplot(posterior_samples, aes(x = b_fouls_scaled)) +
+  geom_density(fill = "skyblue", alpha = 0.5) +
+  geom_vline(xintercept = 0.02, linetype = "dashed", color = "red") +  # True value from simulation
+  labs(
+    title = "Parameter Recovery: Population-Level Foul Effect",
+    subtitle = "Red dashed line shows the true value used in simulation",
+    x = "Effect of Fouls on Shot Attempts (log scale)",
+    y = "Density"
+  ) +
+  theme_minimal()
+
+
+```
+
+## Model Interpretation
+
+### Parameter Estimates
+
+```{r}
+# Extract and plot interaction coefficients
+interaction_coefs <- fixef(interaction_model)[grep(":", rownames(fixef(interaction_model))), ]
+interaction_coefs_df <- data.frame(
+  parameter = rownames(interaction_coefs),
+  estimate = interaction_coefs[, "Estimate"],
+  lower = interaction_coefs[, "Q2.5"],
+  upper = interaction_coefs[, "Q97.5"]
+) %>%
+  # Clean parameter names for plotting
+  mutate(parameter = gsub("fouls_scaled:", "", parameter))
+
+# Plot interaction coefficients
+ggplot(interaction_coefs_df, aes(x = reorder(parameter, estimate), y = estimate)) +
+  geom_point() +
+  geom_errorbar(aes(ymin = lower, ymax = upper), width = 0.2) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
+  coord_flip() +
+  labs(
+    title = "Interaction Effects of Fouls with Position and Defender Proximity",
+    subtitle = "How the effect of fouls varies across contexts",
+    x = "Parameter",
+    y = "Coefficient Estimate"
+  ) +
+  theme_minimal()
+
+```
+
+### Posterior Predictions
+
+```{r}
+# Create prediction data for position interactions
+position_pred_data <- expand_grid(
+  fouls_scaled = seq(-2, 2, by = 0.2),
+  position = unique(period_agg_by_team$position),
+  close_def_dist_range = "0-2 Feet",  # Fix defender proximity
+  slug_team_def = unique(period_agg_by_team$slug_team_def)[1],  # Fix team
+  offender_shot_dist_range = "10_through_23_ft"  # Fix shot distance
+)
+
+# Generate predictions
+position_predictions <- position_pred_data %>%
+  add_epred_draws(interaction_model, ndraws = 100)
+
+# Summarize predictions by position
+position_pred_summary <- position_predictions %>%
+  group_by(fouls_scaled, position) %>%
+  summarize(
+    mean = mean(.epred),
+    lower = quantile(.epred, 0.025),
+    upper = quantile(.epred, 0.975),
+    .groups = "drop"
+  )
+
+# Plot position interactions
+ggplot(position_pred_summary, aes(x = fouls_scaled, y = mean, color = position, fill = position)) +
+  geom_line() +
+  geom_ribbon(aes(ymin = lower, ymax = upper), alpha = 0.2, color = NA) +
+  labs(
+    title = "Interaction Between Fouls and Position",
+    subtitle = "How the effect of fouls on shot attempts varies by position",
+    x = "Standardized Fouls",
+    y = "Predicted Shot Attempts"
+  ) +
+  theme_minimal() +
+  scale_color_brewer(palette = "Set1") +
+  scale_fill_brewer(palette = "Set1")
+
+# Create prediction data for defender proximity interactions
+proximity_pred_data <- expand_grid(
+  fouls_scaled = seq(-2, 2, by = 0.2),
+  close_def_dist_range = unique(period_agg_by_team$close_def_dist_range),
+  position = "C",  # Fix position
+  slug_team_def = unique(period_agg_by_team$slug_team_def)[1],  # Fix team
+  offender_shot_dist_range = "10_through_23_ft"  # Fix shot distance
+)
+
+# Generate predictions
+proximity_predictions <- proximity_pred_data %>%
+  add_epred_draws(interaction_model, ndraws = 100)
+
+# Summarize predictions by defender proximity
+proximity_pred_summary <- proximity_predictions %>%
+  group_by(fouls_scaled, close_def_dist_range) %>%
+  summarize(
+    mean = mean(.epred),
+    lower = quantile(.epred, 0.025),
+    upper = quantile(.epred, 0.975),
+    .groups = "drop"
+  )
+
+# Plot defender proximity interactions
+ggplot(proximity_pred_summary, aes(x = fouls_scaled, y = mean, color = close_def_dist_range, fill = close_def_dist_range)) +
+  geom_line() +
+  geom_ribbon(aes(ymin = lower, ymax = upper), alpha = 0.2, color = NA) +
+  labs(
+    title = "Interaction Between Fouls and Defender Proximity",
+    subtitle = "How the effect of fouls on shot attempts varies by defender proximity",
+    x = "Standardized Fouls",
+    y = "Predicted Shot Attempts"
+  ) +
+  theme_minimal() +
+  scale_color_viridis_d() +
+  scale_fill_viridis_d()
+
+
+# Extract key interaction findings for basketball interpretation
+position_interaction_summary <- fixef(interaction_model)[grep("fouls_scaled:position", rownames(fixef(interaction_model))), ]
+proximity_interaction_summary <- fixef(interaction_model)[grep("fouls_scaled:close_def_dist_range", rownames(fixef(interaction_model))), ]
+
+# Create a summary table for basketball interpretation
+basketball_implications <- data.frame(
+  finding = c(
+    "Foul effect for centers",
+    "Foul effect for point guards",
+    "Foul effect in tight defense (0-2 feet)",
+    "Foul effect in loose defense (6+ feet)"
+  ),
+  estimate = c(
+    fixef(interaction_model)["fouls_scaled", "Estimate"],  # Base effect (usually for centers as reference)
+    fixef(interaction_model)["fouls_scaled", "Estimate"] + 
+      fixef(interaction_model)["fouls_scaled:positionPG", "Estimate"],
+    fixef(interaction_model)["fouls_scaled", "Estimate"],  # Base effect (usually for 0-2 feet as reference)
+    fixef(interaction_model)["fouls_scaled", "Estimate"] + 
+      fixef(interaction_model)["fouls_scaled:close_def_dist_range6PFeet", "Estimate"]
+  )
+)
+
+# Convert log effects to percentage changes
+basketball_implications$percent_change <- (exp(basketball_implications$estimate) - 1) * 100
+basketball_implications$interpretation <- paste0(
+  "Each additional foul ", 
+  ifelse(basketball_implications$percent_change > 0, "increases", "decreases"),
+  " shot attempts by ", 
+  round(abs(basketball_implications$percent_change), 1), 
+  "%"
+)
+
+# Display basketball implications
+print(basketball_implications[, c("finding", "interpretation")])
+```
+
+### Predictor Residual Analysis
+
+```{r}
+residuals <- residuals(interaction_model)
+
+# Create residual plots against predictors
+ggplot(cbind(period_agg_by_team, residuals = residuals[,1]), 
+       aes(x = fouls_scaled, y = residuals)) +
+  geom_point(alpha = 0.5) +
+  geom_smooth(method = "loess") +
+  facet_wrap(~ position) +
+  labs(title = "Residuals vs. Fouls by Position",
+       x = "Standardized Fouls",
+       y = "Residuals") +
+  theme_minimal()
+
+```
+
+### Posterior Predictive Ordinate Analysis
+
+```{r}
+log_lik <- log_lik(interaction_model)
+psis_object <- loo::psis(log_lik)
+pareto_k <- psis_object$diagnostics$pareto_k
+
+# Identify influential observations
+# If influential_obs is empty, no observations are considered influential outliers
+
+influential_obs <- which(pareto_k > 0.7)
+if(length(influential_obs) > 0) {
+  print(paste("Influential observations:", paste(influential_obs, collapse=", ")))
+  print(period_agg_by_team[influential_obs, ])
+}
+
+```
+
+### Sensitivity Analysis
+
+```{r}
+
+```
+
+### Counterfactual Analysis
+
+```{r}
+# Define counterfactual scenarios
+counterfactual_scenarios <- expand_grid(
+  # Foul scenarios
+  fouls_scaled = c(-1.5, 0, 1.5),  # Low, average, high fouls
+  
+  # Position scenarios
+  position = c("C", "PG"),  # Compare centers vs. point guards
+  
+  # Defender proximity scenarios
+  close_def_dist_range = c("0-2 Feet", "6+ Feet"),  # Tight vs. loose defense
+  
+  # Fix other variables
+  offender_shot_dist_range = "10_through_23_ft",  # Mid-range shots
+  slug_team_def = unique(period_agg_by_team$slug_team_def)[1]  # Use first team
+)
+
+# Add scenario labels for easier interpretation
+counterfactual_scenarios <- counterfactual_scenarios %>%
+  mutate(
+    foul_level = case_when(
+      fouls_scaled < -1 ~ "Low Fouls",
+      fouls_scaled > 1 ~ "High Fouls",
+      TRUE ~ "Average Fouls"
+    ),
+    defense_type = case_when(
+      close_def_dist_range == "0-2 Feet" ~ "Tight Defense",
+      close_def_dist_range == "6+ Feet" ~ "Loose Defense",
+      TRUE ~ "Medium Defense"
+    ),
+    scenario_label = paste(position, foul_level, defense_type, sep = ", ")
+  )
+
+# Display the scenarios
+print(counterfactual_scenarios)
+
+# Generate predictions for each scenario
+cf_predictions <- fitted(
+  interaction_model,  # Use your fitted model
+  newdata = counterfactual_scenarios,
+  re_formula = NULL,  # Include random effects
+  summary = FALSE  # Return all posterior samples
+)
+
+# Convert to a data frame for easier manipulation
+n_samples <- dim(cf_predictions)[1]
+n_scenarios <- dim(cf_predictions)[2]
+
+# Create a long-format data frame with all predictions
+cf_predictions_long <- data.frame(
+  draw = rep(1:n_samples, times = n_scenarios),
+  scenario_num = rep(1:n_scenarios, each = n_samples),
+  predicted_shots = as.vector(cf_predictions)
+) %>%
+  # Join with scenario information
+  left_join(
+    counterfactual_scenarios %>% mutate(scenario_num = row_number()),
+    by = "scenario_num"
+  )
+
+# Summarize predictions by scenario
+cf_summary <- cf_predictions_long %>%
+  group_by(scenario_label, position, foul_level, defense_type, fouls_scaled) %>%
+  summarize(
+    mean_shots = mean(predicted_shots),
+    median_shots = median(predicted_shots),
+    lower_95 = quantile(predicted_shots, 0.025),
+    upper_95 = quantile(predicted_shots, 0.975),
+    .groups = "drop"
+  )
+
+# Display summary
+print(cf_summary)
+
+# Calculate foul effects for different positions and defense types
+# Instead of pivot_wider, we'll use a different approach
+foul_effects <- cf_predictions_long %>%
+  # Create a unique identifier for each combination of draw, position, and defense type
+  mutate(group_id = paste(draw, position, close_def_dist_range, sep = "_"))
+
+# Create separate dataframes for each foul level
+low_fouls <- foul_effects %>%
+  filter(fouls_scaled == -1.5) %>%
+  select(group_id, low_fouls = predicted_shots)
+
+avg_fouls <- foul_effects %>%
+  filter(fouls_scaled == 0) %>%
+  select(group_id, avg_fouls = predicted_shots)
+
+high_fouls <- foul_effects %>%
+  filter(fouls_scaled == 1.5) %>%
+  select(group_id, high_fouls = predicted_shots)
+
+# Join these dataframes
+foul_effects_joined <- low_fouls %>%
+  left_join(avg_fouls, by = "group_id") %>%
+  left_join(high_fouls, by = "group_id") %>%
+  # Extract the original grouping variables
+  mutate(
+    draw = as.integer(str_split_fixed(group_id, "_", 3)[,1]),
+    position = str_split_fixed(group_id, "_", 3)[,2],
+    close_def_dist_range = str_split_fixed(group_id, "_", 3)[,3]
+  ) %>%
+  # Calculate differences
+  mutate(
+    high_vs_low = high_fouls - low_fouls,
+    high_vs_avg = high_fouls - avg_fouls,
+    avg_vs_low = avg_fouls - low_fouls
+  )
+
+# Summarize foul effects
+foul_effects_summary <- foul_effects_joined %>%
+  group_by(position, close_def_dist_range) %>%
+  summarize(
+    # High vs. Low fouls effect
+    mean_high_vs_low = mean(high_vs_low),
+    lower_high_vs_low = quantile(high_vs_low, 0.025),
+    upper_high_vs_low = quantile(high_vs_low, 0.975),
+    prob_positive_high_vs_low = mean(high_vs_low > 0),
+    
+    # High vs. Average fouls effect
+    mean_high_vs_avg = mean(high_vs_avg),
+    lower_high_vs_avg = quantile(high_vs_avg, 0.025),
+    upper_high_vs_avg = quantile(high_vs_avg, 0.975),
+    prob_positive_high_vs_avg = mean(high_vs_avg > 0),
+    
+    # Average vs. Low fouls effect
+    mean_avg_vs_low = mean(avg_vs_low),
+    lower_avg_vs_low = quantile(avg_vs_low, 0.025),
+    upper_avg_vs_low = quantile(avg_vs_low, 0.975),
+    prob_positive_avg_vs_low = mean(avg_vs_low > 0),
+    
+    .groups = "drop"
+  ) %>%
+  mutate(
+    defense_type = case_when(
+      close_def_dist_range == "0-2 Feet" ~ "Tight Defense",
+      close_def_dist_range == "6+ Feet" ~ "Loose Defense",
+      TRUE ~ "Medium Defense"
+    )
+  )
+
+# Display foul effects summary
+print(foul_effects_summary)
+
+# Plot predicted shots by scenario
+ggplot(cf_summary, aes(x = foul_level, y = mean_shots, fill = position)) +
+  geom_col(position = "dodge") +
+  geom_errorbar(
+    aes(ymin = lower_95, ymax = upper_95),
+    position = position_dodge(width = 0.9),
+    width = 0.25
+  ) +
+  facet_wrap(~ defense_type) +
+  labs(
+    title = "Predicted Shot Attempts by Scenario",
+    subtitle = "Effect of fouls across positions and defense types",
+    x = "Foul Level",
+    y = "Predicted Shot Attempts"
+  ) +
+  theme_minimal() +
+  scale_fill_brewer(palette = "Set1")
+
+# Plot foul effects (High vs. Low)
+ggplot(foul_effects_summary, aes(x = interaction(position, defense_type), y = mean_high_vs_low, fill = position)) +
+  geom_col() +
+  geom_errorbar(
+    aes(ymin = lower_high_vs_low, ymax = upper_high_vs_low),
+    width = 0.25
+  ) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  labs(
+    title = "Causal Effect of High vs. Low Fouls on Shot Attempts",
+    subtitle = "By position and defense type",
+    x = "Scenario",
+    y = "Difference in Shot Attempts"
+  ) +
+  theme_minimal() +
+  scale_fill_brewer(palette = "Set1") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  geom_text(
+    aes(label = sprintf("P(Δ > 0) = %.2f", prob_positive_high_vs_low)),
+    vjust = -0.5
+  )
+
+# Calculate interaction contrasts
+interaction_contrasts <- foul_effects_joined %>%
+  select(draw, position, close_def_dist_range, high_vs_low) %>%
+  # Create a unique identifier for each draw and defense type
+  mutate(contrast_group_id = paste(draw, close_def_dist_range, sep = "_"))
+
+# Get high_vs_low values for centers
+centers_effects <- interaction_contrasts %>%
+  filter(position == "C") %>%
+  select(contrast_group_id, C_effect = high_vs_low)
+
+# Get high_vs_low values for point guards
+pg_effects <- interaction_contrasts %>%
+  filter(position == "PG") %>%
+  select(contrast_group_id, PG_effect = high_vs_low)
+
+# Join and calculate contrasts
+position_contrasts <- centers_effects %>%
+  left_join(pg_effects, by = "contrast_group_id") %>%
+  mutate(
+    position_contrast = C_effect - PG_effect,
+    draw = as.integer(str_split_fixed(contrast_group_id, "_", 2)[,1]),
+    close_def_dist_range = str_split_fixed(contrast_group_id, "_", 2)[,2]
+  )
+
+# Summarize contrasts
+interaction_contrasts_summary <- position_contrasts %>%
+  group_by(close_def_dist_range) %>%
+  summarize(
+    mean_contrast = mean(position_contrast),
+    lower_contrast = quantile(position_contrast, 0.025),
+    upper_contrast = quantile(position_contrast, 0.975),
+    prob_positive = mean(position_contrast > 0),
+    .groups = "drop"
+  ) %>%
+  mutate(
+    defense_type = case_when(
+      close_def_dist_range == "0-2 Feet" ~ "Tight Defense",
+      close_def_dist_range == "6+ Feet" ~ "Loose Defense",
+      TRUE ~ "Medium Defense"
+    )
+  )
+
+# Plot interaction contrasts
+ggplot(interaction_contrasts_summary, aes(x = defense_type, y = mean_contrast, fill = defense_type)) +
+  geom_col() +
+  geom_errorbar(
+    aes(ymin = lower_contrast, ymax = upper_contrast),
+    width = 0.25
+  ) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  labs(
+    title = "Interaction Contrast: Difference in Foul Effect Between Centers and Point Guards",
+    subtitle = "By defense type",
+    x = "Defense Type",
+    y = "Contrast in Shot Attempts"
+  ) +
+  theme_minimal() +
+  scale_fill_viridis_d() +
+  geom_text(
+    aes(label = sprintf("P(Δ > 0) = %.2f", prob_positive)),
+    vjust = -0.5
+  )
+
+# Create a table of basketball insights
+basketball_insights <- tibble(
+  insight = c(
+    "Effect of high fouls on centers in tight defense",
+    "Effect of high fouls on point guards in tight defense",
+    "Effect of high fouls on centers in loose defense",
+    "Effect of high fouls on point guards in loose defense",
+    "Difference in foul effect between centers and point guards in tight defense",
+    "Difference in foul effect between centers and point guards in loose defense"
+  )
+)
+
+# Add estimates and probabilities
+basketball_insights <- basketball_insights %>%
+  mutate(
+    estimate = case_when(
+      insight == "Effect of high fouls on centers in tight defense" ~ 
+        filter(foul_effects_summary, position == "C" & defense_type == "Tight Defense")$mean_high_vs_low,
+      insight == "Effect of high fouls on point guards in tight defense" ~ 
+        filter(foul_effects_summary, position == "PG" & defense_type == "Tight Defense")$mean_high_vs_low,
+      insight == "Effect of high fouls on centers in loose defense" ~ 
+        filter(foul_effects_summary, position == "C" & defense_type == "Loose Defense")$mean_high_vs_low,
+      insight == "Effect of high fouls on point guards in loose defense" ~ 
+        filter(foul_effects_summary, position == "PG" & defense_type == "Loose Defense")$mean_high_vs_low,
+      insight == "Difference in foul effect between centers and point guards in tight defense" ~ 
+        filter(interaction_contrasts_summary, defense_type == "Tight Defense")$mean_contrast,
+      insight == "Difference in foul effect between centers and point guards in loose defense" ~ 
+        filter(interaction_contrasts_summary, defense_type == "Loose Defense")$mean_contrast,
+      TRUE ~ NA_real_
+    ),
+    probability = case_when(
+      insight == "Effect of high fouls on centers in tight defense" ~ 
+        filter(foul_effects_summary, position == "C" & defense_type == "Tight Defense")$prob_positive_high_vs_low,
+      insight == "Effect of high fouls on point guards in tight defense" ~ 
+        filter(foul_effects_summary, position == "PG" & defense_type == "Tight Defense")$prob_positive_high_vs_low,
+      insight == "Effect of high fouls on centers in loose defense" ~ 
+        filter(foul_effects_summary, position == "C" & defense_type == "Loose Defense")$prob_positive_high_vs_low,
+      insight == "Effect of high fouls on point guards in loose defense" ~ 
+        filter(foul_effects_summary, position == "PG" & defense_type == "Loose Defense")$prob_positive_high_vs_low,
+      insight == "Difference in foul effect between centers and point guards in tight defense" ~ 
+        filter(interaction_contrasts_summary, defense_type == "Tight Defense")$prob_positive,
+      insight == "Difference in foul effect between centers and point guards in loose defense" ~ 
+        filter(interaction_contrasts_summary, defense_type == "Loose Defense")$prob_positive,
+      TRUE ~ NA_real_
+    )
+  ) %>%
+  mutate(
+    percent_change = (exp(estimate) - 1) * 100,
+    interpretation = case_when(
+      probability > 0.95 ~ "Strong positive effect",
+      probability > 0.9 ~ "Moderate positive effect",
+      probability < 0.05 ~ "Strong negative effect",
+      probability < 0.1 ~ "Moderate negative effect",
+      TRUE ~ "Uncertain effect"
+    ),
+    basketball_implication = case_when(
+      str_detect(insight, "centers") & percent_change > 20 ~ "Centers in foul trouble are significantly less effective defenders",
+      str_detect(insight, "point guards") & percent_change < 10 ~ "Point guards' defense is less affected by foul trouble",
+      str_detect(insight, "Difference") & percent_change > 15 ~ "Foul trouble affects centers much more than guards",
+      TRUE ~ "Effect is present but modest"
+    )
+  )
+
+# Display basketball insights
+print(basketball_insights)
+```
+
+## Model Comparison
+
+```{r}
+
+no_interaction_model <- readRDS("models/no-interaction-model_negbinom_sim_1.rds")
+varying_interaction_model <- readRDS("models/varying-slopes-model_negbinom_sim_1.rds")
+unconstrained_interaction_model <- readRDS("models/interaction-model_negbinom_sim_1.rds")
+constrained_varying_slopes_model_sim <- readRDS("models/varying-slopes-model_negbinom_constrained_sim_1.rds")
+
+# Compare models with LOO
+no_interaction_loo <- loo(no_interaction_model)
+constrained_interaction_loo <- loo(interaction_model)
+unconstrained_interaction_loo <- loo(unconstrained_interaction_model)
+varying_slopes_loo <- loo(varying_slopes_model_sim)
+constrained_varying_slopes_loo <- loo(constrained_varying_slopes_model_sim)
+
+# Compare models
+loo_comparison <- loo_compare(constrained_varying_slopes_loo, unconstrained_interaction_loo, interaction_loo, varying_slopes_loo, no_interaction_loo)
+print(loo_comparison)
+
+# need to run and add constrained no_interaction model
+
+```
+
+## Conclusion
+
+### Summary of Findings
+
+### Key Results
+
+Summarize your main findings here, connecting them back to your research questions.
+
+### Limitations and Next Steps
+
+Important Considerations Discuss key limitations and potential future directions.

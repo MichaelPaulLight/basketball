@@ -1,0 +1,985 @@
+---
+title: "foul-modeling-workflow_binomial"
+format: html
+editor: visual
+---
+
+# Purpose of This Document
+
+This template guides you through a Bayesian analysis following McElreath's workflow from Statistical Rethinking. Each section includes explanatory notes that you should replace with your own content.
+
+# Simplest Negative Binomial Model of Foul Effects on Shot Attempts
+
+## Load Packages
+
+```{r}
+#| label: setup
+#| include: false
+
+# Load required packages
+library(hoopR)
+library(tidyverse)
+library(brms)
+library(tidybayes)
+library(bayesplot)
+library(dagitty)
+library(ggdag)
+library(patchwork)
+library(nanoparquet)
+library(zoo)
+```
+
+## Domain Knowledge
+
+Previous Research Summarize key findings from previous research. What do we already know about this system?
+
+Mechanisms Describe the potential mechanisms at work. How might your variables be causally related?
+
+Expected Patterns Based on theory and previous research, what patterns do you expect to see in your data?
+
+### Research Questions
+
+State your research questions clearly and precisely. Good research questions should be:
+
+1.  Specific and well-defined Answerable with your available data
+
+2.  Connected to your theoretical framework.
+
+## Causal Model
+
+### Directed Acyclic Graph (DAG)
+
+Determine which variables to include in your model with the following workflow:
+
+1.  List all of the paths connecting X (the potential cause of interest) and Y (the out- come).
+
+2.  Classify each path by whether it is open or closed. A path is open unless it contains a collider.
+
+3.  Classify each path by whether it is a backdoor path. A backdoor path has an arrow entering X.
+
+4.  If there are any open backdoor paths, decide which variable(s) to condition on to close it (if possible). \[dagitty::impliedConditionalIndependencies(), dagitty::adjustmentSets()\]
+
+```{r}
+
+#| label: dag
+#| fig-cap: "Directed Acyclic Graph representing hypothesized causal relationships"
+#| code-fold: show
+
+# Create your DAG
+# Example:
+# Create improved theoretical DAG with better layout
+theoretical_dag <- dagitty('dag {
+    defSkill_tm [pos="0,0" label="Team Defense Skill"]
+    fouls_tm [pos="4,0" label="Team Foul Tendency"]
+    defInt_tm [pos="2,1" label="Team Defense Intensity"]
+    
+    defSkill_p [pos="0,3" label="Player Defense Skill"]
+    fouls_p [pos="4,3" label="Player Foul Tendency"]
+    defInt_p [pos="2,4" label="Player Defense Intensity"]
+    foul_count [pos="6,3" label="Player Foul Count"]
+    foul_prob [pos="3,6" label="Foul Probability"]
+    
+    game_context [pos="6,1" label="Game Context"]
+    off_skill [pos="0,6" label="Offensive Skill"]
+    ref_tendency [pos="6,6" label="Referee Tendency"]
+    
+    defSkill_tm -> defInt_tm
+    fouls_tm -> defInt_tm
+    defInt_tm -> defInt_p
+    
+    defSkill_p -> defInt_p
+    defInt_p -> foul_prob
+    fouls_p -> foul_prob
+    
+    defSkill_p -> fouls_p
+    fouls_p -> foul_count
+    foul_count -> foul_prob
+    
+    game_context -> defInt_tm
+    game_context -> defInt_p
+    game_context -> foul_prob
+    
+    off_skill -> foul_prob
+    
+    ref_tendency -> foul_prob
+}')
+
+# Create improved statistical model DAG with better layout
+statistical_dag <- dagitty('dag {
+    foul_count [pos="3,2" label="Player Foul Count"]
+    player [pos="1,0" label="Player Identity"]
+    team [pos="3,0" label="Team Identity"]
+    opp_team [pos="5,0" label="Opponent Team"]
+    game [pos="0,2" label="Game Identity"]
+    period [pos="0,4" label="Game Period"]
+    action [pos="6,2" label="Play Action Type"]
+    foul_prob [pos="3,4" label="Foul Probability"]
+    
+    foul_count -> foul_prob
+    player -> foul_prob
+    team -> foul_prob
+    opp_team -> foul_prob
+    game -> foul_prob
+    period -> foul_prob
+    action -> foul_prob
+    
+    player -> foul_count
+    game -> period
+    team -> player
+}')
+
+
+p1 <- ggdag(theoretical_dag) + 
+  theme_dag() +
+  geom_dag_point(aes(color = name), size = 18, alpha = 0.7) +
+  geom_dag_text(color = "black", size = 3.5) +
+  geom_dag_edges(edge_colour = "gray30", edge_width = 0.8, 
+                 arrow_directed = grid::arrow(length = grid::unit(5, "pt"), type = "closed")) +
+  theme_void() +
+  theme(
+    plot.background = element_rect(fill = "white", color = NA),
+    plot.margin = margin(20, 20, 20, 20),
+    legend.position = "none"
+  ) +
+  scale_color_manual(values = c(
+    "defSkill_tm" = "#66c2a5", "fouls_tm" = "#66c2a5",
+    "defInt_tm" = "#66c2a5", "defSkill_p" = "#fc8d62",
+    "fouls_p" = "#fc8d62", "defInt_p" = "#fc8d62",
+    "foul_count" = "#fc8d62", "foul_prob" = "#8da0cb",
+    "game_context" = "#e78ac3", "off_skill" = "#a6d854",
+    "ref_tendency" = "#ffd92f"
+  )) +
+  ggtitle("Theoretical Causal Model") +
+  theme(plot.title = element_text(hjust = 0.5, size = 16, face = "bold"))
+
+p2 <- ggdag(statistical_dag) + 
+  theme_dag() +
+  geom_dag_point(aes(color = name), size = 18, alpha = 0.7) +
+  geom_dag_text(color = "black", size = 3.5) +
+  geom_dag_edges(edge_colour = "gray30", edge_width = 0.8,
+                 arrow_directed = grid::arrow(length = grid::unit(5, "pt"), type = "closed")) +
+  theme_void() +
+  theme(
+    plot.background = element_rect(fill = "white", color = NA),
+    plot.margin = margin(20, 20, 20, 20),
+    legend.position = "none"
+  ) +
+  scale_color_manual(values = c(
+    "foul_count" = "#fc8d62", "player" = "#66c2a5",
+    "team" = "#66c2a5", "opp_team" = "#e78ac3",
+    "game" = "#8da0cb", "period" = "#8da0cb",
+    "action" = "#a6d854", "foul_prob" = "#ffd92f"
+  )) +
+  ggtitle("Statistical Model DAG") +
+  theme(plot.title = element_text(hjust = 0.5, size = 16, face = "bold"))
+
+# Add node grouping annotations to theoretical DAG
+p1 <- p1 + 
+  annotate("rect", xmin = -1, xmax = 5, ymin = -0.5, ymax = 2, 
+           alpha = 0.1, fill = "blue") +
+  annotate("text", x = -0.8, y = -0.3, label = "Team Level", 
+           hjust = 0, size = 4, fontface = "italic") +
+  annotate("rect", xmin = -1, xmax = 7, ymin = 2.5, ymax = 4.5, 
+           alpha = 0.1, fill = "orange") +
+  annotate("text", x = -0.8, y = 2.7, label = "Player Level", 
+           hjust = 0, size = 4, fontface = "italic") +
+  annotate("rect", xmin = -1, xmax = 7, ymin = 5.5, ymax = 6.5, 
+           alpha = 0.1, fill = "green") +
+  annotate("text", x = -0.8, y = 5.7, label = "Outcome Level", 
+           hjust = 0, size = 4, fontface = "italic")
+
+# Combine the plots using patchwork with better layout
+combined_plot <- p1 + p2 + 
+  plot_layout(ncol = 2, widths = c(1.2, 1)) +
+  plot_annotation(
+    title = "Comparison of Theoretical and Statistical DAGs for Basketball Foul Analysis",
+    subtitle = "Showing the relationship between causal theory and statistical implementation",
+    theme = theme(
+      plot.title = element_text(size = 18, hjust = 0.5, face = "bold"),
+      plot.subtitle = element_text(size = 12, hjust = 0.5, face = "italic")
+    )
+  )
+
+# Display the combined plot
+combined_plot
+
+
+```
+
+### DAG Interpretation
+
+Justify the inclusion and exclusion of variables in your model based on the DAG.
+
+Define the relationships in your DAG in terms of:
+
+1.  The Fork
+
+2.  The Pipe
+
+3.  The Collider
+
+4.  The Descendant
+
+## Data Simulation
+
+### Simulate Data Implied by Causal Model
+
+```{r}
+n_games <- 5       # Number of games
+n_players <- 25    # Number of players
+n_events_per_game <- 100  # Events per game (simplified)
+
+# True parameter values
+base_rate <- -3.7   # Base log-odds for foul probability (~2.5% foul rate)
+player_sd <- 0.3    # SD for player random effects
+team_sd <- 0.2      # SD for team effects
+period_sd <- 0.15   # SD for period effects
+game_sd <- 0.25     # SD for game effects
+teammate_effect <- 0.1  # Effect of teammate fouls
+
+# Define positions and their baseline foul tendencies
+positions <- c("PG", "SG", "SF", "PF", "C")
+position_effects <- c(-0.2, -0.1, 0, 0.2, 0.3)  # Centers foul more than guards
+names(position_effects) <- positions
+
+# Generate player effects
+set.seed(123)
+player_effects <- rnorm(n_players, 0, player_sd)
+names(player_effects) <- paste0("Player_", 1:n_players)
+
+# Assign positions to players
+player_positions <- sample(positions, n_players, replace = TRUE, 
+                          prob = c(0.2, 0.2, 0.2, 0.2, 0.2))
+names(player_positions) <- names(player_effects)
+
+# Generate team effects
+n_teams <- 5
+team_effects <- rnorm(n_teams, 0, team_sd)
+teams <- paste0("Team_", LETTERS[1:n_teams])
+names(team_effects) <- teams
+
+# Generate game effects
+game_effects <- rnorm(n_games, 0, game_sd)
+names(game_effects) <- paste0("Game_", 1:n_games)
+
+# Generate period effects
+period_effects <- rnorm(4, 0, period_sd)
+names(period_effects) <- paste0("Period_", 1:4)
+
+# Function to simulate one game's events
+simulate_game <- function(game_id) {
+  # Create data frame for this game
+  game_data <- data.frame()
+  
+  # Assign teams for this game
+  home_team <- sample(teams, 1)
+  away_team <- sample(setdiff(teams, home_team), 1)
+  
+  # Track accumulated fouls for each player
+  player_fouls <- rep(0, n_players)
+  names(player_fouls) <- paste0("Player_", 1:n_players)
+  
+  # Assign players to teams (5 players per team)
+  # Make sure each team has one player of each position
+  home_players <- character(5)
+  away_players <- character(5)
+  
+  for (pos in 1:5) {
+    pos_players <- names(player_positions[player_positions == positions[pos]])
+    if (length(pos_players) >= 2) {
+      selected <- sample(pos_players, 2)
+      home_players[pos] <- selected[1]
+      away_players[pos] <- selected[2]
+    } else {
+      # Fallback if not enough players of a position
+      available <- setdiff(names(player_positions), c(home_players, away_players))
+      home_players[pos] <- sample(available, 1)
+      available <- setdiff(available, home_players[pos])
+      away_players[pos] <- sample(available, 1)
+    }
+  }
+  
+  for (event in 1:n_events_per_game) {
+    # Determine period (1-4)
+    current_period <- ceiling(event / (n_events_per_game/4))
+    
+    # For each player on defense, simulate potential foul
+    defending_team <- ifelse(event %% 2 == 0, home_team, away_team)
+    defending_players <- ifelse(defending_team == home_team, list(home_players), list(away_players))[[1]]
+    
+    for (player in defending_players) {
+      # Get teammates
+      teammates <- setdiff(defending_players, player)
+      
+      # Get player position
+      player_position <- player_positions[player]
+      
+      # Calculate foul probability
+      logit_p <- base_rate + 
+                 player_effects[player] + 
+                 position_effects[player_position] +  # Add position effect
+                 team_effects[defending_team] +
+                 period_effects[paste0("Period_", current_period)] +
+                 game_effects[paste0("Game_", game_id)] +
+                 teammate_effect * mean(player_fouls[teammates])
+      
+      p <- plogis(logit_p)
+      
+      # Simulate foul occurrence
+      foul_occurs <- rbinom(1, 1, p)
+      
+      # Add row to game data
+      event_data <- data.frame(
+        game_id = paste0("Game_", game_id),
+        number_event = event,
+        period = current_period,
+        player_name = player,
+        position = player_position,  # Add position to data
+        slug_team = defending_team,
+        slug_opp = ifelse(defending_team == home_team, away_team, home_team),
+        personal_fouls_during_event = player_fouls[player],
+        personal_foul_occurance_on_player = foul_occurs,
+        act_type = sample(c("2pt", "3pt", "drive"), 1)
+      )
+      
+      # Add teammate information
+      for (tm in teammates) {
+        event_data$teammate_name <- tm
+        event_data$teammate_position <- player_positions[tm]  # Add teammate position
+        event_data$teammate_fouls <- player_fouls[tm]
+        game_data <- rbind(game_data, event_data)
+      }
+      
+      # Update player fouls if a foul occurred
+      if (foul_occurs) {
+        player_fouls[player] <- player_fouls[player] + 1
+      }
+    }
+  }
+  
+  return(game_data)
+}
+
+# Simulate all games
+sim_data <- do.call(rbind, lapply(1:n_games, simulate_game))
+
+# Scale the numeric predictors
+sim_data_scaled <- sim_data |>
+  group_by(player_name) |>
+  mutate(
+    teammate_fouls_scaled = scale(teammate_fouls)[,1],
+    personal_fouls_scaled = scale(personal_fouls_during_event)[,1]
+  ) |>
+  ungroup()
+
+# Preview the simulated data
+glimpse(sim_data_scaled)
+
+# Examine foul rates by position
+sim_data_scaled <- sim_data %>%
+     mutate(
+       teammate_fouls_scaled = scale(teammate_fouls)[,1],
+       personal_fouls_scaled = scale(personal_fouls_during_event)[,1]
+     )
+```
+
+## Data Loading and Processing
+
+Data Loading and Processing
+
+```{r}
+pbp_data <- nanoparquet::read_parquet("../../data/250225_pbp_gt.parquet")
+
+lineup_pbp <- (
+  pbp_data 
+  |> group_by(game_id, slug_team)
+  |> mutate(stint_home = ifelse(slug_team == team_home, cumsum(msg_type == 8) + 1, NA),
+         stint_away = ifelse(slug_team == team_away, cumsum(msg_type == 8) + 1, NA)) 
+  |> group_by(game_id) 
+  |> mutate(across(starts_with("stint"), ~ na.locf0(., fromLast = TRUE)),
+         across(starts_with("stint"), ~ na.locf(.))) 
+  |> ungroup() 
+  |> pivot_longer(cols = starts_with("lineup"),
+               names_to = "lineup_location",
+               values_to = "lineup",
+               names_prefix = "lineup_")
+  |> mutate(pts_team = ifelse(lineup_location == "home", shot_pts_home, shot_pts_away),
+         pts_opp = ifelse(lineup_location == "away", shot_pts_home, shot_pts_away),
+         poss_team = ifelse(lineup_location == "home", poss_home, poss_away),
+         poss_opp = ifelse(lineup_location == "away", poss_home, poss_away),
+         slug_team = ifelse(lineup_location == "home", team_home, team_away),
+         slug_opp = ifelse(lineup_location == "away", team_home, team_away),
+         stint = ifelse(lineup_location == "home", stint_home, stint_away))
+)
+
+pbp_with_fouls_by_player <- (lineup_pbp 
+|> filter(str_detect(description, regex("technical", ignore_case = TRUE)) == FALSE) # excluding technical fouls
+|> mutate(foul_occured_on_make = lead(total_fta) == 1)
+|> mutate(foul_occured_on_make = case_when(lead(foul_occured_on_make) == TRUE ~ 1, .default = foul_occured_on_make))
+|> mutate(foul_occured_on_make = case_when(foul_occured_on_make == 1 & str_detect(description, regex("foul:", ignore_case = T)) ~ 0, .default = foul_occured_on_make))
+|> mutate(fta_awarded_on_make = case_when(foul_occured_on_make == 1 ~ 1, .default = 0))
+|> mutate(fouled_player_on_make = case_when(lead(total_fta, n = 2) == 1 ~ lead(player3, n = 2), .default = NA))
+|> mutate(fouling_player_on_make = case_when(lead(total_fta, n = 2) == 1 ~ lead(player1, n = 2), .default = NA))
+|> mutate(checkr = case_when(fta_awarded_on_make == lead(total_fta, n = 2)~ 1, .default = 0)) # when checkr == fta_awarded_on_make, then this script is working correctly
+|> mutate(fta_awarded_on_miss = case_when(total_fta > 1 ~ total_fta, .default = 0))
+|> mutate(ft_pts_opp = case_when(fta_awarded_on_make == 1 ~ lead(pts_opp, n = 2),
+                                 fta_awarded_on_miss > 0 ~ pts_opp,
+                                 .default = 0))
+|> mutate(ft_pts_team = case_when(fta_awarded_on_make == 1 ~ lead(pts_team, n = 2),
+                                  fta_awarded_on_miss > 0 ~ pts_team,
+                                  .default = 0))
+|> separate_longer_delim(cols = lineup, delim = ", ")
+|> rename(player_name = lineup)
+|> mutate(personal_fouls_after_event = case_when(str_detect(description, regex("foul:", ignore_case = T)) & player1 == player_name ~ str_extract(description, regex("\\([^()]*\\)(?![^()]*\\))")), TRUE ~ NA))
+|> mutate(personal_fouls_after_event = case_when(fouling_player_on_make == player_name ~ lead(personal_fouls_after_event, n = 10), .default = personal_fouls_after_event))
+|> mutate(personal_foul_occurance_on_play = case_when(str_detect(description, regex("foul:", ignore_case = T)) | foul_occured_on_make == 1 ~ 1, TRUE ~ 0))
+|> mutate(personal_foul_occurance_on_player = case_when(
+  str_detect(description, regex("foul:", ignore_case = T)) & player1 == player_name ~ 1,
+  foul_occured_on_make == 1 & fouling_player_on_make == player_name ~ 1,
+  .default = 0))
+|> mutate(personal_foul_occurance_on_teammate = case_when(personal_foul_occurance_on_play == 1 & personal_foul_occurance_on_player == 0 ~ 1, .default = 0))
+|> mutate(referee = case_when(str_detect(description, regex("foul:", ignore_case = T)) & player1 == player_name ~ str_extract(description, regex("\\([^()]*\\)(?!.*\\([^()]*\\))")), TRUE ~ NA))
+|> mutate(referee = case_when(fouling_player_on_make == player_name ~ lead(referee, n = 10), .default = referee))
+|> mutate(referee = str_remove_all(referee, "[()]"))
+|> mutate(personal_fouls_after_event = str_extract(personal_fouls_after_event, regex("\\d+")))
+|> mutate(personal_fouls_after_event = as.numeric(personal_fouls_after_event))
+|> group_by(game_id, slug_team, player_name)
+|> fill(personal_fouls_after_event, .direction = "down")
+|> mutate(personal_fouls_after_event = replace_na(personal_fouls_after_event, 0))
+|> mutate(personal_fouls_during_event = case_when(
+  personal_foul_occurance_on_player == 1 ~ personal_fouls_after_event - 1,
+  .default = personal_fouls_after_event))
+|> mutate(fta_awarded_on_miss = replace_na(fta_awarded_on_miss, 0))
+|> mutate(fta_awarded_on_miss = as.numeric(fta_awarded_on_miss))
+|> mutate(game_id = as.character(game_id))
+|> mutate(total_pts_team = case_when(fta_awarded_on_miss > 0 ~ pts_team,
+                                     fta_awarded_on_make > 0 ~ pts_team + ft_pts_team,
+                                     .default = pts_team),
+          total_pts_opp = case_when(fta_awarded_on_miss > 0 ~ pts_opp,
+                                    fta_awarded_on_make > 0 ~ pts_opp + ft_pts_opp,
+                                    .default = pts_opp))
+)
+
+# Filtering for model data
+# 1. Only include rows where a free throw was awarded to a player who entered their shooting motion but did not produce a made shot (these actions are not counted as 'shots' in traditional basketball statistics) or where a shot was taken (made or missed)
+# 2. Exclude shot clock violations
+# 3. Exclude rows where the team is the same as the offensive team (only defensive lineups are included)
+# 4. Exclude rows where the game is in garbage time
+
+model_data <- (
+  pbp_with_fouls_by_player 
+  |> filter((fta_awarded_on_miss > 0 | str_detect(description, regex("shot", ignore_case = T))) &
+           !str_detect(description, regex("clock", ignore_case = T)))
+  |> filter(slug_team != off_slug_team)
+  |> filter(garbage_time == 0)
+  |> group_by(game_id, number_event) 
+               |> mutate(event_id = cur_group_id())
+               |> mutate(
+                   teammate_name = map(1:n(), ~player_name[-.x]),
+                   teammate_fouls = map(1:n(), ~personal_fouls_during_event[-.x])
+               )
+              |> unnest(cols = c(teammate_name, teammate_fouls))
+              |> select(event_id, game_id, period, description, slug_team, slug_opp, number_event, act_type, player_name, personal_fouls_during_event, teammate_name, teammate_fouls, personal_foul_occurance_on_player)
+)
+
+
+# Filtering out any game in which a now-unrostered player played
+games_with_any_missing <- nanoparquet::read_parquet(here::here("data", "missing_data_by_game.parquet")) |> filter(missing_data_shots > 0) |> pull(game_id)
+
+model_data_test <- model_data |> 
+  mutate(game_id = as.numeric(game_id)) |> 
+  filter(!game_id %in% games_with_any_missing)
+
+set.seed(123)
+
+# Sample size definition (5% of original data)
+sample_fraction <- 0.05
+
+# Creating a stratified sample
+stratified_sample <- (model_data 
+  # First level of stratification: by game and period
+  # This preserves the game context and time dynamics
+  |> group_by(game_id, period) 
+  
+  # Second level: by defensive team and player foul status
+  # This ensures we capture the team defensive styles and player foul situations
+  |> group_by(slug_team, personal_fouls_during_event > 0, .add = TRUE) 
+  
+  # Third level: by foul occurrence (most important to preserve)
+  # This ensures we have proper representation of the rare positive cases
+  |> group_by(personal_foul_occurance_on_player, .add = TRUE) 
+  
+  # Sample from each stratum
+  |> sample_frac(sample_fraction) 
+  
+  # Remove grouping
+  |> ungroup()
+)
+
+stratified_sample_scaled <- stratified_sample |>
+  mutate(
+    teammate_fouls_scaled = scale(teammate_fouls)[,1],
+    personal_fouls_scaled = scale(personal_fouls_during_event)[,1]
+  )
+
+# Creating a validation set from the remaining data
+remaining_data <- model_data |>
+  anti_join(stratified_sample, by = "event_id")
+
+validation_sample <- remaining_data |>
+  # Using the same stratification approach for consistency
+  group_by(game_id, period, slug_team, 
+           personal_fouls_during_event > 0, 
+           personal_foul_occurance_on_player) |>
+  sample_frac(0.01) |>
+  ungroup()
+
+# Scaling the validation sample
+validation_sample_scaled <- validation_sample |>
+  mutate(
+    teammate_fouls_scaled = scale(teammate_fouls)[,1],
+    personal_fouls_scaled = scale(personal_fouls_during_event)[,1]
+  )
+
+library(here)
+
+# Then use this to load the data
+rosters <- nanoparquet::read_parquet(here("data", "250227_rosters.parquet"))
+
+player_logs <- nba_leaguegamelog(season = "2024-25", player_or_team = "P") %>%
+  pluck("LeagueGameLog") %>%
+  janitor::clean_names() %>%
+  mutate(team_location = ifelse(str_detect(matchup, "\\@"), "away", "home"),
+         across(c(player_id, team_id), as.numeric))
+
+player_logs_for_join <- (
+  player_logs
+  |> select(player_name, player_id, team_id, team_abbreviation, game_id)
+  |> ungroup()
+  |> rename(slug_team = team_abbreviation)
+  |> select(player_name, game_id, player_id)
+  |> mutate(game_id = as.numeric(game_id))
+)
+
+stratified_sample_scaled <- (stratified_sample_scaled
+                           |> mutate(game_id = as.numeric(game_id))
+                           |> left_join(player_logs_for_join, by = join_by("player_name", "game_id"))
+                           |> left_join(rosters, by = join_by("player_id"))
+)
+
+validation_sample_scaled <- (validation_sample_scaled
+                           |> mutate(game_id = as.numeric(game_id))
+                           |> left_join(player_logs_for_join, by = join_by("player_name", "game_id"))
+                           |> left_join(rosters, by = join_by("player_id"))
+                           |> drop_na()
+)
+
+# Saving the stratified sample for future use
+write_parquet(stratified_sample_scaled, "samples/stratified_sample_scaled.parquet")
+
+# Saving the validation sample for future use
+write_parquet(validation_sample_scaled, "samples/validation_sample_scaled.parquet")
+
+stratified_sample_scaled <- read_parquet("samples/stratified_sample_scaled.parquet")
+
+validation_sample_scaled <- read_parquet("samples/validation_sample_scaled.parquet")
+
+
+```
+
+## Model Building
+
+### Statistical Model Specification
+
+$$
+x ~ N(mu,sigma)
+mu = alpha + beta *x
+alpha ~ N(0,10)
+beta ~ N(0,2)
+sigma ~ Exponential(1)
+$$
+
+### Computational Model Specification
+
+#### Binomial Model of Teammate Foul Effects
+
+```{r}
+
+binomial_teammates_formula_scaled <- bf(
+  personal_foul_occurance_on_player ~ 
+    teammate_fouls_scaled + personal_fouls_scaled +
+    (1 | game_id:number_event) + 
+    (1 | slug_team) +
+    (1 | player_name) +
+    (1 | teammate_name)
+)
+
+binomial_priors_scaled <- c(
+  # Population-level effects (fixed effects)
+  prior(normal(-3.5, 0.5), class = "Intercept"),  # Baseline foul probability (~3%)
+  prior(normal(0, 0.5), class = "b", coef = "teammate_fouls_scaled"),  # Effect of 1 SD increase
+  prior(normal(0, 0.5), class = "b", coef = "personal_fouls_scaled"),  # Effect of 1 SD increase
+  
+  # Group-level effects (random effects)
+  prior(exponential(2), class = "sd", group = "game_id:number_event"),
+  prior(exponential(2), class = "sd", group = "slug_team"),
+  prior(exponential(2), class = "sd", group = "player_name"),
+  prior(exponential(2), class = "sd", group = "teammate_name")
+)
+
+# More constrained priors
+binomial_priors_scaled_constrained <- c(
+  prior(normal(-3.7, 0.3), class = "Intercept"),
+  prior(normal(0, 0.3), class = "b", coef = "teammate_fouls_scaled"),
+  prior(normal(0, 0.3), class = "b", coef = "personal_fouls_scaled"),
+  
+  prior(exponential(4), class = "sd", group = "game_id:number_event"),
+  prior(exponential(4), class = "sd", group = "slug_team"),
+  prior(exponential(4), class = "sd", group = "player_name"),
+  prior(exponential(4), class = "sd", group = "teammate_name")
+)
+
+```
+
+### Prior Predictive Checks
+
+#### Binomial Model
+
+```{r}
+
+binomial_teammates_model_1_prior <- brm(
+  formula = binomial_teammates_formula_scaled,
+  data = sim_data_scaled,
+  family = bernoulli(),
+  prior = binomial_priors_scaled,
+  sample_prior = "only",
+  chains = 2,
+  cores = 2,
+  iter = 1000,
+  seed = 42
+)
+
+binomial_teammates_model_1_prior_constrained <- brm(
+  formula = binomial_teammates_formula_scaled,
+  data = sim_data_scaled,
+  family = bernoulli(),
+  prior = binomial_priors_scaled_constrained,
+  sample_prior = "only",
+  chains = 2,
+  cores = 2,
+  iter = 1000,
+  seed = 42
+)
+
+pp_check(binomial_teammates_model_1_prior, ndraws = 50) +
+  labs(title = "Posterior Predictive Check: Simulated Data")
+
+pp_check(binomial_teammates_model_1_prior_constrained, ndraws = 50) +
+  labs(title = "Posterior Predictive Check: Simulated Data")
+
+```
+
+### Model Fitting
+
+#### Binomial Model
+
+```{r}
+
+binomial_teammates_model_sim <- brm(
+  formula = binomial_teammates_formula_scaled,
+  data = sim_data_scaled,
+  family = bernoulli(),
+  prior = binomial_priors_scaled,
+  chains = 4,
+  cores = 4,
+  iter = 2000,
+  warmup = 1000,
+  control = list(adapt_delta = 0.95, max_treedepth = 12),
+  seed = 42,
+  file = "models/binomial_teammates_model_sim_2.rds"
+)
+
+binomial_teammates_model_constrained_sim <- brm(
+  formula = binomial_teammates_formula_scaled,
+  data = sim_data_scaled,
+  family = bernoulli(),
+  prior = binomial_priors_scaled_constrained,
+  chains = 4,
+  cores = 4,
+  iter = 2000,
+  warmup = 1000,
+  control = list(adapt_delta = 0.95, max_treedepth = 12),
+  seed = 42,
+  file = "models/binomial_teammates_model_constrained_sim_2.rds"
+)
+
+
+binomial_teammates_model_stratified <- brm(
+  formula = binomial_teammates_formula_scaled,
+  data = stratified_sample_scaled,
+  family = binomial(),
+  prior = binomial_priors_scaled,
+  chains = 4,
+  cores = 4,
+  iter = 2000,
+  warmup = 1000,
+  control = list(adapt_delta = 0.95, max_treedepth = 12),
+  seed = 42,
+  file = "models/binomial_teammates_model_stratified.rds"
+)
+
+```
+
+## Model Checking
+
+### Computational Diagnostics
+
+```{r}
+
+# Check model summary
+summary(binomial_teammates_model_sim)
+summary(binomial_teammates_model_constrained_sim)
+
+# Check convergence
+mcmc_trace(binomial_teammates_model_sim)
+mcmc_trace(binomial_teammates_model_constrained_sim)
+
+
+```
+
+### Posterior Predictive Checks
+
+```{r}
+pp_check(binomial_teammates_model_constrained_sim)
+
+# Or with a few more options but still simple
+pp_check(binomial_teammates_model_constrained_sim, 
+         type = "bars",  # Use a bar plot for binary outcomes
+         ndraws = 10)    # Show 10 posterior predictive distributions
+
+# Another simple option for binary outcomes
+pp_check(binomial_teammates_model_constrained_sim, 
+         type = "error_binned")
+
+# Simple density comparison
+pp_check(binomial_teammates_model_constrained_sim, 
+         type = "dens_overlay")
+
+
+```
+
+## Model Interpretation
+
+### Parameter Estimates
+
+```{r}
+# Extract random effects for teams and players
+team_effects <- ranef(binomial_teammates_model_constrained_sim, summary = TRUE)$slug_team
+player_effects <- ranef(binomial_teammates_model_constrained_sim, summary = TRUE)$player_name
+
+# Prepare team effects for plotting (simplify to just the intercepts)
+team_intercepts <- data.frame(
+  team = rownames(team_effects[, , "Intercept"]),
+  estimate = team_effects[, , "Intercept"][, "Estimate"],
+  lower = team_effects[, , "Intercept"][, "Q2.5"],
+  upper = team_effects[, , "Intercept"][, "Q97.5"]
+) %>%
+  arrange(desc(estimate)) %>%
+  # Just keep top and bottom 5 teams for clarity
+  filter(row_number() <= 5 | row_number() > n() - 5)
+
+# Plot team random effects
+ggplot(team_intercepts, aes(x = reorder(team, estimate), y = estimate)) +
+  geom_point(size = 3, color = "blue") +
+  geom_errorbar(aes(ymin = lower, ymax = upper), width = 0.2) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  coord_flip() +
+  labs(
+    title = "Team Random Effects on Foul Probability",
+    subtitle = "Top 5 and bottom 5 teams shown",
+    x = NULL,
+    y = "Effect on log-odds of foul"
+  ) +
+  theme_minimal()
+
+# Prepare player effects for plotting (just keep top/bottom players)
+player_intercepts <- data.frame(
+  player = rownames(player_effects[, , "Intercept"]),
+  estimate = player_effects[, , "Intercept"][, "Estimate"],
+  lower = player_effects[, , "Intercept"][, "Q2.5"],
+  upper = player_effects[, , "Intercept"][, "Q97.5"]
+) %>%
+  arrange(desc(estimate)) %>%
+  # Just keep top and bottom 5 players for clarity
+  filter(row_number() <= 5 | row_number() > n() - 5)
+
+# Plot player random effects
+ggplot(player_intercepts, aes(x = reorder(player, estimate), y = estimate)) +
+  geom_point(size = 3, color = "orange") +
+  geom_errorbar(aes(ymin = lower, ymax = upper), width = 0.2) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  coord_flip() +
+  labs(
+    title = "Player Random Effects on Foul Probability",
+    subtitle = "Top 5 and bottom 5 players shown",
+    x = NULL,
+    y = "Effect on log-odds of foul"
+  ) +
+  theme_minimal()
+
+```
+
+### Posterior Predictions
+
+```{r}
+pred_data <- expand_grid(
+  teammate_fouls_scaled = seq(-2, 2, by = 0.5),
+  personal_fouls_scaled = c(-1, 0, 1),  # Low, average, high personal fouls
+  player_name = sample(unique(sim_data_scaled$player_name), 3),  # Sample a few players
+  teammate_name = sample(unique(sim_data_scaled$teammate_name), 3),  # Sample a few teammates
+  slug_team = sample(unique(sim_data_scaled$slug_team), 3),  # Sample a few teams
+  game_id = sample(unique(sim_data_scaled$game_id), 1),  # Fix game context
+  number_event = sample(unique(sim_data_scaled$number_event), 1)  # Fix event
+)
+
+# Generate predictions
+predictions <- pred_data %>%
+  mutate(pred = fitted(
+    binomial_teammates_model_constrained_sim, 
+    newdata = .,
+    re_formula = NULL,  # Include random effects
+    summary = TRUE
+  )[,"Estimate"])
+
+# Plot predictions by personal foul status
+ggplot(predictions, 
+       aes(x = teammate_fouls_scaled, y = pred, color = factor(personal_fouls_scaled))) +
+  geom_line() +
+  facet_wrap(~ player_name) +
+  labs(
+    title = "Predicted Foul Probability by Teammate Fouls",
+    subtitle = "For different levels of personal fouls",
+    x = "Standardized Teammate Fouls",
+    y = "Predicted Probability of Committing a Foul",
+    color = "Personal Fouls"
+  ) +
+  theme_minimal() +
+  scale_color_brewer(palette = "Set1", 
+                    labels = c("Low (-1 SD)", "Average (0)", "High (+1 SD)")) +
+  scale_y_continuous(labels = scales::percent_format())
+
+# Calculate and plot marginal effects of teammate fouls
+# The correct way to plot conditional effects from brms
+me <- conditional_effects(
+  binomial_teammates_model_constrained_sim, 
+  effects = "teammate_fouls_scaled",
+  conditions = data.frame(personal_fouls_scaled = c(-1, 0, 1))
+)
+
+# As a player's personal fouls increase, the effect of their teammates' fouls on their own foul probability decreases
+
+plot(me, plot = TRUE)
+
+```
+
+### Predictor Residual Analysis
+
+```{r}
+binomial_residuals <- residuals(binomial_teammates_model_constrained_sim)
+
+# Combine with original data for plotting
+residual_data <- cbind(
+  sim_data_scaled, 
+  residuals = as.vector(binomial_residuals[,1])
+)
+
+# Create residual plots against teammate fouls
+ggplot(residual_data, 
+       aes(x = teammate_fouls_scaled, y = residuals)) +
+  geom_point(alpha = 0.3) +
+  geom_smooth(method = "loess", color = "blue") +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
+  labs(
+    title = "Residuals vs. Teammate Fouls",
+    subtitle = "Checking for patterns in model residuals",
+    x = "Standardized Teammate Fouls",
+    y = "Residuals"
+  ) +
+  theme_minimal()
+
+# Create residual plots against personal fouls
+ggplot(residual_data, 
+       aes(x = personal_fouls_scaled, y = residuals)) +
+  geom_point(alpha = 0.3) +
+  geom_smooth(method = "loess", color = "blue") +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
+  labs(
+    title = "Residuals vs. Personal Fouls",
+    subtitle = "Checking for patterns in model residuals",
+    x = "Standardized Personal Fouls",
+    y = "Residuals"
+  ) +
+  theme_minimal()
+
+# Residuals by team
+ggplot(residual_data, 
+       aes(x = slug_team, y = residuals)) +
+  geom_boxplot(fill = "lightblue", alpha = 0.7) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
+  labs(
+    title = "Residuals by Team",
+    subtitle = "Checking for systematic differences between teams",
+    x = "Team",
+    y = "Residuals"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+# Histogram of residuals
+ggplot(residual_data, aes(x = residuals)) +
+  geom_histogram(bins = 30, fill = "steelblue", color = "white", alpha = 0.7) +
+  labs(
+    title = "Distribution of Model Residuals",
+    subtitle = "Should be approximately symmetric around zero",
+    x = "Residuals",
+    y = "Count"
+  ) +
+  theme_minimal()
+
+```
+
+```
+
+### Sensitivity Analysis
+
+```{r}
+
+```
+
+### Counterfactual Analysis
+
+```{r}
+
+```
+
+## Model Comparison
+
+```{r}
+
+unconstrained_loo <- loo(binomial_teammates_model_sim)
+constrained_loo <- loo(binomial_teammates_model_constrained_sim)
+
+loo_compare(unconstrained_loo, constrained_loo)
+```
+
+## Conclusion
+
+### Summary of Findings
+
+### Key Results
+
+Summarize your main findings here, connecting them back to your research questions.
+
+### Limitations and Next Steps
+
+Important Considerations Discuss key limitations and potential future directions.

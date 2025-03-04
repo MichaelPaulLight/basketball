@@ -1,0 +1,83 @@
+---
+title: "Foul Modeling Workflow (Refactored)"
+format: html
+editor: visual
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(nanoparquet)
+library(hoopR)
+library(zoo)
+library(here)
+```
+
+## Introduction
+
+This notebook demonstrates the foul modeling workflow using the refactored functions from the `foul_data_processing.R` file.
+
+## Load Processing Functions
+
+```{r load-functions}
+# Source the data processing functions
+source(here::here("R", "foul_data_processing.R"))
+```
+
+## Process Data
+
+We can now use the modular functions to process our data. The main function `process_foul_data()` handles the entire pipeline:
+
+```{r process-data}
+# Process the data using the full pipeline
+processed_data <- process_foul_data(
+  pbp_data_path = here::here("data", "250225_pbp_gt.parquet"),
+  missing_data_path = here::here("data", "missing_data_by_game.parquet"),
+  roster_path = here::here("data", "250227_rosters.parquet"),
+  sample_fraction = 0.05, # how much of the full dataset to sample for training
+  validation_fraction = 0.01, # how much of the full dataset to sample for validation   
+  seed = 123, # random seed for reproducibility
+  stratified_output_path = here::here("samples", "stratified_sample_scaled.parquet"), # where to save the stratified sample
+  validation_output_path = here::here("samples", "validation_sample_scaled.parquet") # where to save the validation sample
+)
+
+# Extract the samples
+stratified_sample <- processed_data$stratified_sample
+validation_sample <- processed_data$validation_sample
+```
+
+## Explore the Data
+
+Now we can explore the processed data:
+
+```{r explore-data}
+# Check the dimensions of the samples
+dim(stratified_sample)
+dim(validation_sample)
+
+# Look at the first few rows
+head(stratified_sample)
+
+# Summary statistics
+summary(stratified_sample$personal_fouls_scaled)
+summary(stratified_sample$teammate_fouls_scaled)
+
+# Distribution of fouls
+ggplot(stratified_sample, aes(x = personal_fouls_during_event)) +
+  geom_histogram(binwidth = 1, fill = "steelblue", color = "white") +
+  labs(title = "Distribution of Personal Fouls",
+       x = "Personal Fouls During Event",
+       y = "Count")
+
+# Foul occurrence by personal fouls
+ggplot(stratified_sample, aes(x = factor(personal_fouls_during_event), 
+                             y = personal_foul_occurance_on_player)) +
+  stat_summary(fun = "mean", geom = "bar", fill = "steelblue") +
+  labs(title = "Foul Occurrence by Personal Fouls",
+       x = "Personal Fouls During Event",
+       y = "Probability of Foul")
+```
+
+## Conclusion
+
+By refactoring the data processing code into modular functions, we've made the workflow more maintainable, reusable, and easier to understand. The functions can now be used in other notebooks and scripts without duplicating code.
