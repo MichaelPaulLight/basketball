@@ -61,9 +61,11 @@ Our hierarchical Bayesian models revealed evidence that foul accumulation may af
 
 As players and their teammates accumulate personal fouls, their probability of committing a foul on a given shot attempt increases. Our binomial model shows that for each additional standard deviation increase in personal fouls, players experience an increase in the log-odds of committing a foul on a shot attempt.
 
-![Figure 1: Personal foul effects](images/player_foul_levels_effects.png){width="80%" fig-align="center"}
+::: {layout="[[1,1]]"}
+![Figure 1: Personal foul effects](images/player_foul_levels_effects.png){width="95%"}
 
-![Figure 2: Teammate foul effects](images/teammate_foul_levels_effects.png){width="80%" fig-align="center"}
+![Figure 2: Teammate foul effects](images/teammate_foul_levels_effects.png){width="95%"}
+:::
 
 ### Teammate Foul Effects
 
@@ -71,9 +73,9 @@ We found a significant "contagion effect" where a player's defensive behavior is
 
 Our analysis reveals that premier defenders (Wembanyama, Hartenstein, Gafford) tend to negatively affect teammates' fouling probability as they accumulate fouls, while defensive liabilities (Gilgeous-Alexander, Conley, Sharp) tend to increase teammates' fouling probability. This suggests foul accumulation signals different defensive abilities: for weaker defenders, fouls indicate poor defense, while for elite defenders, fouls may actually indicate effective defense.
 
-![Figure 3: Teammate random effects](images/teammate_random_effects.png){fig-align="center" width="400"}
+![Figure 3: Teammate random effects](images/teammate_random_effects.png){width="250"}
 
-![Figure 4: Player random effects](images/player_random_effects.png){fig-align="center" width="400"}
+![Figure 4: Player random effects](images/player_random_effects.png){width="250"}
 
 This effect can be seen at the player-level as well, where we can see the example of Daniel Gafford again, but this time at the top of the chart, where his probability of committing a foul seems to increase as his teammates (who include P.J. Washington, seen in the above figure, along with other known offensive-minded players like Kyrie Irving) accumulate fouls. Interestingly, Lebron James, who many have speculated receives a 'favorable whistle' from referees (i.e. they tend to call him for fewer fouls as a product of his celebrity) was estimated to be the least affected by his teammates' accumulation of fouls.
 
