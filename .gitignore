@@ -1,0 +1,25 @@
+# R specific
+.Rproj.user
+.Rhistory
+.RData
+.RDataTmp
+*.Rproj
+.Ruserdata
+
+# Large model files
+*.rds
+models/*.rds
+notebooks/binomial_modeling/*.rds
+notebooks/neg-binomial_modeling/*.rds
+
+# Large data files
+*.parquet
+data/*.parquet
+samples/*.parquet
+
+# OS specific
+.DS_Store
+Thumbs.db
+
+# Other large files
+*.pdf 
