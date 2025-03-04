@@ -71,9 +71,9 @@ We found a significant "contagion effect" where a player's defensive behavior is
 
 Our analysis reveals that premier defenders (Wembanyama, Hartenstein, Gafford) tend to negatively affect teammates' fouling probability as they accumulate fouls, while defensive liabilities (Gilgeous-Alexander, Conley, Sharp) tend to increase teammates' fouling probability. This suggests foul accumulation signals different defensive abilities: for weaker defenders, fouls indicate poor defense, while for elite defenders, fouls may actually indicate effective defense.
 
-![Figure 3: Teammate random effects](images/teammate_random_effects.png){width="80%" fig-align="center"}
+![Figure 3: Teammate random effects](images/teammate_random_effects.png){fig-align="center" width="400"}
 
-![Figure 4: Player random effects](images/player_random_effects.png){width="80%" fig-align="center"}
+![Figure 4: Player random effects](images/player_random_effects.png){fig-align="center" width="400"}
 
 This effect can be seen at the player-level as well, where we can see the example of Daniel Gafford again, but this time at the top of the chart, where his probability of committing a foul seems to increase as his teammates (who include P.J. Washington, seen in the above figure, along with other known offensive-minded players like Kyrie Irving) accumulate fouls. Interestingly, Lebron James, who many have speculated receives a 'favorable whistle' from referees (i.e. they tend to call him for fewer fouls as a product of his celebrity) was estimated to be the least affected by his teammates' accumulation of fouls.
 
@@ -326,23 +326,23 @@ Agglomerative hierarchical clustering was chosen as the primary method as the ov
 
 For hierarchical clustering, one of the key parameters is either the number of clusters or the distance threshold between clusters. To accomplish this, the number of clusters was iterated from 2 to 20 to see when the average distance within a cluster tapered off. This point was at nine clusters. One disadvantage of the elbow method is that it is sensitive to the selection of the maximum number of clusters. If you have a larger number for the maximum number of clusters, this causes the overall plot to zoom out and potentially lead to a larger value for the cluster count where the plot begins to taper off. Ultimately, 20 was decided as the maximum number of clusters because at this point clusters were containing less than half a percent of the sample.
 
-::: {layout-ncol=2}
+::: {layout-ncol="2"}
 ![Figure 13: Elbow method for determining optimal number of clusters](images/unsupervised_1.png){width="90%"}
 
 ![Figure 14: Cluster distribution showing percentage of players in each cluster](images/unsupervised_2.png){width="90%"}
 :::
 
-![Figure 15: Hierarchical clustering dendrogram showing cluster relationships](images/unsupervised_3.png){fig-align="center" width="80%"}
+![Figure 15: Hierarchical clustering dendrogram showing cluster relationships](images/unsupervised_3.png){fig-align="center" width="400"}
 
 For context, if the max number of clusters was set to 30, where some clusters were individual data points, the suggested number of clusters would be at ten clusters. Other methods such as the Calinski-Harabasz and silhouette scores were looked at, but since these methods consider the number of clusters in their calculations and the data showed clear patterns of inside and outside defenders both methods optimized at only two clusters. Bosch and Kalman(2020) ran into a similar issue when attempting to decide the cluster for K-means clustering. Only two clusters would not show any valuable insights for a player's defensive role, therefore the nine clusters shown by the elbow method were decided to pursue.
 
 One of the main challenges for clustering is providing context to the results to make them understandable. To understand the main attributes of the clusters, the hierarchical clustering dendrogram and a heatmap of the scaled features are used. The dendrogram outlines the general structure and how clusters split off from one another, while the heatmap shows the defensive strengths and weaknesses for each cluster.
 
-![Figure 16: Heatmap of scaled features by cluster](images/unsupervised_4.png){fig-align="center" width="80%"}
+![Figure 16: Heatmap of scaled features by cluster](images/unsupervised_4.png){fig-align="center" width="400"}
 
 From the dendrogram, there is a clear divide immediately between players tasked with primarily defending near the basket or the perimeter. Clusters 1 through 3 all have substantially lower defensive rebounding rates and block rates, and higher 3 point attempt rates compared to clusters 5 through 8. The two clusters that do not immediately stand out as perimeter or inside defenders are clusters 4 and 9 as they have one feature that drastically separates them.
 
-::: {layout-ncol=3}
+::: {layout-ncol="3"}
 ![Figure 17: PCA Clusters](images/unsupervised_5.png){width="95%"}
 
 ![Figure 18: UMAP visualization](images/unsupervised_6.png){width="95%"}
