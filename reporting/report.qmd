@@ -392,7 +392,7 @@ Our diagnostics showed excellent convergence across all parameters, with R-hat v
 
 We conducted posterior predictive checks to assess how well our model captures the observed data patterns:
 
-![Figure 22: Posterior predictive check comparing observed vs. replicated data](images/neg-binom_pp_check.png){width="65"}
+![Figure 22: Posterior predictive check comparing observed vs. replicated data](images/neg-binom_pp_check.png){width="400"}
 
 The posterior predictive check shows good alignment between the observed data (dark line) and replicated datasets from our model (light lines), indicating that our model captures the overall distribution of shot attempts well. The ECDF comparison further confirms this, showing close correspondence between the empirical cumulative distribution functions of observed and predicted values.
 
