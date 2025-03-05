@@ -406,6 +406,24 @@ There are a variety of different ways to understand the importance of features w
 ![Figure 25: Position effects on shot counts](images/neg-binom_position-effects.png){width="95%"}
 :::
 
+### Tradeoffs in Bayesian Hierarchical Modeling
+
+Our Bayesian hierarchical modeling approach revealed several important tradeoffs:
+
+1.  **Computational Complexity vs. Model Sophistication**
+    Our hierarchical models with varying slopes and multiple group-level effects provide rich insights but come at a significant computational cost. Fitting the full negative binomial model with the complete sample would have taken approximately 36 hours to fit. This tradeoff became particularly apparent when we needed to iterate on model specifications or perform sensitivity analyses, forcing us to balance model sophistication against practical time constraints.
+
+2.  **Sample Size vs. Parameter Uncertainty**
+    Due to computational constraints, we used stratified sampling to reduce our dataset size while preserving the distribution of key variables. This introduced a tradeoff between computational feasibility and parameter uncertainty. With our full play-by-play dataset (412,269 events, with five unique players per event) for example, we may have achieved narrower credible intervals for the parameters in our negative binomial model, but at the cost of long fitting times. Our posterior distributions show uncertainty for some position-specific effects, suggesting that larger samples might have yielded more precise estimates.
+
+3.  **Model Complexity vs. Interpretability**
+    While more complex models (with interaction terms and varying slopes) showed better predictive performance according to LOO-CV, they also introduced challenges for interpretation. For example, our varying slopes model allowed the effect of fouls to differ by position, but this made it more difficult to communicate a single, clear "effect of fouls" to non-technical stakeholders.
+
+4.  **Generalizability vs. Context Specificity**
+    Our hierarchical structure allowed us to model team-specific and position-specific effects, but this raises questions about generalizability. Models that pool information across teams may generalize better to new seasons or unseen teams, while models that emphasize team-specific effects may better capture the current context but potentially overfit to temporary team characteristics. Our partial pooling approach attempts to balance these concerns, but the tradeoff remains inherent in the modeling process, especially when discussing predictive performance. Estimating truly out-of-sample performance on, for example, a new (unseen) team or player remains a challenge
+
+These tradeoffs highlight the importance of carefully considering modeling choices in the context of both statistical performance and practical constraints when developing metrics for defensive evaluation in basketball.
+
 ### Sensitivity Analysis
 
 The model comparison table above gives indication that our model is fairly sensitive to our choice of priors, gaining significant out-of-sample predictive performance when fit with constrained versus unconstrained priors. Our model is less sensitive to whether it's parametrized with interaction terms versus group-level varying slopes, where the difference in ELPD is less than 5; if judging our models purely on predictive performance, a model with varying slopes doesn't seem to necessarily be preferable to one with interaction terms.
