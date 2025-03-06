@@ -278,7 +278,15 @@ A key aspect of our Bayesian workflow was the use of generative modeling and sim
 
 For our negative binomial varying slopes model, we carefully specified informative priors based on domain knowledge about basketball and defensive behavior. The complete prior specification can be found in Appendix D.
 
-These priors reflect our belief that: 1. Teams and positions would show moderate variation in their baseline shot rates (intercepts) 2. The effect of fouls would vary by team and position, but within reasonable bounds 3. The correlation between intercepts and slopes would be modest (regularized by the LKJ prior) 4. The negative binomial dispersion parameter would be around 4, indicating moderate overdispersion
+These priors reflect our belief that:
+
+1.  Teams and positions would show moderate variation in their baseline shot rates (intercepts)
+
+2.  The effect of fouls would vary by team and position, but within reasonable bounds
+
+3.  The correlation between intercepts and slopes would be modest (regularized by the LKJ prior)
+
+4.  The negative binomial dispersion parameter would be around 4, indicating moderate overdispersion
 
 Before fitting our model to real data, we conducted prior predictive simulations to ensure our priors generated plausible outcomes.
 
@@ -410,17 +418,13 @@ There are a variety of different ways to understand the importance of features w
 
 Our Bayesian hierarchical modeling approach revealed several important tradeoffs:
 
-1.  **Computational Complexity vs. Model Sophistication**
-    Our hierarchical models with varying slopes and multiple group-level effects provide rich insights but come at a significant computational cost. Fitting the full negative binomial model with the complete sample would have taken approximately 36 hours to fit. This tradeoff became particularly apparent when we needed to iterate on model specifications or perform sensitivity analyses, forcing us to balance model sophistication against practical time constraints.
+1.  **Computational Complexity vs. Model Sophistication** Our hierarchical models with varying slopes and multiple group-level effects provide rich insights but come at a significant computational cost. Fitting the full negative binomial model with the complete sample would have taken approximately 36 hours to fit. This tradeoff became particularly apparent when we needed to iterate on model specifications or perform sensitivity analyses, forcing us to balance model sophistication against practical time constraints.
 
-2.  **Sample Size vs. Parameter Uncertainty**
-    Due to computational constraints, we used stratified sampling to reduce our dataset size while preserving the distribution of key variables. This introduced a tradeoff between computational feasibility and parameter uncertainty. With our full play-by-play dataset (412,269 events, with five unique players per event) for example, we may have achieved narrower credible intervals for the parameters in our negative binomial model, but at the cost of long fitting times. Our posterior distributions show uncertainty for some position-specific effects, suggesting that larger samples might have yielded more precise estimates.
+2.  **Sample Size vs. Parameter Uncertainty** Due to computational constraints, we used stratified sampling to reduce our dataset size while preserving the distribution of key variables. This introduced a tradeoff between computational feasibility and parameter uncertainty. With our full play-by-play dataset (412,269 events, with five unique players per event) for example, we may have achieved narrower credible intervals for the parameters in our negative binomial model, but at the cost of long fitting times. Our posterior distributions show uncertainty for some position-specific effects, suggesting that larger samples might have yielded more precise estimates.
 
-3.  **Model Complexity vs. Interpretability**
-    While more complex models (with interaction terms and varying slopes) showed better predictive performance according to LOO-CV, they also introduced challenges for interpretation. For example, our varying slopes model allowed the effect of fouls to differ by position, but this made it more difficult to communicate a single, clear "effect of fouls" to non-technical stakeholders.
+3.  **Model Complexity vs. Interpretability** While more complex models (with interaction terms and varying slopes) showed better predictive performance according to LOO-CV, they also introduced challenges for interpretation. For example, our varying slopes model allowed the effect of fouls to differ by position, but this made it more difficult to communicate a single, clear "effect of fouls" to non-technical stakeholders.
 
-4.  **Generalizability vs. Context Specificity**
-    Our hierarchical structure allowed us to model team-specific and position-specific effects, but this raises questions about generalizability. Models that pool information across teams may generalize better to new seasons or unseen teams, while models that emphasize team-specific effects may better capture the current context but potentially overfit to temporary team characteristics. Our partial pooling approach attempts to balance these concerns, but the tradeoff remains inherent in the modeling process, especially when discussing predictive performance. Estimating truly out-of-sample performance on, for example, a new (unseen) team or player remains a challenge
+4.  **Generalizability vs. Context Specificity** Our hierarchical structure allowed us to model team-specific and position-specific effects, but this raises questions about generalizability. Models that pool information across teams may generalize better to new seasons or unseen teams, while models that emphasize team-specific effects may better capture the current context but potentially overfit to temporary team characteristics. Our partial pooling approach attempts to balance these concerns, but the tradeoff remains inherent in the modeling process, especially when discussing predictive performance. Estimating truly out-of-sample performance on, for example, a new (unseen) team or player remains a challenge
 
 These tradeoffs highlight the importance of carefully considering modeling choices in the context of both statistical performance and practical constraints when developing metrics for defensive evaluation in basketball.
 
@@ -502,13 +506,17 @@ Quinten Adabie: Unsupervised Learning, Machine Learning Pipeline, Player Info, a
 
 ### References
 
-Hedquist, Alexander L., "Redefining NBA Basketball Positions Through Visualization and Mega-Cluster Analysis" (2022). All Graduate Theses and Dissertations. 8602. https://digitalcommons.usu.edu/etd/8602
+Chu, D., & Swartz, T. (2020). Foul accumulation in the NBA. Journal of Quantitative Analysis in Sports, 16(4), 301-309. https://doi.org/10.1515/jqas-2019-0119
+
+Alexander Franks. Andrew Miller. Luke Bornn. Kirk Goldsberry. Characterizing the spatial structure of defensive skill in professional basketball. (2015) Ann. Appl. Stat. 9 (1) 94 - 121. https://doi.org/10.1214/14-AOAS799
+
+Hedquist, Alexander L., Redefining NBA Basketball Positions Through Visualization and Mega-Cluster Analysis. (2022). All Graduate Theses and Dissertations. 8602. https://digitalcommons.usu.edu/etd/8602
 
 Kalman, S. and J. Bosch (2020). NBA Lineup Analysis on Clustered Player Tendencies: A New Approach to the Positions of Basketball & Modeling Lineup Efficiency. MIT Sloan Sports Conference. https://www.sloansportsconference.com/research-papers/nba-lineup-analysis-on-clustered-player-tendencies-a-new-approach-to-thepositions-of-basketball-modeling-lineup-efficiency.
 
 Levin, J. (2014, May 16). The absurd, amazing wingspans of professional basketball players. Slate Magazine. https://slate.com/culture/2014/05/nba-wingspans-forget-height-basketball-players-wingspans-are-absurd-and-amazing.html
 
-NBA. (n.d.). Draft combine: Stats. Draft Combine \| Stats \| NBA.com. https://www.nba.com/stats/draft/combine
+Williams, B., Schliep, E. M., Fosdick, B., & Elmore, R. (2024). Expected points above average: A novel NBA player metric based on Bayesian hierarchical modeling. arXiv preprint arXiv:2405.10453. https://arxiv.org/abs/2405.10453
 
 ## Appendix B.
 
@@ -713,11 +721,11 @@ These priors were carefully chosen based on domain knowledge. The normal prior o
 
 The following diagnostic plots were used to assess the convergence and reliability of our Bayesian models:
 
-![R-hat values showing convergence across parameters](images/neg-binom_rhat.png){width="95%" fig-align="center"}
+![R-hat values showing convergence across parameters](images/neg-binom_rhat.png){fig-align="center" width="400"}
 
-The R-hat values consistently below 1.01 indicate excellent convergence across all parameters, suggesting that our chains mixed well and reached the target posterior distribution.
+The R-hat values consistently above .1 indicate convergence across all parameters, suggesting that our chains mixed well and reached the target posterior distribution.
 
-![Effective sample sizes for key parameters](images/neff_values.png){width="95%" fig-align="center"}
+![Effective sample sizes for key parameters](images/neff_values.png){fig-align="center" width="400"}
 
 The effective sample sizes (N_eff) are sufficiently large for all key parameters, ensuring that our posterior summaries are based on adequate independent samples.
 
