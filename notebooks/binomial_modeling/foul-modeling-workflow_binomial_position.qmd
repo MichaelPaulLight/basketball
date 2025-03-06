@@ -669,6 +669,11 @@ pp_check(varying_slopes_binomial_real_update)
 ```{r}
 varying_slopes_binomial_real_update <- readRDS("models/binomial_teammates_varying_slopes_model_real_6_update.rds")
 
+conditional_effects <- conditional_effects(varying_slopes_binomial_real_update)
+
+plot(conditional_effects)
+
+
 # Extract random effects for teams and players
 teammate_effects <- ranef(varying_slopes_binomial_real_update, summary = TRUE)$teammate_name
 player_effects <- ranef(varying_slopes_binomial_real_update, summary = TRUE)$player_name
