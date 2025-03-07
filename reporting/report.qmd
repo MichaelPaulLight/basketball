@@ -29,7 +29,7 @@ editor: visual
 
 # Introduction
 
-Basketball is a simple game: Put a ball through a hoop. It's also a numbers game: put a ball through a hoop more times than someone else. As a result, analysis has historically focused on offense - who scored, how they scored, and who assisted.
+Basketball is a simple game: Put a ball through a hoop. It's also a numbers game: put a ball through a hoop more times than someone else. As a result, analysis has historically focused on offense—who scored, how they scored, and who assisted.
 
 While the introduction of player tracking technology in the early 2010s briefly enabled more sophisticated defensive analysis, this data has been private since 2016. Researchers outside the NBA now face a fundamental challenge: how do you evaluate defensive ability when publicly available statistics are either offense-focused or only loosely related to defense (e.g., blocks and steals)?
 
@@ -41,15 +41,19 @@ At a broader level, developing robust defensive metrics from public data could h
 
 ## Supervised Learning
 
-Our project leverages personal fouls as a proxy for defensive ability in the NBA. Since players who accumulate 6 fouls are ejected from games, they must strategically adjust their defensive intensity based on foul count. This creates a natural experiment where we can observe how defensive behavior changes under varying foul pressure, potentially revealing defensive skill without requiring proprietary tracking data.
+Our project uses personal fouls as a proxy for defensive ability in the NBA. Since players who accumulate 6 fouls are ejected from games, they must strategically adjust their defensive intensity based on foul count. This creates a natural experiment where we can observe how defensive behavior changes under varying foul pressure, potentially revealing defensive skill without requiring proprietary tracking data.
 
-We developed two hierarchical Bayesian models: 1. A binomial model predicting the probability of a defensive player committing a foul during a shot event, conditioned on their accumulated fouls, teammates' fouls, team, and opponent 2. A negative binomial model examining how foul accumulation affects the number of shots opponents attempt, conditioned on defenders, their positions, teams, and accumulated fouls
+We developed two hierarchical Bayesian models:
+
+1.  A binomial model predicting the probability of a defensive player committing a foul during a shot event, conditioned on their accumulated fouls, teammates' fouls, team, and opponent
+
+2.  A negative binomial model examining how foul accumulation affects the number of shots opponents attempt, conditioned on defenders, their positions, teams, and accumulated fouls
 
 Our approach is novel in using Bayesian methods to connect foul patterns to defensive impact, explicitly modeling how players' fouling tendencies affect both teammates and opponents as a defensive proxy.
 
 ## Unsupervised Learning
 
-The main goal of the unsupervised learning portion was to identify the true defensive roles of NBA players. Basketball has shifted towards a positionless style and being able to compare players' defensive styles by their impact on the court would allow for better scouting and gameplaning. Other researchers have explored clustering methods to try to identify a player's true role on the court, but like much other basketball research it is primarily focused on the offensive side of the ball and largely ignores what a player is doing for the other half of the time they are on the court. To accomplish a more defensive approach, play-by-play data, season long metrics, and anthropometric data was synthesized for each player per season with a minimum of 1,000 possessions played. While some of the resulting clusters aligned with classical notions of defensive roles, such as a rim protector or an elite 3 point defender, others had more niche roles.
+The main goal of the unsupervised learning portion was to identify the true defensive roles of NBA players. Basketball has shifted towards a positionless style and being able to compare players' defensive styles by their impact on the court would allow for better scouting and game-planing. Other researchers have explored clustering methods to try to identify a player's true role on the court, but like much other basketball research it is primarily focused on the offensive side of the ball and largely ignores what a player is doing for the other half of the time they are on the court. To accomplish a more defensive approach, play-by-play data, season long metrics, and anthropometric data was synthesized for each player per season with a minimum of 1,000 possessions played. While some of the resulting clusters aligned with classical notions of defensive roles, such as a rim protector or an elite 3 point defender, others had more niche roles.
 
 # Main Findings
 
@@ -328,7 +332,15 @@ To understand the practical implications of our model, we conducted counterfactu
 
 These visualizations show that the Denver Nuggets (DEN) are predicted to face a significant increase in closely-contested shot attempts near the basket when their Centers play with a high number of fouls, while the Dallas Mavericks show a similar pattern when their Guards accumulate fouls. These team and position-specific patterns highlight the value of our varying slopes approach in capturing the complex relationship between foul accumulation and defensive behavior.
 
-This simulation-based approach allowed us to: - Validate our modeling assumptions before and after fitting - Understand the practical implications of our parameter estimates - Test the robustness of our conclusions under different scenarios - Communicate results in terms of concrete basketball outcomes rather than abstract statistical parameters
+This simulation-based approach allowed us to:
+
+-   Validate our modeling assumptions before and after fitting
+
+-   Understand the practical implications of our parameter estimates
+
+-   Test the robustness of our conclusions under different scenarios
+
+-   Communicate results in terms of concrete basketball outcomes rather than abstract statistical parameters
 
 # Unsupervised Learning Methods
 
@@ -430,7 +442,7 @@ These tradeoffs highlight the importance of carefully considering modeling choic
 
 ### Sensitivity Analysis
 
-The model comparison table above gives indication that our model is fairly sensitive to our choice of priors, gaining significant out-of-sample predictive performance when fit with constrained versus unconstrained priors. Our model is less sensitive to whether it's parametrized with interaction terms versus group-level varying slopes, where the difference in ELPD is less than 5; if judging our models purely on predictive performance, a model with varying slopes doesn't seem to necessarily be preferable to one with interaction terms.
+The model comparison table above gives indication that our model is fairly sensitive to our choice of priors, gaining significant out-of-sample predictive performance when fit with constrained versus unconstrained priors. Our model is less sensitive to whether it's parameterized with interaction terms versus group-level varying slopes, where the difference in ELPD is less than 5; if judging our models purely on predictive performance, a model with varying slopes doesn't seem to necessarily be preferable to one with interaction terms.
 
 ### Failure Analysis
 
@@ -446,7 +458,7 @@ Table 1 presents three specific examples where our model's predictions significa
 
 #### 1. High-Volume Centers with Foul Trouble
 
-The first example shows a center from the Chicago Bulls with a high foul count (nearly 2 standard deviations above average) who faced 45 shot attempts while the model predicted only about 4. This dramatic underprediction reveals an important selection effect: centers who remain in games despite foul trouble are likely there specifically because of their defensive importance.
+The first example shows a center from the Chicago Bulls with a high foul count (nearly 2 standard deviations above average) who faced 45 shot attempts while the model predicted only about 4. This underprediction reveals an important selection effect: centers who remain in games despite foul trouble are likely there specifically because of their defensive importance.
 
 #### 2. Extreme Defender Distance Cases
 
@@ -458,7 +470,7 @@ The third example shows another Knicks player, a forward-guard with only slightl
 
 #### Overall Insights
 
-All three examples show massive underprediction, suggesting our model may be missing important factors that lead to high-volume shot attempts in certain situations. The magnitude of these errors (27-46 shots) indicates that in certain edge cases, the model's predictions are far off, pointing to the need for additional variables or interaction effects to capture these extreme scenarios. That said, what we mean by "prediction failure" needs to be contextualized for heirarchical models. Our constrained priors and adaptive regulariztion of partial pooling, while improving overall predictive performance, may be contributing to the severe underprediction of high shot attempt counts.
+All three examples show underprediction, suggesting our model may be missing important factors that lead to high-volume shot attempts in certain situations. The magnitude of these errors (27-46 shots) indicates that in certain edge cases, the model's predictions are far off, pointing to the need for additional variables or interaction effects to capture these extreme scenarios. That said, what we mean by "prediction failure" needs to be contextualized for hierarchical models. Our constrained priors and adaptive regularization of partial pooling, while improving overall predictive performance, may be contributing to the severe underprediction of high shot attempt counts.
 
 The magnitude of our prediction errors in these extreme cases suggests that our priors may be too informative for certain regions of the parameter space, pulling predictions too strongly toward the population mean when faced with unusual combinations of predictor values.
 
