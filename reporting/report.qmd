@@ -106,7 +106,7 @@ These findings have important implications for basketball strategy and player ev
 1.  Defensive impact seems to be partially understandable through the lens of foul accumulation patterns, providing a novel approach to defensive evaluation using publicly available data
 2.  Position-specific and team-specific effects highlight the importance of context when evaluating defensive performance
 3.  One-size-fits-all defensive metrics may miss important nuances in how players contribute defensively
-4.  A foul is not a foul is not a foul is not a foul. For some players, fouls may be an indicator of defensive intensity, skill, and contribution to team defense. For others, they may be a sign of poor defense and a warning sign that their teammates need to play more mindfully and adjust their defensive strategy.
+4.  A foul is not a foul is not a foul is not a foul. For some players, fouls may be an indicator of defensive intensity, skill, and contribution to team defense. For others, they may be a sign of poor defense and a warning that their teammates need to play more mindfully and adjust their defensive strategy.
 
 ## Unsupervised Learning
 
@@ -723,10 +723,10 @@ The following diagnostic plots were used to assess the convergence and reliabili
 
 ![R-hat values showing convergence across parameters](images/neg-binom_rhat.png){fig-align="center" width="400"}
 
-The R-hat values consistently above .1 indicate convergence across all parameters, suggesting that our chains mixed well and reached the target posterior distribution.
+The R-hat values consistently above 1.1 indicate convergence across all parameters, suggesting that our chains mixed well and reached the target posterior distribution.
 
 ![Effective sample sizes for key parameters](images/neff_values.png){fig-align="center" width="400"}
 
-The effective sample sizes (N_eff) are sufficiently large for all key parameters, ensuring that our posterior summaries are based on adequate independent samples.
+The effective sample sizes (N_eff) are sufficiently large (greater than 0.1) for all key parameters, ensuring that our posterior summaries are based on adequate independent samples.
 
 Trace plots (not shown here) further confirmed good mixing of the chains, with no signs of pathological behavior such as stickiness or trending.
