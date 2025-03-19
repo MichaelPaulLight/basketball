@@ -16,6 +16,7 @@ notebooks/neg-binomial_modeling/*.rds
 *.parquet
 data/*.parquet
 samples/*.parquet
+Milestone2/data/*.parquet
 
 # OS specific
 .DS_Store
