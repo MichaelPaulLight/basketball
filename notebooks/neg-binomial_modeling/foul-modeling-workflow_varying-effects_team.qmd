@@ -23,6 +23,7 @@ library(tidybayes)
 library(bayesplot)
 library(dagitty)
 library(ggdag)
+library(vmc)
 ```
 
 ## Domain Knowledge
@@ -581,7 +582,109 @@ ggplot(plot_data, aes(x = fouls_scaled)) +
     y = "Predicted Shot Attempts"
   ) +
   theme_minimal() +
-  coord_cartesian(ylim = c(0, 20))
+  coord_cartesian(ylim = c(0, 1000))
+```
+
+VMC Exploration
+
+```{r}
+
+# prior predictive check
+varying_slopes_model_prior_constrained |> 
+  mcplot() + 
+  mc_draw("shape") +
+  mc_gglayer(coord_flip())
+
+varying_slopes_model_prior_constrained %>%
+  mcplot(observation = period_agg_by_team) +
+  mc_draw(ndraws = 1000) +
+  mc_model_lineribbon() +
+  mc_condition_on(x = vars(position))
+
+# prior pushforward predictive check
+prior_pred_data <- expand_grid(
+  fouls_scaled = seq(-2, 2, by = 0.2),
+  slug_team_def = unique(period_agg_by_team$slug_team_def)[1:3],  # Just a few teams
+  position = unique(period_agg_by_team$position)[1:5],  # Just a few positions
+  offender_shot_dist_range = unique(period_agg_by_team$offender_shot_dist_range),  # Fix shot distance
+  close_def_dist_range = unique(period_agg_by_team$close_def_dist_range)  # Fix defender proximity
+)
+
+# linear predictor prior pushforward check
+prior_linpreds <- prior_pred_data |> 
+  add_linpred_draws(varying_slopes_model_prior_constrained) |> 
+  mutate(offender_fga = .linpred)
+
+# full predictor prior pushforward check
+prior_epreds <- prior_pred_data |> 
+  add_epred_draws(varying_slopes_model_prior_constrained) |> 
+  mutate(offender_fga = .epred)
+
+# prior pushforward predictive check
+prior_predictions <- prior_pred_data |> 
+  add_predicted_draws(varying_slopes_model_prior_constrained) |> 
+  mutate(offender_fga = .prediction)
+
+varying_slopes_model_prior_constrained |> 
+  mcplot(observation = prior_predictions) +
+  mc_draw(ndraws = 50) +
+  mc_model_lineribbon() +
+  mc_condition_on(x = vars(position),
+                  row = vars(close_def_dist_range))
+
+varying_slopes_model_prior_constrained |> 
+  mcplot(observation = prior_epreds) +
+  mc_draw(ndraws = 50) +
+  mc_model_lineribbon() +
+  mc_condition_on(x = vars(position),
+                  row = vars(close_def_dist_range))
+
+varying_slopes_model_prior_constrained |> 
+  mcplot(observation = prior_linpreds) +
+  mc_draw(ndraws = 50) +
+  mc_model_lineribbon() +
+  mc_condition_on(x = vars(position),
+                  row = vars(close_def_dist_range))
+
+# this is another way of checking the model's prior expectations against our grid of prior predictive data
+
+varying_slopes_model_prior_constrained %>%
+  mcplot(observation = prior_predictions) +
+  mc_model_interval() +
+  mc_obs_interval() +
+  mc_condition_on(x = vars(position)) +
+  mc_layout_nested()
+
+varying_slopes_model_prior_constrained %>%
+  mcplot(observation = prior_epreds) +
+  mc_model_interval() +
+  mc_obs_interval() +
+  mc_condition_on(x = vars(position)) +
+  mc_layout_nested()
+
+varying_slopes_model_prior_constrained %>%
+  mcplot(observation = prior_linpreds) +
+  mc_model_interval() +
+  mc_obs_interval() +
+  mc_condition_on(x = vars(position)) +
+  mc_layout_nested()
+
+# these don't seem useful for prior checking
+
+varying_slopes_model_prior_constrained %>%
+  mcplot(observation = prior_predictions) +
+  mc_draw(ndraws = 1) +
+  mc_condition_on(x = vars(position),
+                  color = vars(close_def_dist_range)) +
+  mc_layout_encoding("residual") +
+  mc_gglayer(geom_hline(yintercept = 0))
+
+varying_slopes_model_prior_constrained %>%
+  mcplot(observation = prior_predictions) +
+  mc_draw(ndraws = 1) +
+  mc_condition_on(color = vars(position)) +
+  mc_layout_encoding("qq") +
+  mc_gglayer(geom_abline())
 ```
 
 ### Model Fitting
